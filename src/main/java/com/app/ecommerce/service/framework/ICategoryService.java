@@ -1,15 +1,22 @@
 package com.app.ecommerce.service.framework;
 
-import com.app.ecommerce.entity.Category;
-import com.app.ecommerce.exception.models.IdNotFoundException;
-import com.app.ecommerce.models.request.CategoryDTO;
+import java.util.List;
 
-import java.util.Set;
+import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.models.request.CategoryRequestBody;
+import com.app.ecommerce.models.response.success.AddNewCategoryResponse;
+import com.app.ecommerce.models.response.success.DeleteCategoryResponse;
+import com.app.ecommerce.models.response.success.GetAllCategoriesReponse;
+
+
 
 public interface ICategoryService {
-    boolean addCategory(CategoryDTO category);
+	
+    AddNewCategoryResponse add(CategoryRequestBody category) throws DuplicatedUniqueColumnValueException;
 
-    boolean deleteCategoryById(Long categoryId) throws IdNotFoundException;
+    DeleteCategoryResponse deleteById(Long categoryId) throws IdNotFoundException;
 
-    Set<CategoryDTO> getAllCategories();
+    GetAllCategoriesReponse findAll();
+
 }

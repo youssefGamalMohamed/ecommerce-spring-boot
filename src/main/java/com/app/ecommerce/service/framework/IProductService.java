@@ -1,15 +1,13 @@
 package com.app.ecommerce.service.framework;
 
-import com.app.ecommerce.entity.Product;
-import com.app.ecommerce.models.request.ProductDTO;
+import com.app.ecommerce.models.request.ProductRequestBody;
+import com.app.ecommerce.models.response.success.AddNewProductResponse;
+import com.app.ecommerce.models.response.success.GetAllProductsByCategoryIdResponse;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 public interface IProductService {
 
-    boolean addProduct(ProductDTO productDTO);
+    AddNewProductResponse addNewProduct(ProductRequestBody productDTO);
 
-	List<ProductDTO> getProductsByCategoryId(Long categoryId);
+    GetAllProductsByCategoryIdResponse findProductsByCategoryId(Long categoryId);
 }

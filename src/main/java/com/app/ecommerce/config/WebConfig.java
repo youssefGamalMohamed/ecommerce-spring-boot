@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
+	// this method handles CORS and allow any to access any point here
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**");

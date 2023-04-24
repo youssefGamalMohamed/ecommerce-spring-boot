@@ -1,8 +1,13 @@
 package com.app.ecommerce.exception.handler;
 
 
-import com.app.ecommerce.models.response.error.BadRequestResponse;
-import com.app.ecommerce.models.response.error.InternalServerResponse;
+import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.models.response.other.BadRequestResponse;
+import com.app.ecommerce.models.response.other.ConfilctResponse;
+import com.app.ecommerce.models.response.other.InternalServerResponse;
+import com.app.ecommerce.models.response.other.NotFoundResponse;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -56,19 +61,37 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler({ Exception.class })
-    public ResponseEntity<?> handleGeneralException(Exception exception) {
-        return new ResponseEntity<>(
-                InternalServerResponse.builder()
-                        .message(exception.getMessage())
-                        .build()
-                , HttpStatus.INTERNAL_SERVER_ERROR
-        );
+//    @ExceptionHandler(value = Exception.class)
+//    public ResponseEntity<?> handleInternalServerErrorException(Exception exception) {
+//    	return new ResponseEntity<>(
+//    				InternalServerResponse.builder()
+//    				.message(exception.getMessage())
+//    				.build()
+//    				 , HttpStatus.INTERNAL_SERVER_ERROR
+//    			
+//    			);
+//    }
+
+    @ExceptionHandler(value = DuplicatedUniqueColumnValueException.class)
+    public ResponseEntity<?> handleDuplicatedUniqueValueException(DuplicatedUniqueColumnValueException exception) {
+    	return new ResponseEntity<>(
+    				ConfilctResponse.builder()
+    				.message(exception.getMessage())
+    				.build()
+    				 , HttpStatus.CONFLICT
+    			
+    			);
     }
 
-
-
-
-
+    @ExceptionHandler(value = IdNotFoundException.class)
+    public ResponseEntity<?> handleDuplicatedUniqueValueException(IdNotFoundException exception) {
+    	return new ResponseEntity<>(
+    				NotFoundResponse.builder()
+    				.message(exception.getMessage())
+    				.build()
+    				 , HttpStatus.NOT_FOUND
+    			
+    			);
+    }
 
 }

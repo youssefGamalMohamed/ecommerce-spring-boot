@@ -3,7 +3,11 @@ package com.app.ecommerce.service.impl;
 
 import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
-import com.app.ecommerce.models.request.ProductDTO;
+import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.models.request.ProductRequestBody;
+import com.app.ecommerce.models.response.success.AddNewProductResponse;
+import com.app.ecommerce.models.response.success.GetAllCategoriesReponse;
+import com.app.ecommerce.models.response.success.GetAllProductsByCategoryIdResponse;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.IProductService;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,33 +31,42 @@ public class ProductService implements IProductService {
 
 
     @Override
-    public boolean addProduct(ProductDTO productDTO) {
+    public AddNewProductResponse addNewProduct(ProductRequestBody productRequestBody) {
 
         Set<Category> categories = new HashSet<>();
-        productDTO.getCategoriesId()
-                .forEach(id -> categories.add(categoryRepo.findById(id).get()));
+        productRequestBody.getCategoriesId()
+                .forEach(id -> {
+                	Optional<Category> category = categoryRepo.findById(id);
+                	if(category.isPresent())
+                		categories.add(category.get());
+                	else
+                		throw new IdNotFoundException("Can Not Add New Product with Category Id = " + id 
+                				+ " , this Id not exist and not belong for Category");
+                });
 
         Product product = Product.builder()
-                .name(productDTO.getName())
-                .price(productDTO.getPrice())
-                .description(productDTO.getDescription())
-                .categories(categories)
-                .build();
-        productRepo.save(product);
-        return false;
+        		.name(productRequestBody.getName())
+        		.description(productRequestBody.getDescription())
+        		.price(productRequestBody.getPrice())
+        		.quantity(productRequestBody.getQuantity())
+        		.categories(categories)
+        		.build();
+        
+        return AddNewProductResponse.builder()
+        		.id(
+        				productRepo.save(product).getId()
+        		)
+        		.build();
+      
     }
 
 
 	@Override
-	public List<ProductDTO> getProductsByCategoryId(Long categoryId) {
-		return productRepo.findByCategoriesId(categoryId)
-				.stream()
-				.map(product -> ProductDTO.builder()
-						.id(product.getId())
-						.name(product.getName())
-						.description(product.getDescription())
-						.price(product.getPrice())
-						.build())
-				.toList();
+	public GetAllProductsByCategoryIdResponse findProductsByCategoryId(Long categoryId) {
+		return GetAllProductsByCategoryIdResponse.builder()
+				.products(
+						productRepo.findByCategoriesId(categoryId)
+				)
+				.build();
 	}
 }
