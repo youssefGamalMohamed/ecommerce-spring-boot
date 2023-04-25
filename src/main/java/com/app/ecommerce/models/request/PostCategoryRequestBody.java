@@ -21,7 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 
-public class CategoryRequestBody {
+public class PostCategoryRequestBody {
 
 
     private Long id;

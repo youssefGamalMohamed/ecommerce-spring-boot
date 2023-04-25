@@ -27,7 +27,7 @@ import com.app.ecommerce.entity.Product;
 @NoArgsConstructor
 @ToString
 
-public class ProductRequestBody {
+public class PostProductRequestBody {
 
 	private Long id;
 	
@@ -47,24 +47,5 @@ public class ProductRequestBody {
     @NotNull
     private Set<Long> categoriesId;
 
-    
-    public static Product fromDto(ProductRequestBody productDto , Set<Category> categories) {
-    	return Product.builder()
-    			.categories(categories)
-    			.description(productDto.getDescription())
-    			.name(productDto.getName())
-    			.price(productDto.getPrice())
-    			.quantity(productDto.getQuantity())
-    			.build();
-    }
-    
-    public static ProductRequestBody toDto(Product product) {
-    	return ProductRequestBody.builder()
-    			.description(product.getDescription())
-    			.id(product.getId())
-    			.name(product.getName())
-    			.price(product.getPrice())
-    			.quantity(product.getQuantity())
-    			.build();
-    }
+   
 }

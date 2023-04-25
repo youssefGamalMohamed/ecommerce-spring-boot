@@ -5,10 +5,11 @@ import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.CategoryRequestBody;
+import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.response.success.AddNewCategoryResponse;
 import com.app.ecommerce.models.response.success.DeleteCategoryResponse;
 import com.app.ecommerce.models.response.success.GetAllCategoriesReponse;
+import com.app.ecommerce.models.response.success.GetCategoryByIdResponse;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.ICategoryService;
@@ -31,7 +32,7 @@ public class CategoryService implements ICategoryService {
 
         
     @Override
-    public AddNewCategoryResponse add(CategoryRequestBody categoryRequestBody) throws DuplicatedUniqueColumnValueException {
+    public AddNewCategoryResponse add(PostCategoryRequestBody categoryRequestBody) throws DuplicatedUniqueColumnValueException {
     	if(categoryRepo.findByName(categoryRequestBody.getName()).isPresent())
     		throw new DuplicatedUniqueColumnValueException("Category Name Already Exist" +
     					"and Should Not Be Duplicated"
@@ -82,6 +83,18 @@ public class CategoryService implements ICategoryService {
         		)
         		.build();
     }
+
+	@Override
+	public GetCategoryByIdResponse findById(Long categoryId) {
+		if(!categoryRepo.existsById(categoryId))
+			throw new IdNotFoundException("Can Not Get Category By Id , Id Not Found");
+		
+		return GetCategoryByIdResponse.builder()
+				.category(
+					categoryRepo.findById(categoryId).get()
+				 )
+				.build();
+	}
 
 
 }

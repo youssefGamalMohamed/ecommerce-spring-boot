@@ -1,16 +1,11 @@
 package com.app.ecommerce.models.response.success;
 
-import com.app.ecommerce.models.request.PostCategoryRequestBody;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
 
 @Builder
 @Setter
@@ -18,8 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+public class UpdateProductResponse {
 
-public class AddNewCategoryResponse {
-	
 	private Long id;
 }

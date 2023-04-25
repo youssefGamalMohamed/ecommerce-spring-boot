@@ -1,15 +1,13 @@
 package com.app.ecommerce.controller;
 
-import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.CategoryRequestBody;
+import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.service.framework.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 public class CategoryController {
@@ -19,8 +17,11 @@ public class CategoryController {
     private ICategoryService categoryService;
 
     @PostMapping("/categories")
-    public ResponseEntity<?> addNewCategory(@RequestBody CategoryRequestBody categoryRequestBody) {
-        return ResponseEntity.ok(categoryService.add(categoryRequestBody));
+    public ResponseEntity<?> addNewCategory(@RequestBody PostCategoryRequestBody categoryRequestBody) {
+        return new ResponseEntity<>(
+        		    categoryService.add(categoryRequestBody) ,
+        		    HttpStatus.CREATED
+        		);
     }
 
     @DeleteMapping("/categories/{id}")
@@ -35,5 +36,10 @@ public class CategoryController {
     @GetMapping("/categories")
     public ResponseEntity<?> findAll() {
         return ResponseEntity.ok(categoryService.findAll());
+    }
+    
+    @GetMapping("/categories/{id}")
+    public ResponseEntity<?> findById(@PathVariable("id") Long categoryId) {
+        return ResponseEntity.ok(categoryService.findById(categoryId));
     }
 }

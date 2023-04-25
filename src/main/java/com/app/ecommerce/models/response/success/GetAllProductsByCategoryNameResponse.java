@@ -23,6 +23,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 
-public class GetAllProductsByCategoryIdResponse {
-	private List<Product> products;
+public class GetAllProductsByCategoryNameResponse {
+	private Set<Product> products;
 }

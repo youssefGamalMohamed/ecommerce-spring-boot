@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepo extends JpaRepository<Product, Long> {
 	
 	List<Product> findByCategoriesId(Long categoryId);
+	
 }

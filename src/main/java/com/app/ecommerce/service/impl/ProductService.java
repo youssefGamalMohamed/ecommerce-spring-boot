@@ -4,16 +4,19 @@ package com.app.ecommerce.service.impl;
 import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.ProductRequestBody;
+import com.app.ecommerce.models.request.PostProductRequestBody;
+import com.app.ecommerce.models.request.PutProductRequestBody;
 import com.app.ecommerce.models.response.success.AddNewProductResponse;
 import com.app.ecommerce.models.response.success.GetAllCategoriesReponse;
-import com.app.ecommerce.models.response.success.GetAllProductsByCategoryIdResponse;
+import com.app.ecommerce.models.response.success.GetAllProductsByCategoryNameResponse;
+import com.app.ecommerce.models.response.success.UpdateProductResponse;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +34,7 @@ public class ProductService implements IProductService {
 
 
     @Override
-    public AddNewProductResponse addNewProduct(ProductRequestBody productRequestBody) {
+    public AddNewProductResponse addNewProduct(PostProductRequestBody productRequestBody) {
 
         Set<Category> categories = new HashSet<>();
         productRequestBody.getCategoriesId()
@@ -62,11 +65,46 @@ public class ProductService implements IProductService {
 
 
 	@Override
-	public GetAllProductsByCategoryIdResponse findProductsByCategoryId(Long categoryId) {
-		return GetAllProductsByCategoryIdResponse.builder()
+	public GetAllProductsByCategoryNameResponse findProductsByCategoryName(String categoryName) {
+		Set<Product> productSet = categoryRepo.findByName(categoryName).get().getProducts();
+		return GetAllProductsByCategoryNameResponse.builder()
 				.products(
-						productRepo.findByCategoriesId(categoryId)
+					productSet
 				)
 				.build();
+	}
+
+
+	@Override
+	public UpdateProductResponse updateProductById(Long productId, PutProductRequestBody updatedProductRequstBody) {
+		if(!productRepo.existsById(productId))
+			throw new IdNotFoundException("Can Not Update Product , Id Not Found");
+		
+		
+		Product product = productRepo.findById(productId).get();
+		
+        Set<Category> categories = new HashSet<>();
+        
+        updatedProductRequstBody.getCategoriesId()
+                .forEach(id -> {
+                	Optional<Category> category = categoryRepo.findById(id);
+                	if(category.isPresent())
+                		categories.add(category.get());
+                	else
+                		throw new IdNotFoundException("Can Not Update New Product with Category Id = " + id 
+                				+ " , this Id not exist and not belong for Category");
+                });
+        
+        product.setName(updatedProductRequstBody.getName());
+        product.setDescription(updatedProductRequstBody.getDescription());
+        product.setPrice(updatedProductRequstBody.getPrice());
+        product.setQuantity(updatedProductRequstBody.getQuantity());
+        product.getCategories().addAll(categories);
+        
+        productRepo.save(product);
+        
+        return UpdateProductResponse.builder()
+        		.id(productId)
+        		.build();
 	}
 }
