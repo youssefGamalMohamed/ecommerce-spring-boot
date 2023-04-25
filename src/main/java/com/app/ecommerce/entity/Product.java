@@ -36,7 +36,7 @@ public class Product {
     
     
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.REFRESH})
     @JoinTable(
             name = "product_category",
             joinColumns = @JoinColumn(name = "product_id"),
@@ -63,6 +63,15 @@ public class Product {
 		return "Product [id=" + id + ", name=" + name + ", description=" + description + ", price=" + price
 				+ ", quantity=" + quantity + "]";
 	}
+
+//	public void removeCategory(Long categoryId) {
+//		Category category = this.categories.stream()
+//				.filter(cate -> cate.getId() == categoryId)
+//				.findFirst()
+//				.get();
+//		this.categories.remove(category);
+//		category.getProducts().remove(this);
+//	}
     
     
 }

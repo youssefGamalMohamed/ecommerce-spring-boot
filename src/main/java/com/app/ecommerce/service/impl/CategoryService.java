@@ -16,6 +16,8 @@ import com.app.ecommerce.service.framework.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -27,9 +29,7 @@ public class CategoryService implements ICategoryService {
     @Autowired
     private CategoryRepo categoryRepo;
 
-    
-    
-    
+        
     @Override
     public AddNewCategoryResponse add(CategoryRequestBody categoryRequestBody) throws DuplicatedUniqueColumnValueException {
     	if(categoryRepo.findByName(categoryRequestBody.getName()).isPresent())
@@ -55,7 +55,19 @@ public class CategoryService implements ICategoryService {
         if(!categoryRepo.existsById(categoryId))
             throw new IdNotFoundException("Cateogory Id Not Found to Delete");
         
+
+        
+        Category category = categoryRepo.findById(categoryId).get();
+        
+        Iterator<Product> iterator = category.getProducts().iterator();
+        while (iterator.hasNext()) {
+            Product product = iterator.next();
+            product.getCategories().remove(category);
+        }
+        
+        category.getProducts().clear();
         categoryRepo.deleteById(categoryId);
+        
         
         return DeleteCategoryResponse.builder()
         		.message("Cateogry Deleted Successfully")

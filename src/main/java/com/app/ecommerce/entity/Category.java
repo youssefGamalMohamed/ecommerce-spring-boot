@@ -28,6 +28,7 @@ public class Category {
     @Column(unique = true)
     private String name;
 
+    
     @ManyToMany(mappedBy = "categories" , fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Product> products;
