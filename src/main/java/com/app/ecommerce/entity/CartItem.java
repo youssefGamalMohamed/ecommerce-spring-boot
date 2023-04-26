@@ -2,6 +2,9 @@ package com.app.ecommerce.entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,12 +33,14 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @OneToOne(mappedBy = "cartItem")
+    @ManyToOne
+    @JoinColumn(name = "product_id")
 	private Product product;
 	
 	private int productQuantity;
 	
 	@ManyToOne
 	@JoinColumn(name = "cart_id")
+	@JsonIgnore
 	private Cart cart;
 }

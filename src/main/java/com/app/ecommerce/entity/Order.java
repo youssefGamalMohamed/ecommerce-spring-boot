@@ -5,9 +5,15 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.app.ecommerce.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.app.ecommerce.enums.PaymentType;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,8 +30,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "`Order`")
-@Entity(name = "`Order`")
+@Table(name = "customer_order")
+@Entity(name = "customer_order")
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -43,20 +49,24 @@ public class Order {
 	@Column
 	private double totalPrice;
 	
-	@Column
-	private String deliveryAddress;
+	@Embedded
+	@AttributeOverrides({
+		  @AttributeOverride( name = "status", column = @Column(name = "delivery_status")),
+		  @AttributeOverride( name = "address", column = @Column(name = "delivery_address")),
+		  @AttributeOverride( name = "date", column = @Column(name = "delivery_date"))
+	})
+	private Delivery delivery;
 	
-	@Column
-	private String deliveryDate;
-	
-	@OneToOne(mappedBy = "order")
+	@OneToOne(mappedBy = "order" , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.REFRESH })
 	private Cart cart;
 	
+	
 	@Column
-	@CreationTimestamp
-	private LocalDateTime createdAt = LocalDateTime.now();
+	private LocalDateTime createdAt;
 	
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
+	@JsonIgnore
 	private Customer customer;
+	
 }

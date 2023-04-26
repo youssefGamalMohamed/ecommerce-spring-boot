@@ -3,10 +3,13 @@ package com.app.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.Hibernate;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Table(name = "Product")
@@ -44,9 +47,9 @@ public class Product {
     )
     private Set<Category> categories;
 
-    @OneToOne
-    @JoinColumn(name = "cart_item_id")
-    private CartItem cartItem;
+    @OneToMany(mappedBy = "product")
+    @JsonIgnore
+    private List<CartItem> cartItem;
     
     @Override
     public boolean equals(Object o) {

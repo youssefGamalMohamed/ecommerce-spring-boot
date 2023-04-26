@@ -2,6 +2,9 @@ package com.app.ecommerce.entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,10 +34,11 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@OneToMany(mappedBy = "cart")
+	@OneToMany(mappedBy = "cart" , cascade = {CascadeType.PERSIST , CascadeType.REFRESH , CascadeType.MERGE})
 	private Set<CartItem> cartItems;
 	
 	@OneToOne
 	@JoinColumn(name = "order_id")
+	@JsonIgnore
 	private Order order;
 }
