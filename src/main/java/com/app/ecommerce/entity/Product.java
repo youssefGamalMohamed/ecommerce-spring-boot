@@ -44,6 +44,9 @@ public class Product {
     )
     private Set<Category> categories;
 
+    @OneToOne
+    @JoinColumn(name = "cart_item_id")
+    private CartItem cartItem;
     
     @Override
     public boolean equals(Object o) {

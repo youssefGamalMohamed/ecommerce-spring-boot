@@ -2,6 +2,7 @@ package com.app.ecommerce.controller;
 
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostCategoryRequestBody;
+import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.service.framework.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,4 +43,12 @@ public class CategoryController {
     public ResponseEntity<?> findById(@PathVariable("id") Long categoryId) {
         return ResponseEntity.ok(categoryService.findById(categoryId));
     }
+    
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @RequestBody PutCategoryRequestBody updatedBody) {
+        return ResponseEntity.ok(categoryService.updateByIdef(categoryId, updatedBody));
+    }
+    
+    
+    
 }

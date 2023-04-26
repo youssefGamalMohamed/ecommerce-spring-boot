@@ -6,10 +6,12 @@ import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostCategoryRequestBody;
+import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.models.response.success.AddNewCategoryResponse;
 import com.app.ecommerce.models.response.success.DeleteCategoryResponse;
 import com.app.ecommerce.models.response.success.GetAllCategoriesReponse;
 import com.app.ecommerce.models.response.success.GetCategoryByIdResponse;
+import com.app.ecommerce.models.response.success.UpdateCategoryResponse;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.ICategoryService;
@@ -93,6 +95,22 @@ public class CategoryService implements ICategoryService {
 				.category(
 					categoryRepo.findById(categoryId).get()
 				 )
+				.build();
+	}
+
+	@Override
+	public UpdateCategoryResponse updateByIdef(Long categoryId, PutCategoryRequestBody updatedCategory) {
+		if(!categoryRepo.existsById(categoryId))
+			throw new IdNotFoundException("Can Not Update Category , Id Not Found");
+		
+		Category category = categoryRepo.findById(categoryId).get();
+		
+		category.setName(updatedCategory.getName());
+		
+		categoryRepo.save(category);
+		
+		return UpdateCategoryResponse.builder()
+				.id(categoryId)
 				.build();
 	}
 
