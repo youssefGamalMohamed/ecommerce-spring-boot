@@ -1,6 +1,8 @@
 package com.app.ecommerce.exception.type;
 
-public class IdNotFoundException extends RuntimeException {
+import java.util.NoSuchElementException;
+
+public class IdNotFoundException extends NoSuchElementException {
     public IdNotFoundException() {
     }
 

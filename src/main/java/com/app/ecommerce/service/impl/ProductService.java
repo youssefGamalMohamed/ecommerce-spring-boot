@@ -4,6 +4,7 @@ package com.app.ecommerce.service.impl;
 import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.exception.type.NameNotFoundException;
 import com.app.ecommerce.models.request.PostProductRequestBody;
 import com.app.ecommerce.models.request.PutProductRequestBody;
 import com.app.ecommerce.models.response.success.AddNewProductResponse;
@@ -39,12 +40,10 @@ public class ProductService implements IProductService {
         Set<Category> categories = new HashSet<>();
         productRequestBody.getCategoriesId()
                 .forEach(id -> {
-                	Optional<Category> category = categoryRepo.findById(id);
-                	if(category.isPresent())
-                		categories.add(category.get());
-                	else
-                		throw new IdNotFoundException("Can Not Add New Product with Category Id = " + id 
-                				+ " , this Id not exist and not belong for Category");
+                	Category category = categoryRepo.findById(id)
+                			.orElseThrow(() -> new IdNotFoundException("Can Not Create New Product"
+                					+ " , Some of Assigned Categories with Id " + id));
+                	categories.add(category);
                 });
 
         Product product = Product.builder()
@@ -66,7 +65,9 @@ public class ProductService implements IProductService {
 
 	@Override
 	public GetAllProductsByCategoryNameResponse findProductsByCategoryName(String categoryName) {
-		Set<Product> productSet = categoryRepo.findByName(categoryName).get().getProducts();
+		Set<Product> productSet = categoryRepo.findByName(categoryName)
+				.orElseThrow(() -> new NameNotFoundException("Category Name does not exist to retrieve associated Products"))
+				.getProducts();
 		return GetAllProductsByCategoryNameResponse.builder()
 				.products(
 					productSet
@@ -77,22 +78,19 @@ public class ProductService implements IProductService {
 
 	@Override
 	public UpdateProductResponse updateProductById(Long productId, PutProductRequestBody updatedProductRequstBody) {
-		if(!productRepo.existsById(productId))
-			throw new IdNotFoundException("Can Not Update Product , Id Not Found");
-		
-		
-		Product product = productRepo.findById(productId).get();
+			
+		Product product = productRepo.findById(productId)
+				.orElseThrow(() -> new IdNotFoundException("Can Not Update Product , Id Not Found"));
 		
         Set<Category> categories = new HashSet<>();
         
         updatedProductRequstBody.getCategoriesId()
                 .forEach(id -> {
-                	Optional<Category> category = categoryRepo.findById(id);
-                	if(category.isPresent())
-                		categories.add(category.get());
-                	else
-                		throw new IdNotFoundException("Can Not Update New Product with Category Id = " + id 
-                				+ " , this Id not exist and not belong for Category");
+                	Category category = categoryRepo.findById(id)
+                			.orElseThrow(() -> new IdNotFoundException("Can Not Update Product , Category with id = " + 
+                							id + "Not Eixst"
+                					));
+                	categories.add(category);
                 });
         
         product.setName(updatedProductRequstBody.getName());

@@ -21,19 +21,7 @@ public class CartService implements ICartService {
 	private ICartItemService cartItemService;
 	
 	@Override
-	public Cart createNewCart(PostCartRequestBody cartRequestBody) {
-//		Set<CartItem> cartItems = new HashSet<>();
-//		
-//		cartRequestBody.getCartItems().forEach(item -> {
-//			cartItems.add(
-//						CartItem.builder()
-//						.product(productRepo.findById(item.getProductId()).get())
-//						.productQuantity(item.getQuantity())
-//						.build()
-//					);
-//		});
-		
-		
+	public Cart createNewCart(PostCartRequestBody cartRequestBody) {		
 		
 		Cart cart = Cart.builder()
 						.cartItems(

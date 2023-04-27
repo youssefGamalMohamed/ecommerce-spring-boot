@@ -43,7 +43,8 @@ public class OrderSerivce implements IOrderService {
 	@Override
 	public CreateNewOrderResponse createNewOrder(PostOrderRequestBody orderRequestBody) {
 		
-		Customer customer = customerRepo.findById(orderRequestBody.getCustomerId()).get();
+		Customer customer = customerRepo.findById(orderRequestBody.getCustomerId())
+				.orElseThrow(() -> new IdNotFoundException("Can Not Create Order Becuase Customre Id Not Exist"));
 		
 		
 		Delivery delivery = Delivery.builder()
@@ -74,23 +75,21 @@ public class OrderSerivce implements IOrderService {
 
 	@Override
 	public GetOrderByIdResponse findById(Long orderId) {
-		if(!orderRepo.existsById(orderId))
-			throw new IdNotFoundException("No Such Order , Id Not Found");
 		
 		return GetOrderByIdResponse.builder()
-				.order(orderRepo.findById(orderId).get())
+				.order(
+						orderRepo.findById(orderId).orElseThrow(() -> new IdNotFoundException("No Such Order With This Id , Id Not Found "))
+				)
 				.build();
 	}
 
 	@Override
 	public GetOrderStatusById findOrderStatusById(Long orderId) {
-		if(!orderRepo.existsById(orderId))
-			throw new IdNotFoundException("No Such Order , Id Not Found");
 		
 		return GetOrderStatusById.builder()
 				.orderStatus(
 							orderRepo.findById(orderId)
-							.get()
+							.orElseThrow(() -> new IdNotFoundException("No Such Order , Id Not Found"))
 							.getDelivery()
 							.getStatus()
 						)

@@ -61,16 +61,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-//    @ExceptionHandler(value = Exception.class)
-//    public ResponseEntity<?> handleInternalServerErrorException(Exception exception) {
-//    	return new ResponseEntity<>(
-//    				InternalServerResponse.builder()
-//    				.message(exception.getMessage())
-//    				.build()
-//    				 , HttpStatus.INTERNAL_SERVER_ERROR
-//    			
-//    			);
-//    }
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<?> handleInternalServerErrorException(Exception exception) {
+    	return new ResponseEntity<>(
+    				InternalServerResponse.builder()
+    				.message(exception.getMessage())
+    				.build()
+    				 , HttpStatus.INTERNAL_SERVER_ERROR
+    			
+    			);
+    }
 
     @ExceptionHandler(value = DuplicatedUniqueColumnValueException.class)
     public ResponseEntity<?> handleDuplicatedUniqueValueException(DuplicatedUniqueColumnValueException exception) {
@@ -83,8 +83,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     			);
     }
 
-    @ExceptionHandler(value = IdNotFoundException.class)
-    public ResponseEntity<?> handleDuplicatedUniqueValueException(IdNotFoundException exception) {
+    @ExceptionHandler(value = NoSuchElementException.class)
+    public ResponseEntity<?> handleNoSuchElementException(NoSuchElementException exception) {
     	return new ResponseEntity<>(
     				NotFoundResponse.builder()
     				.message(exception.getMessage())

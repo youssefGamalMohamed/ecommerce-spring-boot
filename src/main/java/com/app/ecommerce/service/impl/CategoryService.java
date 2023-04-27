@@ -55,12 +55,10 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public DeleteCategoryResponse deleteById(Long categoryId) throws IdNotFoundException {
-        if(!categoryRepo.existsById(categoryId))
-            throw new IdNotFoundException("Cateogory Id Not Found to Delete");
-        
-
-        
-        Category category = categoryRepo.findById(categoryId).get();
+    	
+        Category category = categoryRepo.findById(categoryId).orElseThrow(
+        				() -> new IdNotFoundException("Category Id Not Exist to Delete")
+        		);
         
         Iterator<Product> iterator = category.getProducts().iterator();
         while (iterator.hasNext()) {
@@ -88,22 +86,17 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public GetCategoryByIdResponse findById(Long categoryId) {
-		if(!categoryRepo.existsById(categoryId))
-			throw new IdNotFoundException("Can Not Get Category By Id , Id Not Found");
-		
 		return GetCategoryByIdResponse.builder()
 				.category(
-					categoryRepo.findById(categoryId).get()
+					categoryRepo.findById(categoryId).orElseThrow(() -> new IdNotFoundException("No Category To Retrieve, Id Not Found"))
 				 )
 				.build();
 	}
 
 	@Override
 	public UpdateCategoryResponse updateByIdef(Long categoryId, PutCategoryRequestBody updatedCategory) {
-		if(!categoryRepo.existsById(categoryId))
-			throw new IdNotFoundException("Can Not Update Category , Id Not Found");
 		
-		Category category = categoryRepo.findById(categoryId).get();
+		Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new IdNotFoundException("No Category Update, Id Not Found"));
 		
 		category.setName(updatedCategory.getName());
 		
