@@ -1,34 +1,27 @@
 package com.app.ecommerce.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.entity.Cart;
-import com.app.ecommerce.entity.CartItem;
 import com.app.ecommerce.entity.Customer;
 import com.app.ecommerce.entity.Delivery;
 import com.app.ecommerce.entity.Order;
-import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.enums.Status;
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostOrderRequestBody;
 import com.app.ecommerce.models.response.success.CreateNewOrderResponse;
 import com.app.ecommerce.models.response.success.GetOrderByIdResponse;
 import com.app.ecommerce.models.response.success.GetOrderStatusById;
-import com.app.ecommerce.repository.CartItemRepo;
-import com.app.ecommerce.repository.CartRepo;
 import com.app.ecommerce.repository.CustomerRepo;
 import com.app.ecommerce.repository.OrderRepo;
-import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.ICartService;
 import com.app.ecommerce.service.framework.IOrderService;
 
 @Service
-public class OrderSerivce implements IOrderService {
+public class OrderService implements IOrderService {
 
 	
 	@Autowired

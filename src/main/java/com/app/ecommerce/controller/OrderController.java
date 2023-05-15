@@ -10,19 +10,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.ecommerce.models.request.PostOrderRequestBody;
-import com.app.ecommerce.service.impl.OrderSerivce;
+import com.app.ecommerce.service.impl.OrderService;
 
 @RestController
 public class OrderController {
 
 	@Autowired
-	private OrderSerivce orderSerivce;
+	private OrderService orderService;
 	
 	@PostMapping("/orders")
 	public ResponseEntity<?> createNewOrder(@RequestBody PostOrderRequestBody orderRequestBody) {
 		System.out.println(orderRequestBody);
 		return new ResponseEntity<>(
-					orderSerivce.createNewOrder(orderRequestBody) , 
+					orderService.createNewOrder(orderRequestBody) ,
 					HttpStatus.CREATED
 				);
 	}
@@ -31,7 +31,7 @@ public class OrderController {
 	public ResponseEntity<?> findOrderById(@PathVariable("id") Long orderId) {
 		
 		return new ResponseEntity<> (
-					orderSerivce.findById(orderId),
+					orderService.findById(orderId),
 					HttpStatus.OK
 				);
 	}
