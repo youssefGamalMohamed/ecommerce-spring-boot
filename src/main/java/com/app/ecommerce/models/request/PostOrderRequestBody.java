@@ -19,7 +19,7 @@ import lombok.ToString;
 @ToString
 public class PostOrderRequestBody {
 	
-	private Long customerId;
+	private String customerUserName;
 	
 	private double totalPrice;
 		

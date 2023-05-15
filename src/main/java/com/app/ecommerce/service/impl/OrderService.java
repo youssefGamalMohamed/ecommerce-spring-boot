@@ -2,6 +2,8 @@ package com.app.ecommerce.service.impl;
 
 import java.time.LocalDateTime;
 
+import com.app.ecommerce.exception.type.EmailNotFoundException;
+import com.app.ecommerce.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,6 @@ import com.app.ecommerce.models.request.PostOrderRequestBody;
 import com.app.ecommerce.models.response.success.CreateNewOrderResponse;
 import com.app.ecommerce.models.response.success.GetOrderByIdResponse;
 import com.app.ecommerce.models.response.success.GetOrderStatusById;
-import com.app.ecommerce.repository.CustomerRepo;
 import com.app.ecommerce.repository.OrderRepo;
 import com.app.ecommerce.service.framework.ICartService;
 import com.app.ecommerce.service.framework.IOrderService;
@@ -23,10 +24,9 @@ import com.app.ecommerce.service.framework.IOrderService;
 @Service
 public class OrderService implements IOrderService {
 
-	
 	@Autowired
-	private CustomerRepo customerRepo;
-	
+	private UserRepo userRepo;
+
 	@Autowired
 	private OrderRepo orderRepo;
 		
@@ -36,8 +36,8 @@ public class OrderService implements IOrderService {
 	@Override
 	public CreateNewOrderResponse createNewOrder(PostOrderRequestBody orderRequestBody) {
 		
-		Customer customer = customerRepo.findById(orderRequestBody.getCustomerId())
-				.orElseThrow(() -> new IdNotFoundException("Can Not Create Order Becuase Customre Id Not Exist"));
+		Customer customer = (Customer) userRepo.findByEmail(orderRequestBody.getCustomerUserName())
+				.orElseThrow(() -> new EmailNotFoundException("Can Not Create Order Because Customer Email Not Exist"));
 		
 		
 		Delivery delivery = Delivery.builder()
