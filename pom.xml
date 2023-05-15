@@ -110,6 +110,25 @@
         <!-- End of Security-->
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>home</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <springProfile>home</springProfile>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>intercom</id>
+            <properties>
+                <springProfile>intercom</springProfile>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
