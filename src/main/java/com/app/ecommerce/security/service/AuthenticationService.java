@@ -1,6 +1,8 @@
 package com.app.ecommerce.security.service;
 
 
+import com.app.ecommerce.entity.Admin;
+import com.app.ecommerce.entity.Customer;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.Role;
 import com.app.ecommerce.models.request.LoginRequestBody;
@@ -23,15 +25,31 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public RegisterResponseBody register(RegisterRequestBody request) {
-        var user = User.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
+        User user = null;
+
+        if(request.getRole() == Role.ADMIN) {
+            user = Admin.builder()
+                    .firstname(request.getFirstname())
+                    .lastname(request.getLastname())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.ADMIN)
+                    .build();
+        }
+        else {
+            user = Customer.builder()
+                    .firstname(request.getFirstname())
+                    .lastname(request.getLastname())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.USER)
+                    .build();
+        }
+
         repository.save(user);
+
         var jwtToken = jwtService.generateToken(user);
+
         return RegisterResponseBody.builder()
                 .token(jwtToken)
                 .build();

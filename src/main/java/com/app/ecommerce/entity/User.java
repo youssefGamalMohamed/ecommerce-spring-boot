@@ -3,6 +3,7 @@ package com.app.ecommerce.entity;
 import com.app.ecommerce.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "User")
 @Getter
@@ -18,6 +19,8 @@ import java.util.List;
 @ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="user_type", discriminatorType = DiscriminatorType.STRING)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
