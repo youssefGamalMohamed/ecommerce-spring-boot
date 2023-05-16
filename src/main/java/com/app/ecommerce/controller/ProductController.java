@@ -4,6 +4,7 @@ import com.app.ecommerce.models.request.PostProductRequestBody;
 import com.app.ecommerce.models.request.PutProductRequestBody;
 import com.app.ecommerce.service.framework.IProductService;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
+    @RolesAllowed({"ADMIN"})
     @PostMapping("/products")
     public ResponseEntity<?> addNewProduct(@RequestBody PostProductRequestBody productRequestBody) {
         return new ResponseEntity<>(
@@ -31,12 +33,14 @@ public class ProductController {
         			HttpStatus.CREATED
         		);
     }
-    
+
+    @RolesAllowed({"ADMIN" , "USER"})
     @GetMapping("/products")
     public ResponseEntity<?> findProductsByCategoryId(@RequestParam(value = "category") String categoryName) {
 		return ResponseEntity.ok(productService.findProductsByCategoryName(categoryName));
     }
-    
+
+    @RolesAllowed({"ADMIN"})
     @PutMapping("/products/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable(value = "id") Long productId 
     		, @Valid @RequestBody PutProductRequestBody updatedProductRequestBody) {

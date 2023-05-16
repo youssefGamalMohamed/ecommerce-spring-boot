@@ -27,13 +27,13 @@ public class AuthenticationService {
     public RegisterResponseBody register(RegisterRequestBody request) {
         User user = null;
 
-        if(request.getRole() == Role.ADMIN) {
+        if(request.getRole() == Role.ROLE_ADMIN) {
             user = Admin.builder()
                     .firstname(request.getFirstname())
                     .lastname(request.getLastname())
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.ADMIN)
+                    .role(Role.ROLE_ADMIN)
                     .build();
         }
         else {
@@ -42,7 +42,7 @@ public class AuthenticationService {
                     .lastname(request.getLastname())
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.USER)
+                    .role(Role.ROLE_USER)
                     .build();
         }
 
