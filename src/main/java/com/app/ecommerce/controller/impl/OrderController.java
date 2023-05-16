@@ -1,5 +1,6 @@
 package com.app.ecommerce.controller.impl;
 
+import com.app.ecommerce.controller.framework.IOrderController;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,14 @@ import com.app.ecommerce.models.request.PostOrderRequestBody;
 import com.app.ecommerce.service.impl.OrderService;
 
 @RestController
-public class OrderController {
+public class OrderController implements IOrderController {
 
 	@Autowired
 	private OrderService orderService;
 
 	@RolesAllowed({"USER"})
 	@PostMapping("/orders")
+	@Override
 	public ResponseEntity<?> createNewOrder(@RequestBody PostOrderRequestBody orderRequestBody) {
 		System.out.println(orderRequestBody);
 		return new ResponseEntity<>(
@@ -31,6 +33,7 @@ public class OrderController {
 
 	@RolesAllowed({"ADMIN" , "USER"})
 	@GetMapping("/orders/{id}")
+	@Override
 	public ResponseEntity<?> findOrderById(@PathVariable("id") Long orderId) {
 		
 		return new ResponseEntity<> (
