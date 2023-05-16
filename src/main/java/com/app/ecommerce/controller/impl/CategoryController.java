@@ -1,5 +1,6 @@
 package com.app.ecommerce.controller.impl;
 
+import com.app.ecommerce.controller.framework.ICategoryController;
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.request.PutCategoryRequestBody;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-public class CategoryController {
+public class CategoryController implements ICategoryController {
 
 
     @Autowired
@@ -22,6 +23,7 @@ public class CategoryController {
 
     @RolesAllowed({"ADMIN"})
     @PostMapping("/categories")
+    @Override
     public ResponseEntity<?> addNewCategory(@RequestBody PostCategoryRequestBody categoryRequestBody) {
         return new ResponseEntity<>(
         		    categoryService.add(categoryRequestBody) ,
@@ -31,6 +33,7 @@ public class CategoryController {
 
     @RolesAllowed({"ADMIN"})
     @DeleteMapping("/categories/{id}")
+    @Override
     public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long categoryId) throws IdNotFoundException {
     	return new ResponseEntity<>(
     			categoryService.deleteById(categoryId) 
@@ -40,20 +43,23 @@ public class CategoryController {
 
     @RolesAllowed({"ADMIN" , "USER"})
     @GetMapping("/categories")
+    @Override
     public ResponseEntity<?> findAll() {
         return ResponseEntity.ok(categoryService.findAll());
     }
 
     @RolesAllowed({"ADMIN" , "USER"})
     @GetMapping("/categories/{id}")
+    @Override
     public ResponseEntity<?> findById(@PathVariable("id") Long categoryId) {
         return ResponseEntity.ok(categoryService.findById(categoryId));
     }
 
     @RolesAllowed({"ADMIN"})
     @PutMapping("/categories/{id}")
+    @Override
     public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @RequestBody PutCategoryRequestBody updatedBody) {
-        return ResponseEntity.ok(categoryService.updateByIdef(categoryId, updatedBody));
+        return ResponseEntity.ok(categoryService.updateById(categoryId, updatedBody));
     }
     
     

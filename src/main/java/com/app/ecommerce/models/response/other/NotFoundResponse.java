@@ -1,5 +1,6 @@
 package com.app.ecommerce.models.response.other;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +17,8 @@ import lombok.ToString;
 @ToString
 @Builder
 public class NotFoundResponse {
+
+    // as an example
+    @Schema(type = "string" , example = "No Element Found")
     private String message;
 }

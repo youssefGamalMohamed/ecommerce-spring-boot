@@ -1,5 +1,6 @@
 package com.app.ecommerce.models.response.success;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +19,7 @@ import lombok.ToString;
 @ToString
 
 public class DeleteCategoryResponse {
+
+	@Schema(type = "string" , example = "Category Deleted Successfully")
 	private String message;
 }

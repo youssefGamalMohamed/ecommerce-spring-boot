@@ -71,7 +71,7 @@ public class CategoryService implements ICategoryService {
         
         
         return DeleteCategoryResponse.builder()
-        		.message("Cateogry Deleted Successfully")
+        		.message("Category Deleted Successfully")
         		.build();
     }
 
@@ -94,7 +94,7 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public UpdateCategoryResponse updateByIdef(Long categoryId, PutCategoryRequestBody updatedCategory) {
+	public UpdateCategoryResponse updateById(Long categoryId, PutCategoryRequestBody updatedCategory) {
 		
 		Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new IdNotFoundException("No Category Update, Id Not Found"));
 		

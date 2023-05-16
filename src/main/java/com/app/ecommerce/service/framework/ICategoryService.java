@@ -24,5 +24,5 @@ public interface ICategoryService {
 
 	GetCategoryByIdResponse findById(Long categoryId);
 	
-	UpdateCategoryResponse updateByIdef(Long categoryId , PutCategoryRequestBody updatedCategory);
+	UpdateCategoryResponse updateById(Long categoryId , PutCategoryRequestBody updatedCategory);
 }
