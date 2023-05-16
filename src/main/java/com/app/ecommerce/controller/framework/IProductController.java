@@ -1,9 +1,6 @@
 package com.app.ecommerce.controller.framework;
 
-import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.request.PostProductRequestBody;
-import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.models.request.PutProductRequestBody;
 import com.app.ecommerce.models.response.other.BadRequestResponse;
 import com.app.ecommerce.models.response.other.NotFoundResponse;

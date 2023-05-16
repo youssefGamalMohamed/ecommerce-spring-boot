@@ -1,9 +1,6 @@
 package com.app.ecommerce.models.response.success;
 
-import java.util.Set;
-
 import com.app.ecommerce.entity.Category;
-import com.app.ecommerce.entity.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,5 @@
 package com.app.ecommerce.service.framework;
 
-import java.util.List;
 
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;

@@ -2,9 +2,7 @@ package com.app.ecommerce.exception.handler;
 
 
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
-import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.response.other.*;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

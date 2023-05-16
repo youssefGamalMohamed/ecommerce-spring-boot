@@ -1,6 +1,5 @@
 package com.app.ecommerce.models.response.success;
 
-import com.app.ecommerce.entity.Order;
 import com.app.ecommerce.enums.Status;
 
 import lombok.AllArgsConstructor;

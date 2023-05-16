@@ -1,8 +1,6 @@
 package com.app.ecommerce.controller.framework;
 
 import com.app.ecommerce.models.request.PostOrderRequestBody;
-import com.app.ecommerce.models.request.PostProductRequestBody;
-import com.app.ecommerce.models.request.PutProductRequestBody;
 import com.app.ecommerce.models.response.other.BadRequestResponse;
 import com.app.ecommerce.models.response.other.NotFoundResponse;
 import com.app.ecommerce.models.response.success.*;
@@ -12,11 +10,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Tag(name = "Orders", description = "contains All Order operation for Customer")
 public interface IOrderController {

@@ -8,7 +8,6 @@ import com.app.ecommerce.exception.type.NameNotFoundException;
 import com.app.ecommerce.models.request.PostProductRequestBody;
 import com.app.ecommerce.models.request.PutProductRequestBody;
 import com.app.ecommerce.models.response.success.AddNewProductResponse;
-import com.app.ecommerce.models.response.success.GetAllCategoriesReponse;
 import com.app.ecommerce.models.response.success.GetAllProductsByCategoryNameResponse;
 import com.app.ecommerce.models.response.success.UpdateProductResponse;
 import com.app.ecommerce.repository.CategoryRepo;
@@ -16,14 +15,8 @@ import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 @Service
 public class ProductService implements IProductService {
 

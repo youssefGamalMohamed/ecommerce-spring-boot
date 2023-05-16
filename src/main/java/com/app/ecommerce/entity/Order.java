@@ -2,13 +2,8 @@ package com.app.ecommerce.entity;
 
 
 import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-
-import com.app.ecommerce.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.app.ecommerce.enums.PaymentType;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;

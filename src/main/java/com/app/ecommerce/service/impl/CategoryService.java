@@ -13,18 +13,10 @@ import com.app.ecommerce.models.response.success.GetAllCategoriesReponse;
 import com.app.ecommerce.models.response.success.GetCategoryByIdResponse;
 import com.app.ecommerce.models.response.success.UpdateCategoryResponse;
 import com.app.ecommerce.repository.CategoryRepo;
-import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.ICategoryService;
-import com.app.ecommerce.service.framework.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryService implements ICategoryService {
