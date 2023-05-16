@@ -3,10 +3,7 @@ package com.app.ecommerce.exception.handler;
 
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.response.other.BadRequestResponse;
-import com.app.ecommerce.models.response.other.ConfilctResponse;
-import com.app.ecommerce.models.response.other.InternalServerResponse;
-import com.app.ecommerce.models.response.other.NotFoundResponse;
+import com.app.ecommerce.models.response.other.*;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.security.core.AuthenticationException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -93,5 +91,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     			
     			);
     }
+
+    @ExceptionHandler({ AuthenticationException.class })
+    public ResponseEntity<?> handleAuthenticationException(Exception exception) {
+        return new ResponseEntity<>(
+                UnAuthorizedResponse.builder()
+                        .message("Wrong Username/Email or Password")
+                        .build()
+                , HttpStatus.UNAUTHORIZED
+        );
+    }
+
 
 }

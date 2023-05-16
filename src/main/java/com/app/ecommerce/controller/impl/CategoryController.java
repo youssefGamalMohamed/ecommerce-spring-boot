@@ -1,4 +1,4 @@
-package com.app.ecommerce.controller;
+package com.app.ecommerce.controller.impl;
 
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostCategoryRequestBody;

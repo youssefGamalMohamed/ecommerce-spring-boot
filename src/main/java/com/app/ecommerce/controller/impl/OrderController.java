@@ -1,4 +1,4 @@
-package com.app.ecommerce.controller;
+package com.app.ecommerce.controller.impl;
 
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;

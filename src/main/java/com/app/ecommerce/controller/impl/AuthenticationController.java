@@ -1,5 +1,6 @@
-package com.app.ecommerce.controller;
+package com.app.ecommerce.controller.impl;
 
+import com.app.ecommerce.controller.framework.IAuthenticationController;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.security.service.AuthenticationService;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthenticationController {
+public class AuthenticationController implements IAuthenticationController {
 
     @Autowired
     private AuthenticationService service;

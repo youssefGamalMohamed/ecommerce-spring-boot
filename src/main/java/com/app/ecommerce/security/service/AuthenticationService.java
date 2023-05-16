@@ -7,6 +7,7 @@ import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.Role;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
+import com.app.ecommerce.models.response.other.UnAuthorizedResponse;
 import com.app.ecommerce.models.response.success.LoginResponseBody;
 import com.app.ecommerce.models.response.success.RegisterResponseBody;
 import com.app.ecommerce.repository.UserRepo;
