@@ -4,6 +4,7 @@ import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.models.response.other.BadRequestResponse;
+import com.app.ecommerce.models.response.other.ConflictResponse;
 import com.app.ecommerce.models.response.other.NotFoundResponse;
 import com.app.ecommerce.models.response.success.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +29,15 @@ public interface ICategoryController {
                             @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = AddNewCategoryResponse.class)
+                            )
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "409", description = "Trying to Add Existing Category Name",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ConflictResponse.class)
                             )
                     }
             ),

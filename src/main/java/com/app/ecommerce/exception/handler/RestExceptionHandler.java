@@ -71,7 +71,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = DuplicatedUniqueColumnValueException.class)
     public ResponseEntity<?> handleDuplicatedUniqueValueException(DuplicatedUniqueColumnValueException exception) {
     	return new ResponseEntity<>(
-    				ConfilctResponse.builder()
+    				ConflictResponse.builder()
     				.message(exception.getMessage())
     				.build()
     				 , HttpStatus.CONFLICT

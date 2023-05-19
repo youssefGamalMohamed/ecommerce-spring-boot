@@ -1,6 +1,7 @@
 package com.app.ecommerce.models.response.other;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Builder
-public class ConfilctResponse {
+public class ConflictResponse {
+
+    @Schema(type = "string" , example = "Element Already Exist and should be unique")
     private String message;
 }
