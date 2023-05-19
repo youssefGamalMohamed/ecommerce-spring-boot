@@ -5,11 +5,11 @@ import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.request.PutCategoryRequestBody;
-import com.app.ecommerce.models.response.success.AddNewCategoryResponse;
-import com.app.ecommerce.models.response.success.DeleteCategoryResponse;
-import com.app.ecommerce.models.response.success.GetAllCategoriesReponse;
-import com.app.ecommerce.models.response.success.GetCategoryByIdResponse;
-import com.app.ecommerce.models.response.success.UpdateCategoryResponse;
+import com.app.ecommerce.models.response.endpoints.AddNewCategoryResponse;
+import com.app.ecommerce.models.response.endpoints.DeleteCategoryResponse;
+import com.app.ecommerce.models.response.endpoints.GetAllCategoriesReponse;
+import com.app.ecommerce.models.response.endpoints.GetCategoryByIdResponse;
+import com.app.ecommerce.models.response.endpoints.UpdateCategoryResponse;
 
 
 

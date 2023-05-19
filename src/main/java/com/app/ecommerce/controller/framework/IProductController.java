@@ -2,9 +2,9 @@ package com.app.ecommerce.controller.framework;
 
 import com.app.ecommerce.models.request.PostProductRequestBody;
 import com.app.ecommerce.models.request.PutProductRequestBody;
-import com.app.ecommerce.models.response.other.BadRequestResponse;
-import com.app.ecommerce.models.response.other.NotFoundResponse;
-import com.app.ecommerce.models.response.success.*;
+import com.app.ecommerce.models.response.http.BadRequestResponse;
+import com.app.ecommerce.models.response.http.NotFoundResponse;
+import com.app.ecommerce.models.response.endpoints.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

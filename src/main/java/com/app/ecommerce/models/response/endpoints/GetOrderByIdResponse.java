@@ -1,4 +1,6 @@
-package com.app.ecommerce.models.response.success;
+package com.app.ecommerce.models.response.endpoints;
+
+import com.app.ecommerce.entity.Order;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class CreateNewOrderResponse {
-	private Long id;
+
+public class GetOrderByIdResponse {
+	private Order order;
 }

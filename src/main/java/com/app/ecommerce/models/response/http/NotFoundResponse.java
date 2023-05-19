@@ -1,4 +1,4 @@
-package com.app.ecommerce.models.response.success;
+package com.app.ecommerce.models.response.http;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -8,16 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
-@Builder
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
+public class NotFoundResponse {
 
-public class DeleteCategoryResponse {
-
-	@Schema(type = "string" , example = "Category Deleted Successfully")
-	private String message;
+    // as an example
+    @Schema(type = "string" , example = "No Element Found")
+    private String message;
 }

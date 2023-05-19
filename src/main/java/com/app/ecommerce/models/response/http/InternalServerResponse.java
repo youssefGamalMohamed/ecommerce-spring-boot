@@ -1,4 +1,4 @@
-package com.app.ecommerce.models.response.other;
+package com.app.ecommerce.models.response.http;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -14,9 +14,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Builder
-public class NotFoundResponse {
+public class InternalServerResponse {
 
     // as an example
-    @Schema(type = "string" , example = "No Element Found")
+    @Schema(type = "string" , example = "Id Not Found to Perform Function")
     private String message;
 }

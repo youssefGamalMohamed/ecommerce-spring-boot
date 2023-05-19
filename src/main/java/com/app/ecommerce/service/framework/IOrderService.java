@@ -1,9 +1,9 @@
 package com.app.ecommerce.service.framework;
 
 import com.app.ecommerce.models.request.PostOrderRequestBody;
-import com.app.ecommerce.models.response.success.CreateNewOrderResponse;
-import com.app.ecommerce.models.response.success.GetOrderByIdResponse;
-import com.app.ecommerce.models.response.success.GetOrderStatusById;
+import com.app.ecommerce.models.response.endpoints.CreateNewOrderResponse;
+import com.app.ecommerce.models.response.endpoints.GetOrderByIdResponse;
+import com.app.ecommerce.models.response.endpoints.GetOrderStatusById;
 
 
 public interface IOrderService {

@@ -1,5 +1,8 @@
-package com.app.ecommerce.models.response.success;
+package com.app.ecommerce.models.response.endpoints;
 
+import java.util.List;
+
+import com.app.ecommerce.entity.Category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +19,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 
-public class AddNewCategoryResponse {
+public class GetAllCategoriesReponse {
 	
-	private Long id;
+	private List<Category> categories;
 }

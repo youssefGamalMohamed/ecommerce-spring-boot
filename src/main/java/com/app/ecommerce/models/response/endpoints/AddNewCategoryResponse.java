@@ -1,6 +1,5 @@
-package com.app.ecommerce.models.response.success;
+package com.app.ecommerce.models.response.endpoints;
 
-import com.app.ecommerce.enums.Status;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+
 @Builder
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class GetOrderStatusById {
+
+public class AddNewCategoryResponse {
 	
-	private Status orderStatus;
+	private Long id;
 }

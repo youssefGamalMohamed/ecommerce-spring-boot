@@ -1,5 +1,4 @@
-package com.app.ecommerce.models.response.other;
-
+package com.app.ecommerce.models.response.endpoints;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -9,14 +8,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+
+@Builder
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Builder
-public class ConflictResponse {
 
-    @Schema(type = "string" , example = "Element Already Exist and should be unique")
-    private String message;
+public class DeleteCategoryResponse {
+
+	@Schema(type = "string" , example = "Category Deleted Successfully")
+	private String message;
 }

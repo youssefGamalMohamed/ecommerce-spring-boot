@@ -2,9 +2,9 @@ package com.app.ecommerce.controller.framework;
 
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
-import com.app.ecommerce.models.response.other.UnAuthorizedResponse;
-import com.app.ecommerce.models.response.success.LoginResponseBody;
-import com.app.ecommerce.models.response.success.RegisterResponseBody;
+import com.app.ecommerce.models.response.http.UnAuthorizedResponse;
+import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
+import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

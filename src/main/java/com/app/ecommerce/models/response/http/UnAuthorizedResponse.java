@@ -1,4 +1,4 @@
-package com.app.ecommerce.models.response.other;
+package com.app.ecommerce.models.response.http;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

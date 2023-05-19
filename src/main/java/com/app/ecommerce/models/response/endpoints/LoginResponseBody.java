@@ -1,4 +1,5 @@
-package com.app.ecommerce.models.response.success;
+package com.app.ecommerce.models.response.endpoints;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterResponseBody {
-
+public class LoginResponseBody {
     private String token;
 }

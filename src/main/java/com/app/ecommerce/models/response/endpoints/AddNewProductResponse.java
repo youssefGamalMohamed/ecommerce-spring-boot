@@ -1,4 +1,4 @@
-package com.app.ecommerce.models.response.success;
+package com.app.ecommerce.models.response.endpoints;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UpdateCategoryResponse {
+
+public class AddNewProductResponse {
 	private Long id;
 }

@@ -1,4 +1,5 @@
-package com.app.ecommerce.models.response.other;
+package com.app.ecommerce.models.response.http;
+
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -14,9 +15,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Builder
-public class InternalServerResponse {
+public class ConflictResponse {
 
-    // as an example
-    @Schema(type = "string" , example = "Id Not Found to Perform Function")
+    @Schema(type = "string" , example = "Element Already Exist and should be unique")
     private String message;
 }

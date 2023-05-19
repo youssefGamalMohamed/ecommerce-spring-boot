@@ -1,6 +1,8 @@
-package com.app.ecommerce.models.response.success;
+package com.app.ecommerce.models.response.endpoints;
 
-import com.app.ecommerce.entity.Order;
+import java.util.Set;
+
+import com.app.ecommerce.entity.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+
 @Builder
 @Setter
 @Getter
@@ -16,6 +19,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 
-public class GetOrderByIdResponse {
-	private Order order;
+public class GetAllProductsByCategoryNameResponse {
+	private Set<Product> products;
 }

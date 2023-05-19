@@ -1,8 +1,6 @@
-package com.app.ecommerce.models.response.success;
+package com.app.ecommerce.models.response.endpoints;
 
-import java.util.Set;
-
-import com.app.ecommerce.entity.Product;
+import com.app.ecommerce.enums.Status;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,14 +9,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @Builder
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-
-public class GetAllProductsByCategoryNameResponse {
-	private Set<Product> products;
+public class GetOrderStatusById {
+	
+	private Status orderStatus;
 }
