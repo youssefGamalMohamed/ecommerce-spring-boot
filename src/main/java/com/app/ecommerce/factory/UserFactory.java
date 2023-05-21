@@ -20,21 +20,20 @@ public class UserFactory {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private Map<Role,User> userMap;
 
+    private User getUser(Role role) {
+        if(role == Role.ROLE_USER)
+            return Customer.builder().build();
+        else if(role == Role.ROLE_ADMIN)
+            return Admin.builder().build();
 
-    @PostConstruct
-    public void PosConstructor() {
-        this.userMap = Map.of(
-                Role.ROLE_USER , Customer.builder().build() ,
-                Role.ROLE_ADMIN , Admin.builder().build()
-        );
+        return null;
     }
 
     public User getUser(RegisterRequestBody registerRequestBody) {
 
 
-        User user = userMap.get(registerRequestBody.getRole());
+        User user = this.getUser(registerRequestBody.getRole());
 
         user.setFirstname(registerRequestBody.getFirstname());
         user.setLastname(registerRequestBody.getLastname());
