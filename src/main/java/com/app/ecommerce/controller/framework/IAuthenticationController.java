@@ -2,6 +2,7 @@ package com.app.ecommerce.controller.framework;
 
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
+import com.app.ecommerce.models.response.http.BadRequestResponse;
 import com.app.ecommerce.models.response.http.UnAuthorizedResponse;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -28,10 +30,17 @@ public interface IAuthenticationController {
                                             schema = @Schema(implementation = RegisterResponseBody.class)
                                     )
                             }
+                    ),
+                    @ApiResponse(
+                            responseCode = "400", description = "Validation Error",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = BadRequestResponse.class))
+                            }
                     )
             }
     )
-    ResponseEntity<?> register(@RequestBody RegisterRequestBody registerRequestBody);
+    ResponseEntity<?> register(@Valid @RequestBody RegisterRequestBody registerRequestBody);
 
 
     @Operation(summary = "Login with UserName and Password")
@@ -54,8 +63,15 @@ public interface IAuthenticationController {
                                             schema = @Schema(implementation = UnAuthorizedResponse.class)
                                     )
                             }
+                    ),
+                    @ApiResponse(
+                            responseCode = "400", description = "Validation Error",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = BadRequestResponse.class))
+                            }
                     )
             }
     )
-    ResponseEntity<?> authenticate(@RequestBody LoginRequestBody loginRequestBody);
+    ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequestBody loginRequestBody);
 }

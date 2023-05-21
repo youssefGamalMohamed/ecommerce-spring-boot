@@ -6,13 +6,10 @@ import com.app.ecommerce.entity.Customer;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.Role;
 import com.app.ecommerce.models.request.RegisterRequestBody;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class UserFactory {
@@ -22,12 +19,11 @@ public class UserFactory {
 
 
     private User getUser(Role role) {
+
         if(role == Role.ROLE_USER)
             return Customer.builder().build();
-        else if(role == Role.ROLE_ADMIN)
-            return Admin.builder().build();
 
-        return null;
+        return Admin.builder().build();
     }
 
     public User getUser(RegisterRequestBody registerRequestBody) {

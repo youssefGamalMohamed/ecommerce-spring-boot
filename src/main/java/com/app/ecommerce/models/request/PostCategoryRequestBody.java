@@ -16,11 +16,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-
 public class PostCategoryRequestBody {
-
-
-    private Long id;
 
     @NotBlank(message = "Name of Category Should Not Be Null or Empty")
     private String name;

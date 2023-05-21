@@ -22,8 +22,6 @@ import java.util.Set;
 
 public class PutProductRequestBody {
 
-	private Long id;
-	
     @NotBlank(message = "Name of Category Should Not Be Null or Empty")
     private String name;
 

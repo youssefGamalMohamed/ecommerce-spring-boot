@@ -37,7 +37,7 @@ public class PostProductRequestBody {
     @Min(1)
     private Integer quantity;
     
-    @NotNull
+    @NotNull(message = "Categories Id's should Not be Null or Empty")
     private Set<Long> categoriesId;
 
    
