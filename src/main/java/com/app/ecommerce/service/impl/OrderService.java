@@ -16,7 +16,7 @@ import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostOrderRequestBody;
 import com.app.ecommerce.models.response.endpoints.CreateNewOrderResponse;
 import com.app.ecommerce.models.response.endpoints.GetOrderByIdResponse;
-import com.app.ecommerce.models.response.endpoints.GetOrderStatusById;
+import com.app.ecommerce.models.response.endpoints.GetOrderStatusByIdResponse;
 import com.app.ecommerce.repository.OrderRepo;
 import com.app.ecommerce.service.framework.ICartService;
 import com.app.ecommerce.service.framework.IOrderService;
@@ -77,9 +77,9 @@ public class OrderService implements IOrderService {
 	}
 
 	@Override
-	public GetOrderStatusById findOrderStatusById(Long orderId) {
+	public GetOrderStatusByIdResponse findOrderStatusById(Long orderId) {
 		
-		return GetOrderStatusById.builder()
+		return GetOrderStatusByIdResponse.builder()
 				.orderStatus(
 							orderRepo.findById(orderId)
 							.orElseThrow(() -> new IdNotFoundException("No Such Order , Id Not Found"))

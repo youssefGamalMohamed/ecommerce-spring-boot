@@ -3,7 +3,7 @@ package com.app.ecommerce.service.framework;
 import com.app.ecommerce.models.request.PostOrderRequestBody;
 import com.app.ecommerce.models.response.endpoints.CreateNewOrderResponse;
 import com.app.ecommerce.models.response.endpoints.GetOrderByIdResponse;
-import com.app.ecommerce.models.response.endpoints.GetOrderStatusById;
+import com.app.ecommerce.models.response.endpoints.GetOrderStatusByIdResponse;
 
 
 public interface IOrderService {
@@ -12,5 +12,5 @@ public interface IOrderService {
     
     GetOrderByIdResponse findById(Long orderId);
     
-    GetOrderStatusById findOrderStatusById(Long orderId);
+    GetOrderStatusByIdResponse findOrderStatusById(Long orderId);
 }

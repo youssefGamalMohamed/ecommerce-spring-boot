@@ -15,7 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class GetOrderStatusById {
+public class GetOrderStatusByIdResponse {
 	
 	private Status orderStatus;
 }
