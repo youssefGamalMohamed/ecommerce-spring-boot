@@ -29,7 +29,7 @@ public class ProductController implements IProductController {
     @RolesAllowed({"ADMIN"})
     @PostMapping("/products")
     @Override
-    public ResponseEntity<?> addNewProduct(@RequestBody PostProductRequestBody productRequestBody) {
+    public ResponseEntity<?> addNewProduct(@Valid @RequestBody PostProductRequestBody productRequestBody) {
         return new ResponseEntity<>(
         			productService.addNewProduct(productRequestBody) ,
         			HttpStatus.CREATED

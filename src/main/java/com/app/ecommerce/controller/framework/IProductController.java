@@ -47,7 +47,7 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> addNewProduct(@RequestBody PostProductRequestBody productRequestBody);
+    ResponseEntity<?> addNewProduct(@Valid @RequestBody PostProductRequestBody productRequestBody);
 
 
     @Operation(summary = "Find All Products with Specific Category Name , this endpoint accessed for ( Admin , User )")

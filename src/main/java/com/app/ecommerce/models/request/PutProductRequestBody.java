@@ -30,11 +30,13 @@ public class PutProductRequestBody {
     private String description;
 
     @Min(5)
+    @NotNull(message = "Price should not be empty or null")
     private double price;
 
     @Min(1)
+    @NotNull(message = "Quantity should not be empty or null")
     private Integer quantity;
-    
-    @NotNull
+
+    @NotNull(message = "Categories Id's should Not be Null or Empty")
     private Set<Long> categoriesId;
 }

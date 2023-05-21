@@ -22,19 +22,19 @@ import java.util.Set;
 
 public class PostProductRequestBody {
 
-	private Long id;
-	
-    @NotBlank(message = "Name of Category Should Not Be Null or Empty")
+    @NotBlank(message = "Name Should Not Be Null or Empty")
     private String name;
 
 
-    @NotBlank(message = "description of Category Should Not Be Null or Empty")
+    @NotBlank(message = "Description of Category Should Not Be Null or Empty")
     private String description;
 
     @Min(5)
+    @NotNull(message = "Price should not be empty or null")
     private double price;
 
     @Min(1)
+    @NotNull(message = "Quantity should not be empty or null")
     private Integer quantity;
     
     @NotNull(message = "Categories Id's should Not be Null or Empty")
