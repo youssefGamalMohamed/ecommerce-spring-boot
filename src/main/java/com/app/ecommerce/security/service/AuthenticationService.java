@@ -5,6 +5,7 @@ import com.app.ecommerce.entity.Admin;
 import com.app.ecommerce.entity.Customer;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.Role;
+import com.app.ecommerce.factory.UserFactory;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
@@ -24,27 +25,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public RegisterResponseBody register(RegisterRequestBody request) {
-        User user = null;
+    private final UserFactory userFactory;
 
-        if(request.getRole() == Role.ROLE_ADMIN) {
-            user = Admin.builder()
-                    .firstname(request.getFirstname())
-                    .lastname(request.getLastname())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.ROLE_ADMIN)
-                    .build();
-        }
-        else {
-            user = Customer.builder()
-                    .firstname(request.getFirstname())
-                    .lastname(request.getLastname())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.ROLE_USER)
-                    .build();
-        }
+    public RegisterResponseBody register(RegisterRequestBody request) {
+
+        User user = userFactory.getUser(request);
 
         repository.save(user);
 
