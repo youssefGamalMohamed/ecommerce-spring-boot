@@ -6,6 +6,7 @@ import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.service.framework.ICategoryService;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class CategoryController implements ICategoryController {
     @RolesAllowed({"ADMIN"})
     @PostMapping("/categories")
     @Override
-    public ResponseEntity<?> addNewCategory(@RequestBody PostCategoryRequestBody categoryRequestBody) {
+    public ResponseEntity<?> addNewCategory(@Valid @RequestBody PostCategoryRequestBody categoryRequestBody) {
         return new ResponseEntity<>(
         		    categoryService.add(categoryRequestBody) ,
         		    HttpStatus.CREATED
@@ -56,7 +57,7 @@ public class CategoryController implements ICategoryController {
     @RolesAllowed({"ADMIN"})
     @PutMapping("/categories/{id}")
     @Override
-    public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @RequestBody PutCategoryRequestBody updatedBody) {
+    public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody PutCategoryRequestBody updatedBody) {
         return ResponseEntity.ok(categoryService.updateById(categoryId, updatedBody));
     }
     

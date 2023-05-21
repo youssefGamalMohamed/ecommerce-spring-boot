@@ -4,6 +4,7 @@ import com.app.ecommerce.controller.framework.IAuthenticationController;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.security.service.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +21,12 @@ public class AuthenticationController implements IAuthenticationController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestBody registerRequestBody) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestBody registerRequestBody) {
         return ResponseEntity.ok(service.register(registerRequestBody));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestBody LoginRequestBody loginRequestBody) {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequestBody loginRequestBody) {
         return ResponseEntity.ok(service.authenticate(loginRequestBody));
     }
 
