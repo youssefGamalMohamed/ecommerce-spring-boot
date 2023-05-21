@@ -32,20 +32,6 @@ public class Category {
     @ManyToMany(mappedBy = "categories" , fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Product> products;
-    
-    
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Category category = (Category) o;
-        return id != null && Objects.equals(id, category.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 
 	@Override
 	public String toString() {
