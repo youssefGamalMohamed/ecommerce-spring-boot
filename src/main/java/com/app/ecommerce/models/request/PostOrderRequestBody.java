@@ -4,6 +4,7 @@ package com.app.ecommerce.models.request;
 
 import com.app.ecommerce.enums.PaymentType;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -35,10 +36,12 @@ public class PostOrderRequestBody {
 
 	@NotBlank(message = "Delivery Address Should Not Be Null or Empty")
 	private String deliveryAddress;
-	
+
+
 	private PaymentType paymentType;
 
 	@NotNull(message = "Cart Should Be Attached With Order and Should Not Be Null")
+	@Valid
 	private PostCartRequestBody cart;
 	
 }

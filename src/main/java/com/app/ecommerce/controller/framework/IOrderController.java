@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +47,7 @@ public interface IOrderController {
             )
     }
     )
-    ResponseEntity<?> createNewOrder(@RequestBody PostOrderRequestBody orderRequestBody);
+    ResponseEntity<?> createNewOrder(@Valid @RequestBody PostOrderRequestBody orderRequestBody);
 
 
     @Operation(summary = "Find Order By Id , this endpoint accessed for ( Admin , User )")
