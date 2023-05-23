@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import com.app.ecommerce.exception.type.EmailNotFoundException;
 import com.app.ecommerce.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.entity.Cart;
@@ -35,8 +37,11 @@ public class OrderService implements IOrderService {
 	
 	@Override
 	public CreateNewOrderResponse createNewOrder(PostOrderRequestBody orderRequestBody) {
-		
-		Customer customer = (Customer) userRepo.findByEmail(orderRequestBody.getCustomerUserName())
+
+		String customerEmail = ( (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal() ).getUsername();
+
+
+		Customer customer = (Customer) userRepo.findByEmail(customerEmail)
 				.orElseThrow(() -> new EmailNotFoundException("Can Not Create Order Because Customer Email Not Exist"));
 		
 		

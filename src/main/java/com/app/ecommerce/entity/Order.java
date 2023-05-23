@@ -25,8 +25,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "customer_order")
-@Entity(name = "customer_order")
+@Table(name = "`order`")
+@Entity(name = "`order`")
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
