@@ -2,6 +2,7 @@ package com.app.ecommerce.controller.framework;
 
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
+import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
 import com.app.ecommerce.models.response.http.UnAuthorizedResponse;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
@@ -102,9 +103,15 @@ public interface IAuthenticationController {
     @ApiResponses(
             value = {
                     @ApiResponse(
-                            responseCode = "200", description = "Will not an empty response"
+                            responseCode = "200", description = "Logout Done",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            schema = @Schema(implementation = LogoutResponseBody.class)
+                                    )
+                            }
                     )
             }
     )
-    void logout( HttpServletRequest request, HttpServletResponse response );
+    ResponseEntity<?> logout( HttpServletRequest request, HttpServletResponse response );
 }

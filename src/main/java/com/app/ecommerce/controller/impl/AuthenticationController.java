@@ -40,8 +40,10 @@ public class AuthenticationController implements IAuthenticationController {
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        service.logout(request , response);
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok(
+                service.logout(request , response)
+        );
     }
 
 

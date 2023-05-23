@@ -11,6 +11,7 @@ import com.app.ecommerce.factory.UserFactory;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
+import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
 import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
@@ -128,7 +129,12 @@ public class AuthenticationService {
     }
 
 
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public LogoutResponseBody logout(HttpServletRequest request, HttpServletResponse response) {
+
         logoutHandler.logout(request , response , SecurityContextHolder.getContext().getAuthentication());
+
+        return LogoutResponseBody.builder()
+                .message("Logout Done Successfully")
+                .build();
     }
 }
