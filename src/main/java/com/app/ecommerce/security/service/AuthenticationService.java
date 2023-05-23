@@ -21,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,6 +37,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     private final UserFactory userFactory;
+
+    private final LogoutHandler logoutHandler;
+
 
     public RegisterResponseBody register(RegisterRequestBody request) {
 
@@ -120,5 +125,10 @@ public class AuthenticationService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+    }
+
+
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        logoutHandler.logout(request , response , SecurityContextHolder.getContext().getAuthentication());
     }
 }

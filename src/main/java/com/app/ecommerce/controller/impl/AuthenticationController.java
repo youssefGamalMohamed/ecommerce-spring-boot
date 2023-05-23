@@ -4,13 +4,11 @@ import com.app.ecommerce.controller.framework.IAuthenticationController;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.security.service.AuthenticationService;
-import com.app.ecommerce.security.service.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +23,6 @@ public class AuthenticationController implements IAuthenticationController {
     @Autowired
     private AuthenticationService service;
 
-    @Autowired
-    private LogoutService logoutService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestBody registerRequestBody) {
@@ -45,7 +41,7 @@ public class AuthenticationController implements IAuthenticationController {
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        logoutService.logout(request , response , SecurityContextHolder.getContext().getAuthentication());
+        service.logout(request , response);
     }
 
 
