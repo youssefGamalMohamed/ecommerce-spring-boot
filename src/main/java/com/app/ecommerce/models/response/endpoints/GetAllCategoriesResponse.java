@@ -19,7 +19,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 
-public class GetAllCategoriesReponse {
+public class GetAllCategoriesResponse {
 	
 	private List<Category> categories;
 }

@@ -82,7 +82,6 @@ public interface IAuthenticationController {
 
 
 
-
     void refreshToken( HttpServletRequest request, HttpServletResponse response ) throws IOException;
 
 }

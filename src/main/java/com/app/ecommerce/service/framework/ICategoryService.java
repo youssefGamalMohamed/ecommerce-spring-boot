@@ -7,7 +7,7 @@ import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.models.response.endpoints.AddNewCategoryResponse;
 import com.app.ecommerce.models.response.endpoints.DeleteCategoryResponse;
-import com.app.ecommerce.models.response.endpoints.GetAllCategoriesReponse;
+import com.app.ecommerce.models.response.endpoints.GetAllCategoriesResponse;
 import com.app.ecommerce.models.response.endpoints.GetCategoryByIdResponse;
 import com.app.ecommerce.models.response.endpoints.UpdateCategoryResponse;
 
@@ -19,7 +19,7 @@ public interface ICategoryService {
 
     DeleteCategoryResponse deleteById(Long categoryId) throws IdNotFoundException;
 
-    GetAllCategoriesReponse findAll();
+    GetAllCategoriesResponse findAll();
 
 	GetCategoryByIdResponse findById(Long categoryId);
 	

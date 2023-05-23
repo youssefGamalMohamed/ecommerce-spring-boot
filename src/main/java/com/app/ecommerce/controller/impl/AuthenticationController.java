@@ -24,7 +24,7 @@ public class AuthenticationController implements IAuthenticationController {
     private AuthenticationService service;
 
 
-    @PostMapping("/sign-up")
+    @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestBody registerRequestBody) {
         return ResponseEntity.ok(service.register(registerRequestBody));
     }

@@ -9,7 +9,7 @@ import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.models.response.endpoints.AddNewCategoryResponse;
 import com.app.ecommerce.models.response.endpoints.DeleteCategoryResponse;
-import com.app.ecommerce.models.response.endpoints.GetAllCategoriesReponse;
+import com.app.ecommerce.models.response.endpoints.GetAllCategoriesResponse;
 import com.app.ecommerce.models.response.endpoints.GetCategoryByIdResponse;
 import com.app.ecommerce.models.response.endpoints.UpdateCategoryResponse;
 import com.app.ecommerce.repository.CategoryRepo;
@@ -68,8 +68,8 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public GetAllCategoriesReponse findAll() {
-        return 	GetAllCategoriesReponse.builder()
+    public GetAllCategoriesResponse findAll() {
+        return 	GetAllCategoriesResponse.builder()
         		.categories(
         				categoryRepo.findAll()
         		)

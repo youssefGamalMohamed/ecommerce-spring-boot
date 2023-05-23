@@ -84,7 +84,7 @@ public interface ICategoryController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = GetAllCategoriesReponse.class)
+                                    schema = @Schema(implementation = GetAllCategoriesResponse.class)
                             )
                     }
             )
