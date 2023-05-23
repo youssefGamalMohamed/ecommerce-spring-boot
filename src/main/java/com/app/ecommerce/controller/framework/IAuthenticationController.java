@@ -12,9 +12,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import java.io.IOException;
+
 
 @Tag(name = "Authentication", description = "contains Login and Register endpoints for authentication")
 public interface IAuthenticationController {
@@ -74,4 +79,10 @@ public interface IAuthenticationController {
             }
     )
     ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequestBody loginRequestBody);
+
+
+
+
+    void refreshToken( HttpServletRequest request, HttpServletResponse response ) throws IOException;
+
 }
