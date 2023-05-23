@@ -81,7 +81,30 @@ public interface IAuthenticationController {
     ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequestBody loginRequestBody);
 
 
-
+    @Operation(summary = "Refresh Old Expired Token")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200", description = "Return new Access Token and New Refresh Token",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            schema = @Schema(implementation = LoginResponseBody.class)
+                                    )
+                            }
+                    )
+            }
+    )
     void refreshToken( HttpServletRequest request, HttpServletResponse response ) throws IOException;
 
+
+    @Operation(summary = "Logout User From System")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200", description = "Will not an empty response"
+                    )
+            }
+    )
+    void logout( HttpServletRequest request, HttpServletResponse response );
 }
