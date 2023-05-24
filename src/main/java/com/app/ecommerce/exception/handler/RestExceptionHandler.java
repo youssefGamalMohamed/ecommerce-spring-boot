@@ -2,6 +2,7 @@ package com.app.ecommerce.exception.handler;
 
 
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.exception.type.MissingAuthorizationTokenException;
 import com.app.ecommerce.models.response.http.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -101,4 +102,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
+    @ExceptionHandler({MissingAuthorizationTokenException.class })
+    public ResponseEntity<?> handleMissingAuthTokenInHeader(Exception exception) {
+        return new ResponseEntity<>(
+                ForbiddenResponse.builder()
+                        .message(exception.getMessage())
+                        .build() ,
+                HttpStatus.FORBIDDEN
+        );
+    }
 }

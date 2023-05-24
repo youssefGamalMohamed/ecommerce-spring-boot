@@ -7,11 +7,13 @@ import com.app.ecommerce.entity.Token;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.TokenType;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.exception.type.MissingAuthorizationTokenException;
 import com.app.ecommerce.factory.UserFactory;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
 import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
+import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
 import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
@@ -100,7 +102,7 @@ public class AuthenticationService {
         tokenRepo.saveAll(validUserTokens);
     }
 
-    public void refreshToken(
+    public RefreshTokenResponseBody refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
@@ -108,7 +110,7 @@ public class AuthenticationService {
         final String refreshToken;
         final String userEmail;
         if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            return;
+            throw new MissingAuthorizationTokenException("Authorization Header Token are Missing");
         }
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
@@ -119,13 +121,15 @@ public class AuthenticationService {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = LoginResponseBody.builder()
+                var authResponse = RefreshTokenResponseBody.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+                return authResponse;
             }
         }
+
+        return null;
     }
 
 

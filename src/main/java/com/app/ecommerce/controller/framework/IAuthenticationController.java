@@ -3,6 +3,7 @@ package com.app.ecommerce.controller.framework;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
+import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
 import com.app.ecommerce.models.response.http.UnAuthorizedResponse;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
@@ -90,13 +91,13 @@ public interface IAuthenticationController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            schema = @Schema(implementation = LoginResponseBody.class)
+                                            schema = @Schema(implementation = RefreshTokenResponseBody.class)
                                     )
                             }
                     )
             }
     )
-    void refreshToken( HttpServletRequest request, HttpServletResponse response ) throws IOException;
+    ResponseEntity<?> refreshToken( HttpServletRequest request, HttpServletResponse response ) throws IOException;
 
 
     @Operation(summary = "Logout User From System")
