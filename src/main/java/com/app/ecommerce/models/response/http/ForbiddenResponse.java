@@ -10,6 +10,6 @@ import lombok.*;
 @ToString
 @Builder
 public class ForbiddenResponse {
-    @Schema(type = "string" , example = "Id Not Found to Perform Function")
+    @Schema(type = "string" , example = "No Authorization Token Sent in Header")
     private String message;
 }

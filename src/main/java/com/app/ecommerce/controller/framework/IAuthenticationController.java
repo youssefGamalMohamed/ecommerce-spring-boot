@@ -5,6 +5,7 @@ import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
+import com.app.ecommerce.models.response.http.ForbiddenResponse;
 import com.app.ecommerce.models.response.http.UnAuthorizedResponse;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
@@ -92,6 +93,15 @@ public interface IAuthenticationController {
                                     @Content(
                                             mediaType = "application/json",
                                             schema = @Schema(implementation = RefreshTokenResponseBody.class)
+                                    )
+                            }
+                    ) ,
+                    @ApiResponse(
+                            responseCode = "403", description = "In Case of Missing Authorization Refresh Token in Header",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            schema = @Schema(implementation = ForbiddenResponse.class)
                                     )
                             }
                     )
