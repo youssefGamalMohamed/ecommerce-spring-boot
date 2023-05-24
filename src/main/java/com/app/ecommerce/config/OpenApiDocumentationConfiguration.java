@@ -10,18 +10,22 @@ import lombok.extern.log4j.Log4j2;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 
 @OpenAPIDefinition(
         info = @Info(
             title = "Ecommerce App Swagger",
             version = "1.0",
-            description = "this API represent the online selling of products for customers all over the world"
+            description = "This API represent the online selling of products for customers all over the world"
         )
 )
 @Configuration
-@Log4j2
 public class OpenApiDocumentationConfiguration {
+
+
+        // this bean will create a global Header called "Authorization" and this header should not appear in /login and /register
+        // we will customize this header for all operations
         @Bean
         public OperationCustomizer customGlobalHeaders() {
 
