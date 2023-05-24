@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.io.IOException;
 
@@ -81,7 +80,7 @@ public interface IAuthenticationController {
                     )
             }
     )
-    ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequestBody loginRequestBody);
+    ResponseEntity<?> login(@Valid @RequestBody LoginRequestBody loginRequestBody);
 
 
     @Operation(summary = "Refresh Old Expired Token")

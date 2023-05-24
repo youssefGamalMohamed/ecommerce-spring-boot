@@ -31,7 +31,7 @@ public class AuthenticationController implements IAuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequestBody loginRequestBody) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestBody loginRequestBody) {
         return ResponseEntity.ok(service.authenticate(loginRequestBody));
     }
 

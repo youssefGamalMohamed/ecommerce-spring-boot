@@ -27,7 +27,20 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
 
 
-    private  String[] whiteListEndPoints = { "/auth/**" , "/swagger-ui/**" , "/v3/api-docs/**"};
+    private  String[] whiteListEndPoints =
+            {
+                "/auth/**",
+                "/v2/api-docs",
+                "/v3/api-docs",
+                "/v3/api-docs/**",
+                "/swagger-resources",
+                "/swagger-resources/**",
+                "/configuration/ui",
+                "/configuration/security",
+                "/swagger-ui/**",
+                "/webjars/**",
+                "/swagger-ui.html"
+            };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
