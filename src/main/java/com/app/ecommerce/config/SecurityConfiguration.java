@@ -33,6 +33,8 @@ public class SecurityConfiguration {
 
     private final CustomBearerTokenAuthenticationEntryPoint customBearerTokenAuthenticationEntryPoint;
 
+    private final LogoutHandler logoutHandler;
+
     private  String[] whiteListEndPoints =
             {
                 "/auth/register",
@@ -64,6 +66,10 @@ public class SecurityConfiguration {
                 .and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/aut/logout")
+                .addLogoutHandler(logoutHandler)
+                .and()
                 .exceptionHandling()
                 .accessDeniedHandler(customBearerTokenAccessDeniedHandler)
                 .authenticationEntryPoint(customBearerTokenAuthenticationEntryPoint)
