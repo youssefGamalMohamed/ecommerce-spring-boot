@@ -106,12 +106,11 @@ public class AuthenticationService {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
+
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            throw new MissingAuthorizationTokenException("Authorization Header Token are Missing");
-        }
+
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
@@ -121,11 +120,11 @@ public class AuthenticationService {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = RefreshTokenResponseBody.builder()
+                return RefreshTokenResponseBody.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
-                return authResponse;
+
             }
         }
 

@@ -4,10 +4,15 @@ package com.app.ecommerce.exception.handler;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.MissingAuthorizationTokenException;
 import com.app.ecommerce.models.response.http.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -91,11 +96,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     			);
     }
 
-    @ExceptionHandler({ AuthenticationException.class })
-    public ResponseEntity<?> handleAuthenticationException(Exception exception) {
+    @ExceptionHandler({ BadCredentialsException.class })
+    public ResponseEntity<?> handleAuthenticationException(BadCredentialsException exception) {
         return new ResponseEntity<>(
                 UnAuthorizedResponse.builder()
-                        .message("Wrong Username/Email or Password")
+                        .message("Authentication Error")
                         .build()
                 , HttpStatus.UNAUTHORIZED
         );
