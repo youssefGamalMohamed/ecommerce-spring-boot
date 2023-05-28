@@ -3,6 +3,8 @@ package com.app.ecommerce.config;
 
 import com.app.ecommerce.security.filters.JwtAuthenticationFilter;
 import com.app.ecommerce.security.handler.CustomBearerTokenAccessDeniedHandler;
+import com.app.ecommerce.security.handler.CustomBearerTokenAuthenticationEntryPoint;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,9 +31,13 @@ public class SecurityConfiguration {
 
     private final CustomBearerTokenAccessDeniedHandler customBearerTokenAccessDeniedHandler;
 
+    private final CustomBearerTokenAuthenticationEntryPoint customBearerTokenAuthenticationEntryPoint;
+
     private  String[] whiteListEndPoints =
             {
-                "/auth/**",
+                "/auth/register",
+                "/auth/login",
+                "/auth/refresh-token",
                 "/swagger-resources",
                 "/swagger-resources/**",
                 "/configuration/ui",
@@ -59,7 +65,8 @@ public class SecurityConfiguration {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
-                .accessDeniedHandler(customBearerTokenAccessDeniedHandler);
+                .accessDeniedHandler(customBearerTokenAccessDeniedHandler)
+                .authenticationEntryPoint(customBearerTokenAuthenticationEntryPoint)
         ;
 
         return http.build();

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -98,5 +99,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(null , HttpStatus.FORBIDDEN);
     }
 
-
+    @ExceptionHandler(value = AuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationExceptionException(AuthenticationException exception) {
+        return new ResponseEntity<>(null , HttpStatus.UNAUTHORIZED);
+    }
 }

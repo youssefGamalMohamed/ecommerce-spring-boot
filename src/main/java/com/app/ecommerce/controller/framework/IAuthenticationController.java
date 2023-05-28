@@ -5,8 +5,6 @@ import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
-import com.app.ecommerce.models.response.http.ForbiddenResponse;
-import com.app.ecommerce.models.response.http.UnAuthorizedResponse;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,13 +61,7 @@ public interface IAuthenticationController {
                             }
                     ),
                     @ApiResponse(
-                            responseCode = "401", description = "Failed to Login",
-                            content = {
-                                    @Content(
-                                            mediaType = "application/json",
-                                            schema = @Schema(implementation = UnAuthorizedResponse.class)
-                                    )
-                            }
+                            responseCode = "401", description = "Failed to Login"
                     ),
                     @ApiResponse(
                             responseCode = "400", description = "Validation Error",
@@ -94,15 +86,6 @@ public interface IAuthenticationController {
                                             schema = @Schema(implementation = RefreshTokenResponseBody.class)
                                     )
                             }
-                    ) ,
-                    @ApiResponse(
-                            responseCode = "403", description = "In Case of Missing Authorization Refresh Token in Header",
-                            content = {
-                                    @Content(
-                                            mediaType = "application/json",
-                                            schema = @Schema(implementation = ForbiddenResponse.class)
-                                    )
-                            }
                     )
             }
     )
@@ -120,6 +103,9 @@ public interface IAuthenticationController {
                                             schema = @Schema(implementation = LogoutResponseBody.class)
                                     )
                             }
+                    ) ,
+                    @ApiResponse(
+                            responseCode = "401", description = "No Token Sent , Failed to Logout"
                     )
             }
     )
