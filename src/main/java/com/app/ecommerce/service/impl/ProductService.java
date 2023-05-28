@@ -24,20 +24,13 @@ public class ProductService implements IProductService {
     private ProductRepo productRepo;
 
     @Autowired
-    private CategoryRepo categoryRepo;
+    private CategoryService categoryService;
 
 
     @Override
     public AddNewProductResponse addNewProduct(PostProductRequestBody productRequestBody) {
 
-        Set<Category> categories = new HashSet<>();
-        productRequestBody.getCategoriesId()
-                .forEach(id -> {
-                	Category category = categoryRepo.findById(id)
-                			.orElseThrow(() -> new IdNotFoundException("Can Not Create New Product"
-                					+ " , Some of Assigned Categories with Id " + id));
-                	categories.add(category);
-                });
+        Set<Category> categories = categoryService.getCategories(productRequestBody.getCategoriesId());
 
         Product product = Product.builder()
         		.name(productRequestBody.getName())
@@ -58,13 +51,10 @@ public class ProductService implements IProductService {
 
 	@Override
 	public GetAllProductsByCategoryNameResponse findProductsByCategoryName(String categoryName) {
-		Set<Product> productSet = categoryRepo.findByName(categoryName)
-				.orElseThrow(() -> new NameNotFoundException("Category Name does not exist to retrieve associated Products"))
-				.getProducts();
+		Set<Product> productSet = categoryService.getAllProductsByCategoryName(categoryName);
+
 		return GetAllProductsByCategoryNameResponse.builder()
-				.products(
-					productSet
-				)
+				.products(productSet)
 				.build();
 	}
 
@@ -75,16 +65,7 @@ public class ProductService implements IProductService {
 		Product product = productRepo.findById(productId)
 				.orElseThrow(() -> new IdNotFoundException("Can Not Update Product , Id Not Found"));
 		
-        Set<Category> categories = new HashSet<>();
-        
-        updatedProductRequstBody.getCategoriesId()
-                .forEach(id -> {
-                	Category category = categoryRepo.findById(id)
-                			.orElseThrow(() -> new IdNotFoundException("Can Not Update Product , Category with id = " + 
-                							id + "Not Eixst"
-                					));
-                	categories.add(category);
-                });
+        Set<Category> categories = categoryService.getCategories(updatedProductRequstBody.getCategoriesId());
         
         product.setName(updatedProductRequstBody.getName());
         product.setDescription(updatedProductRequstBody.getDescription());

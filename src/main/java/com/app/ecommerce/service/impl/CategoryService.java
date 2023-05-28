@@ -5,6 +5,7 @@ import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.exception.type.NameNotFoundException;
 import com.app.ecommerce.models.request.PostCategoryRequestBody;
 import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.models.response.endpoints.AddNewCategoryResponse;
@@ -16,7 +17,12 @@ import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.service.framework.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService implements ICategoryService {
@@ -97,6 +103,31 @@ public class CategoryService implements ICategoryService {
 		return UpdateCategoryResponse.builder()
 				.id(categoryId)
 				.build();
+	}
+
+	@Override
+	public Set<Category> getCategories(Set<Long> categoriesIds) {
+
+		return categoriesIds.stream()
+				.map(this::getCategory)
+				.collect(Collectors.toSet());
+
+	}
+
+	@Override
+	public Category getCategory(Long id) {
+		return categoryRepo.findById(id)
+				.orElseThrow(
+						() -> new IdNotFoundException("Can Not Create New Product"
+									+ " , Some of Assigned Categories with Id " + id)
+				);
+	}
+
+	@Override
+	public Set<Product> getAllProductsByCategoryName(String categoryName) {
+		return categoryRepo.findByName(categoryName)
+				.orElseThrow(() -> new NameNotFoundException("Category Name does not exist to retrieve associated Products"))
+				.getProducts();
 	}
 
 
