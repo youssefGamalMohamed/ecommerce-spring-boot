@@ -2,6 +2,7 @@ package com.app.ecommerce.config;
 
 
 import com.app.ecommerce.security.filters.JwtAuthenticationFilter;
+import com.app.ecommerce.security.handler.CustomBearerTokenAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    private final CustomBearerTokenAccessDeniedHandler customBearerTokenAccessDeniedHandler;
 
     private  String[] whiteListEndPoints =
             {
@@ -56,7 +58,8 @@ public class SecurityConfiguration {
                 .and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-
+                .exceptionHandling()
+                .accessDeniedHandler(customBearerTokenAccessDeniedHandler);
         ;
 
         return http.build();

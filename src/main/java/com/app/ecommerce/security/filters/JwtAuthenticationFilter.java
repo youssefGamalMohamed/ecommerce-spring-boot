@@ -48,18 +48,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
-//            response.getWriter().write("{\"message\": \"Authentication is required to access this resource\"}");
             response.getWriter().flush();
             return;
         }
         jwt = authHeader.substring(7);
+
+        // in this case we handle any corrupted token and all JwtException
+        // then the response should be an 401
         try {
             userEmail = jwtService.extractUsername(jwt);
         }
         catch (Exception e) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
-//            response.getWriter().write("{\"message\": \"Authentication is required to access this resource\"}");
             response.getWriter().flush();
             return;
         }

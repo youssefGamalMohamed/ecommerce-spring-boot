@@ -2,23 +2,18 @@ package com.app.ecommerce.exception.handler;
 
 
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
-import com.app.ecommerce.exception.type.MissingAuthorizationTokenException;
 import com.app.ecommerce.models.response.http.*;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.security.core.AuthenticationException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,7 +65,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     				.message(exception.getMessage())
     				.build()
     				 , HttpStatus.INTERNAL_SERVER_ERROR
-    			
+
     			);
     }
 
@@ -96,24 +91,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     			);
     }
 
-    @ExceptionHandler({ BadCredentialsException.class })
-    public ResponseEntity<?> handleAuthenticationException(BadCredentialsException exception) {
-        return new ResponseEntity<>(
-                UnAuthorizedResponse.builder()
-                        .message("Authentication Error")
-                        .build()
-                , HttpStatus.UNAUTHORIZED
-        );
+
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
+        return new ResponseEntity<>(null , HttpStatus.FORBIDDEN);
     }
 
 
-    @ExceptionHandler({MissingAuthorizationTokenException.class })
-    public ResponseEntity<?> handleMissingAuthTokenInHeader(Exception exception) {
-        return new ResponseEntity<>(
-                ForbiddenResponse.builder()
-                        .message(exception.getMessage())
-                        .build() ,
-                HttpStatus.FORBIDDEN
-        );
-    }
 }
