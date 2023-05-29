@@ -52,7 +52,7 @@ public class Order {
 	})
 	private Delivery delivery;
 	
-	@OneToOne(mappedBy = "order" , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.REFRESH })
+	@OneToOne(mappedBy = "order" , cascade = CascadeType.ALL)
 	private Cart cart;
 	
 	

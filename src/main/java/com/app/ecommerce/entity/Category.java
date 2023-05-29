@@ -29,7 +29,8 @@ public class Category {
     private String name;
 
     
-    @ManyToMany(mappedBy = "categories" , fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "categories" , fetch = FetchType.EAGER
+            , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.DETACH , CascadeType.REFRESH })
     @JsonIgnore
     private Set<Product> products;
 
@@ -38,5 +39,7 @@ public class Category {
 		return "Category [id=" + id + ", name=" + name + "]";
 	}
     
-    
+    public void removeProduct(Product product) {
+        this.getProducts().remove(product);
+    }
 }

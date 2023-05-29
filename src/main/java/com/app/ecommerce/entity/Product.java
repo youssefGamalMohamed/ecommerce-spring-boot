@@ -39,7 +39,7 @@ public class Product {
     
     
 
-    @ManyToMany(fetch = FetchType.EAGER , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.DETACH , CascadeType.REFRESH })
     @JoinTable(
             name = "product_category",
             joinColumns = @JoinColumn(name = "product_id"),
@@ -59,5 +59,9 @@ public class Product {
 				+ ", quantity=" + quantity + "]";
 	}
     
-    
+
+
+    public void removeCategory(Category category) {
+        this.getCategories().remove(category);
+    }
 }

@@ -30,7 +30,7 @@ public class CategoryService implements ICategoryService {
     @Autowired
     private CategoryRepo categoryRepo;
 
-        
+
     @Override
     public AddNewCategoryResponse add(PostCategoryRequestBody categoryRequestBody) throws DuplicatedUniqueColumnValueException {
     	if(categoryRepo.findByName(categoryRequestBody.getName()).isPresent())
@@ -57,17 +57,14 @@ public class CategoryService implements ICategoryService {
         Category category = categoryRepo.findById(categoryId).orElseThrow(
         				() -> new IdNotFoundException("Category Id Not Exist to Delete")
         		);
+
+		for (Product product : category.getProducts()) {
+			product.removeCategory(category);
+		}
         
-        Iterator<Product> iterator = category.getProducts().iterator();
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            product.getCategories().remove(category);
-        }
-        
-        category.getProducts().clear();
+
         categoryRepo.deleteById(categoryId);
-        
-        
+
         return DeleteCategoryResponse.builder()
         		.message("Category Deleted Successfully")
         		.build();

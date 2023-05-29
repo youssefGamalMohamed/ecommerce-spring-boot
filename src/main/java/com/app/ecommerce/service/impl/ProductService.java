@@ -8,6 +8,7 @@ import com.app.ecommerce.exception.type.NameNotFoundException;
 import com.app.ecommerce.models.request.PostProductRequestBody;
 import com.app.ecommerce.models.request.PutProductRequestBody;
 import com.app.ecommerce.models.response.endpoints.AddNewProductResponse;
+import com.app.ecommerce.models.response.endpoints.DeleteProductByIdResponse;
 import com.app.ecommerce.models.response.endpoints.GetAllProductsByCategoryNameResponse;
 import com.app.ecommerce.models.response.endpoints.UpdateProductResponse;
 import com.app.ecommerce.repository.CategoryRepo;
@@ -60,17 +61,17 @@ public class ProductService implements IProductService {
 
 
 	@Override
-	public UpdateProductResponse updateProductById(Long productId, PutProductRequestBody updatedProductRequstBody) {
+	public UpdateProductResponse updateProductById(Long productId, PutProductRequestBody updatedProductRequestBody) {
 			
 		Product product = productRepo.findById(productId)
 				.orElseThrow(() -> new IdNotFoundException("Can Not Update Product , Id Not Found"));
 		
-        Set<Category> categories = categoryService.getCategories(updatedProductRequstBody.getCategoriesId());
+        Set<Category> categories = categoryService.getCategories(updatedProductRequestBody.getCategoriesId());
         
-        product.setName(updatedProductRequstBody.getName());
-        product.setDescription(updatedProductRequstBody.getDescription());
-        product.setPrice(updatedProductRequstBody.getPrice());
-        product.setQuantity(updatedProductRequstBody.getQuantity());
+        product.setName(updatedProductRequestBody.getName());
+        product.setDescription(updatedProductRequestBody.getDescription());
+        product.setPrice(updatedProductRequestBody.getPrice());
+        product.setQuantity(updatedProductRequestBody.getQuantity());
         product.getCategories().addAll(categories);
         
         productRepo.save(product);
@@ -78,5 +79,23 @@ public class ProductService implements IProductService {
         return UpdateProductResponse.builder()
         		.id(productId)
         		.build();
+	}
+
+	@Override
+	public DeleteProductByIdResponse deleteProductById(Long productId) {
+		Product product = productRepo.findById(productId)
+				.orElseThrow(() -> new IdNotFoundException("Product Id Not Found to Delete"));
+
+		for(Category category : product.getCategories())
+			category.removeProduct(product);
+
+		product.getCategories().clear();
+
+		productRepo.deleteById(productId);
+
+
+		return DeleteProductByIdResponse.builder()
+				.message("Product Deleted Successfully")
+				.build();
 	}
 }

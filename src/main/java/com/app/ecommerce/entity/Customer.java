@@ -19,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 public class Customer extends User {
 
 
-	@OneToMany(mappedBy = "customer")
+	@OneToMany(mappedBy = "customer" , cascade = CascadeType.ALL)
 	private List<Order> orders;
 	
 }

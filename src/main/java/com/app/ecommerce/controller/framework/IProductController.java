@@ -1,5 +1,6 @@
 package com.app.ecommerce.controller.framework;
 
+import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.models.request.PostProductRequestBody;
 import com.app.ecommerce.models.request.PutProductRequestBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
@@ -100,4 +101,30 @@ public interface IProductController {
     }
     )
     ResponseEntity<?> updateProduct(@PathVariable(value = "id") Long productId , @Valid @RequestBody PutProductRequestBody updatedProductRequestBody);
+
+
+
+    @Operation(summary = "Delete Product By Id , this endpoint accessed for ( Admin )")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204", description = "Product Deleted Successfully",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = DeleteProductByIdResponse.class)
+                            )
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Product Not Found with this ID",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = NotFoundResponse.class))
+                    }
+            )
+    }
+    )
+    ResponseEntity<?> deleteById(@PathVariable(name = "id") Long productId) throws IdNotFoundException;
+
+
 }

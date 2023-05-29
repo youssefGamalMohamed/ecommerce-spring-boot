@@ -34,7 +34,7 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@OneToMany(mappedBy = "cart" , cascade = {CascadeType.PERSIST , CascadeType.REFRESH , CascadeType.MERGE})
+	@OneToMany(mappedBy = "cart" , cascade = CascadeType.ALL)
 	private Set<CartItem> cartItems;
 	
 	@OneToOne
