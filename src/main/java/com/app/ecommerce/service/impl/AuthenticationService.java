@@ -17,6 +17,7 @@ import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
 import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
+import com.app.ecommerce.security.handler.CustomLogoutHandler;
 import com.app.ecommerce.service.framework.IAuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,7 +44,7 @@ public class AuthenticationService implements IAuthenticationService {
 
     private final UserFactory userFactory;
 
-    private final LogoutHandler logoutHandler;
+    private final CustomLogoutHandler logoutHandler;
 
 
     public RegisterResponseBody register(RegisterRequestBody request) {
