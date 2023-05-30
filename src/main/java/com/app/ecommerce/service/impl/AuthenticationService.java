@@ -1,4 +1,4 @@
-package com.app.ecommerce.security.service;
+package com.app.ecommerce.service.impl;
 
 
 
@@ -16,6 +16,7 @@ import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
 import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
+import com.app.ecommerce.service.framework.IAuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationService implements IAuthenticationService {
     private final UserRepo userRepo;
     private final TokenRepo tokenRepo;
     private final JwtService jwtService;
@@ -77,7 +78,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    public void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
@@ -88,7 +89,7 @@ public class AuthenticationService {
         tokenRepo.save(token);
     }
 
-    private void revokeAllUserTokens(User user) {
+    public void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepo.findAllValidTokenByUser(user.getId());
         if (validUserTokens.isEmpty())
             return;
