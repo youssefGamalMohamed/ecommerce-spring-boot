@@ -7,6 +7,7 @@ import com.app.ecommerce.entity.Token;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.TokenType;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.exception.type.MissingRefreshTokenException;
 import com.app.ecommerce.factory.UserFactory;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
@@ -22,7 +23,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
@@ -109,8 +113,21 @@ public class AuthenticationService implements IAuthenticationService {
         final String refreshToken;
         final String userEmail;
 
+        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+            throw new MissingRefreshTokenException("missing Refresh-Token in the Headers");
+        }
+
+
         refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
+        try {
+            userEmail = jwtService.extractUsername(refreshToken);
+        }
+        catch (Exception exception) {
+            throw new BadCredentialsException("corrupted or invalid Refresh-Token in the Headers");
+        }
+
+
+
         if (userEmail != null) {
             var user = this.userRepo.findByEmail(userEmail)
                     .orElseThrow();
@@ -123,10 +140,13 @@ public class AuthenticationService implements IAuthenticationService {
                         .refreshToken(refreshToken)
                         .build();
 
+            } else {
+                throw new CredentialsExpiredException("expired refresh token");
             }
         }
-
-        return null;
+        else {
+            throw new BadCredentialsException("corrupted or invalid Refresh-Token in the Headers");
+        }
     }
 
 
