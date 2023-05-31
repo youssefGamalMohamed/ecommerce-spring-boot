@@ -63,46 +63,17 @@ public class AppLogger extends OncePerRequestFilter {
         long timeTaken = System.currentTimeMillis() - startTime;
 
 
-
-
-        // prepare request
-        Map<String,String> queryParameters = this.getQueryParametersFrom(request);
-        Map<String,String> pathVariables = this.getPathVariablesFrom(request);
-        Map<String,Object> requestInformation = new HashMap<>();
-        try {
-            Object obj = objectMapper.readValue(
-                                getRequestOrResponseBodyStringValue(requestWrapper.getContentAsByteArray(), request.getCharacterEncoding()),
-                                Object.class
-                            );
-            requestInformation.put("body", obj);
-        }
-        catch (Exception e) {
-            log.info("obj  = {}" , e.getMessage());
-        }
-        requestInformation.put("pathVariables" , pathVariables);
-        requestInformation.put("queryParameters" , queryParameters);
+        Map<String, Object> requestInformation = getRequestInformationMap(request, requestWrapper);
         String requestInformationJsonString = objectMapper.writeValueAsString(requestInformation);
 
 
-        // prepare response
-        Map<String,Object> responseBodyMap = new HashMap<>();
-        responseBodyMap.put("httpStatusCode", response.getStatus());
-        try {
-            responseBodyMap.put("body", objectMapper.readValue(getInlineJSONStringFrom(getRequestOrResponseBodyStringValue(responseWrapper.getContentAsByteArray(),
-                    response.getCharacterEncoding())), Object.class)
-            );
-
-        }
-        catch (Exception e) {
-
-        }
-
+        Map<String, Object> responseBodyMap = getResponseInformationMap(response, responseWrapper);
         String responseBodyInformation = objectMapper.writeValueAsString(responseBodyMap);
 
         log.info(
-                "FINISHED PROCESSING : METHOD={}; REQUESTURI={}; \n REQUEST BODY ={}; \n RESPONSE={}; \n TIM TAKEN={}",
-                request.getMethod(), request.getRequestURI(), requestInformationJsonString, responseBodyInformation,
-                timeTaken);
+                "FINISHED PROCESSING : METHOD={}; REQUESTURI={}; \n REQUEST BODY ={}; \n RESPONSE={}; \n TIME TAKEN={}",
+                request.getMethod(), request.getRequestURI(), requestInformationJsonString, responseBodyInformation, timeTaken
+        );
 
 
 
@@ -110,7 +81,42 @@ public class AppLogger extends OncePerRequestFilter {
         responseWrapper.copyBodyToResponse();
     }
 
+    private Map<String, Object> getResponseInformationMap(HttpServletResponse response, ContentCachingResponseWrapper responseWrapper) {
+        // prepare response
+        Map<String,Object> responseBodyMap = new HashMap<>();
+        responseBodyMap.put("httpStatusCode", response.getStatus());
+        try {
+            responseBodyMap.put("body", objectMapper.readValue(getInlineJSONStringFrom(getRequestOrResponseBodyStringValue(responseWrapper.getContentAsByteArray(),
+                    response.getCharacterEncoding())), Object.class)
+            );
+        }
+        catch (Exception e) {
 
+        }
+        return responseBodyMap;
+    }
+
+    private Map<String, Object> getRequestInformationMap(HttpServletRequest request, ContentCachingRequestWrapper requestWrapper) {
+        // prepare request
+        Map<String,String> queryParameters = this.getQueryParametersFrom(request);
+        Map<String,String> pathVariables = this.getPathVariablesFrom(request);
+        Map<String,Object> requestInformation = new HashMap<>();
+        try {
+
+            requestInformation.put("body", objectMapper.readValue(
+                                    getRequestOrResponseBodyStringValue(requestWrapper.getContentAsByteArray(), request.getCharacterEncoding()),
+                                    Object.class
+                            )
+            );
+        }
+        catch (Exception e) {
+        }
+        if(pathVariables.size() != 0)
+            requestInformation.put("pathVariables" , pathVariables);
+        if(queryParameters.size() != 0)
+            requestInformation.put("queryParameters" , queryParameters);
+        return requestInformation;
+    }
 
 
     private Map<String,String> getQueryParametersFrom(HttpServletRequest request) {
