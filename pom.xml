@@ -109,6 +109,13 @@
             <version>0.11.5</version>
         </dependency>
         <!-- End of Security-->
+
+        <!-- For Converting Java Objects to JSON Strings -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <!-- End of Converting Java Objects to JSON Strings -->
     </dependencies>
 
     <profiles>
