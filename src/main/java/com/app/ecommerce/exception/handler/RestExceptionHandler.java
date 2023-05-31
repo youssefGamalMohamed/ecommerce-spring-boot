@@ -95,12 +95,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     @ExceptionHandler(value = AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
-        return new ResponseEntity<>(null , HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(value = AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<?> handleAuthenticationExceptionException(AuthenticationException exception) {
-        return new ResponseEntity<>(null , HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }
