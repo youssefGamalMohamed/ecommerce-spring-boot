@@ -71,7 +71,7 @@ public class AppLogger extends OncePerRequestFilter {
         String responseBodyInformation = objectMapper.writeValueAsString(responseBodyMap);
 
         log.info(
-                "FINISHED PROCESSING : METHOD={}; REQUESTURI={}; \n REQUEST BODY ={}; \n RESPONSE={}; \n TIME TAKEN={}",
+                "FINISHED PROCESSING : METHOD={}; REQUESTURI={}; \n\n REQUEST BODY ={}; \n\n RESPONSE={}; \n\n TIME TAKEN={} \n\n",
                 request.getMethod(), request.getRequestURI(), requestInformationJsonString, responseBodyInformation, timeTaken
         );
 
