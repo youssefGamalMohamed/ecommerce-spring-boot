@@ -36,14 +36,12 @@ public class AuthenticationController implements IAuthenticationController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        return ResponseEntity.ok(service.refreshToken(request, response));
+        return ResponseEntity.ok(service.refreshToken());
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.ok(
-                service.logout(request , response)
-        );
+        return ResponseEntity.ok(service.logout());
     }
 
 

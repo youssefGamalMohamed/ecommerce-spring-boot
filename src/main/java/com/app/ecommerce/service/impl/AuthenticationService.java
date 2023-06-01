@@ -31,8 +31,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -105,10 +108,8 @@ public class AuthenticationService implements IAuthenticationService {
         tokenRepo.saveAll(validUserTokens);
     }
 
-    public RefreshTokenResponseBody refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
+    public RefreshTokenResponseBody refreshToken() throws IOException {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
 
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
@@ -151,7 +152,9 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
 
-    public LogoutResponseBody logout(HttpServletRequest request, HttpServletResponse response) {
+    public LogoutResponseBody logout() {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
 
         logoutHandler.logout(request , response , SecurityContextHolder.getContext().getAuthentication());
 

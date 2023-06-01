@@ -24,9 +24,9 @@ public interface IAuthenticationService {
     void revokeAllUserTokens(User user);
 
 
-    RefreshTokenResponseBody refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    RefreshTokenResponseBody refreshToken() throws IOException;
 
-    LogoutResponseBody logout(HttpServletRequest request, HttpServletResponse response);
+    LogoutResponseBody logout();
 
 
 

@@ -20,9 +20,6 @@ public class CustomLogoutHandler implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            return;
-        }
         jwt = authHeader.substring(7);
         var storedToken = tokenRepo.findByToken(jwt)
                 .orElse(null);

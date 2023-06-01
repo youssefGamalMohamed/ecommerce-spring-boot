@@ -61,13 +61,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<?> handleInternalServerErrorException(Exception exception) {
-    	return new ResponseEntity<>(
-    				InternalServerResponse.builder()
-    				.message(exception.getMessage())
-    				.build()
-    				 , HttpStatus.INTERNAL_SERVER_ERROR
-
-    			);
+        exception.printStackTrace();
+    	return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = DuplicatedUniqueColumnValueException.class)

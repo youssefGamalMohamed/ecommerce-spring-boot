@@ -7,7 +7,13 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -16,38 +22,24 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import org.thymeleaf.util.StringUtils;
 
+@Aspect
 @Component
 @Log4j2
+@AllArgsConstructor
 public class AppLogger extends OncePerRequestFilter {
 
-    private final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-    private void logSeparator(){
-        log.info(StringUtils.repeat("=" , 200).toString());
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    private String getRequestOrResponseBodyStringValue(byte[] contentAsByteArray, String characterEncoding) {
-        try {
-            return new String(contentAsByteArray, 0, contentAsByteArray.length, characterEncoding);
-        } catch (UnsupportedEncodingException e) {
-            log.warn("Can Not Convert Request or Response to String to Log it");
-        }
-        return "";
-    }
+    @Autowired
+    private HttpRequestResponseLoggingUtils httpRequestResponseLoggingUtils;
 
-    private String getInlineJSONStringFrom(String objectString) {
-        try {
-            Object object = objectMapper.readValue(objectString, Object.class);
-            return objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            return "";
-        }
-    }
+    @Autowired
+    private LoggingUtils loggingUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -56,84 +48,83 @@ public class AppLogger extends OncePerRequestFilter {
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
-        this.logSeparator();
+        loggingUtils.logSeparator();
+
+
+        Map<String, Object> requestInformation = httpRequestResponseLoggingUtils.getRequestInformationMap(request, requestWrapper);
+        String requestInformationJsonString = objectMapper.writeValueAsString(requestInformation);
+
+        log.info(
+                " METHOD = {}; REQUESTURI = {}; \n\n REQUEST = {}; ",
+                request.getMethod(), request.getRequestURI(), requestInformationJsonString
+        );
 
         long startTime = System.currentTimeMillis();
         filterChain.doFilter(requestWrapper, responseWrapper);
         long timeTaken = System.currentTimeMillis() - startTime;
 
 
-        Map<String, Object> requestInformation = getRequestInformationMap(request, requestWrapper);
-        String requestInformationJsonString = objectMapper.writeValueAsString(requestInformation);
 
 
-        Map<String, Object> responseBodyMap = getResponseInformationMap(response, responseWrapper);
+        Map<String, Object> responseBodyMap = httpRequestResponseLoggingUtils.getResponseInformationMap(response, responseWrapper);
         String responseBodyInformation = objectMapper.writeValueAsString(responseBodyMap);
 
         log.info(
-                "FINISHED PROCESSING : METHOD = {}; REQUESTURI = {}; \n\n REQUEST = {}; \n\n RESPONSE = {}; \n\n TIME TAKEN = {} \n\n",
-                request.getMethod(), request.getRequestURI(), requestInformationJsonString, responseBodyInformation, timeTaken
+                "\n\n RESPONSE = {}; \n\n TIME TAKEN = {} \n\n",
+                    responseBodyInformation, timeTaken
         );
 
 
 
-        this.logSeparator();
+        loggingUtils.logSeparator();
         responseWrapper.copyBodyToResponse();
     }
 
-    private Map<String, Object> getResponseInformationMap(HttpServletResponse response, ContentCachingResponseWrapper responseWrapper) {
-        // prepare response
-        Map<String,Object> responseBodyMap = new HashMap<>();
-        responseBodyMap.put("httpStatusCode", response.getStatus());
+
+
+
+
+
+    @Pointcut("within(@org.springframework.stereotype.Service *)")
+    public void serviceMethod(){}
+
+    @Pointcut("execution(* com.app.*..*(..))")
+    public void projectMethod(){}
+
+
+    @Around(value = "projectMethod() && serviceMethod()")
+    public Object loggingFunction(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+
+        Map<String,Object> serviceMap = new HashMap<>();
+
+        String name = proceedingJoinPoint.getSignature().toLongString();
+        Object inputs = proceedingJoinPoint.getArgs();
+        Object object = proceedingJoinPoint.proceed();
+        Object outputs = object;
+
+
+        serviceMap.put("serviceFunctionName" , name);
+        serviceMap.put("inputs" , inputs);
+        serviceMap.put("outputs" , outputs);
+
+
+        log.info("\n\n" + objectMapper.writeValueAsString(serviceMap));
+
+        return object;
+    }
+
+
+    @AfterThrowing(pointcut = "projectMethod() && serviceMethod()" , throwing = "exception")
+    public void afterThrowingException(JoinPoint joinPoint , Exception exception)  {
+        Map<String,Object> exceptionMap = new HashMap<>();
+        String name = joinPoint.getSignature().getDeclaringTypeName();
+        exceptionMap.put("serviceFunctionName" , name);
+        exceptionMap.put("exception" , exception.getMessage());
         try {
-            responseBodyMap.put("body", objectMapper.readValue(getInlineJSONStringFrom(getRequestOrResponseBodyStringValue(responseWrapper.getContentAsByteArray(),
-                    response.getCharacterEncoding())), Object.class)
-            );
+            log.info("\n\n" + "Exception = " + objectMapper.writeValueAsString(exceptionMap) + "\n\n");
+        } catch (JsonProcessingException e) {
+            log.error(">>>>>>> Exception Occurred with Parsing Object to JSON , Details = " + e.getOriginalMessage());
         }
-        catch (Exception e) {
-
-        }
-        return responseBodyMap;
-    }
-
-    private Map<String, Object> getRequestInformationMap(HttpServletRequest request, ContentCachingRequestWrapper requestWrapper) {
-        // prepare request
-        Map<String,String> queryParameters = this.getQueryParametersFrom(request);
-        Map<String,String> pathVariables = this.getPathVariablesFrom(request);
-        Map<String,Object> requestInformation = new HashMap<>();
-        try {
-
-            requestInformation.put("body", objectMapper.readValue(
-                                    getRequestOrResponseBodyStringValue(requestWrapper.getContentAsByteArray(), request.getCharacterEncoding()),
-                                    Object.class
-                            )
-            );
-        }
-        catch (Exception e) {
-        }
-        if(pathVariables.size() != 0)
-            requestInformation.put("pathVariables" , pathVariables);
-        if(queryParameters.size() != 0)
-            requestInformation.put("queryParameters" , queryParameters);
-        return requestInformation;
-    }
-
-
-    private Map<String,String> getQueryParametersFrom(HttpServletRequest request) {
-        Map<String,String> map = new HashMap<>();
-
-
-        for (Iterator<String> it = request.getParameterNames().asIterator(); it.hasNext(); ) {
-            String key = it.next();
-            map.put(key , request.getParameter(key));
-        }
-
-        return map;
-    }
-
-
-    private Map<String,String> getPathVariablesFrom(HttpServletRequest request) {
-        return (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
     }
 
 }
