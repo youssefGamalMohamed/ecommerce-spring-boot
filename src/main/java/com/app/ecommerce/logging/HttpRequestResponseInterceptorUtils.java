@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
-import org.thymeleaf.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -23,7 +22,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class HttpRequestResponseLoggingUtils {
+public class HttpRequestResponseInterceptorUtils {
     @Autowired
     private ObjectMapper objectMapper;
 

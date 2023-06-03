@@ -2,7 +2,6 @@ package com.app.ecommerce.logging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,18 +12,13 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
-
-import org.thymeleaf.util.StringUtils;
 
 @Aspect
 @Component
@@ -36,7 +30,7 @@ public class AppLogger extends OncePerRequestFilter {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private HttpRequestResponseLoggingUtils httpRequestResponseLoggingUtils;
+    private HttpRequestResponseInterceptorUtils httpRequestResponseInterceptorUtils;
 
     @Autowired
     private LoggingUtils loggingUtils;
@@ -51,7 +45,7 @@ public class AppLogger extends OncePerRequestFilter {
         loggingUtils.logSeparator();
 
 
-        Map<String, Object> requestInformation = httpRequestResponseLoggingUtils.getRequestInformationMap(request, requestWrapper);
+        Map<String, Object> requestInformation = httpRequestResponseInterceptorUtils.getRequestInformationMap(request, requestWrapper);
         String requestInformationJsonString = objectMapper.writeValueAsString(requestInformation);
 
         log.info(
@@ -66,7 +60,7 @@ public class AppLogger extends OncePerRequestFilter {
 
 
 
-        Map<String, Object> responseBodyMap = httpRequestResponseLoggingUtils.getResponseInformationMap(response, responseWrapper);
+        Map<String, Object> responseBodyMap = httpRequestResponseInterceptorUtils.getResponseInformationMap(response, responseWrapper);
         String responseBodyInformation = objectMapper.writeValueAsString(responseBodyMap);
 
         log.info(
