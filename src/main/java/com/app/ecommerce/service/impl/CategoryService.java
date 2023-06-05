@@ -16,6 +16,8 @@ import com.app.ecommerce.models.response.endpoints.UpdateCategoryResponse;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.service.framework.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -71,10 +73,12 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public GetAllCategoriesResponse findAll() {
+    public GetAllCategoriesResponse findAll(int page , int size) {
+		Pageable paging = PageRequest.of(page, size);
+
         return 	GetAllCategoriesResponse.builder()
         		.categories(
-        				categoryRepo.findAll()
+        				categoryRepo.findAll(paging)
         		)
         		.build();
     }

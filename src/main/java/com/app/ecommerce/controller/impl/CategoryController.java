@@ -43,8 +43,8 @@ public class CategoryController implements ICategoryController {
     @RolesAllowed({"ADMIN" , "USER"})
     @GetMapping("/categories")
     @Override
-    public ResponseEntity<?> findAll() {
-        return ResponseEntity.ok(categoryService.findAll());
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(categoryService.findAll(page,size));
     }
 
     @RolesAllowed({"ADMIN" , "USER"})
@@ -60,7 +60,7 @@ public class CategoryController implements ICategoryController {
     public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody PutCategoryRequestBody updatedBody) {
         return ResponseEntity.ok(categoryService.updateById(categoryId, updatedBody));
     }
-    
-    
-    
+
+
+
 }

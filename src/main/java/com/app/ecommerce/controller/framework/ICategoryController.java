@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Categories", description = "contains All Category operation for Customer and Admin")
 public interface ICategoryController {
@@ -90,7 +91,7 @@ public interface ICategoryController {
             )
     }
     )
-    ResponseEntity<?> findAll();
+    ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size);
 
 
     @Operation(summary = "Find Category By Id , this endpoint accessed for ( Admin , User )")

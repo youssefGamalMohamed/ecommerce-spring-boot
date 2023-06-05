@@ -22,7 +22,7 @@ public interface ICategoryService {
 
     DeleteCategoryResponse deleteById(Long categoryId) throws IdNotFoundException;
 
-    GetAllCategoriesResponse findAll();
+    GetAllCategoriesResponse findAll(int page , int size);
 
 	GetCategoryByIdResponse findById(Long categoryId);
 	
