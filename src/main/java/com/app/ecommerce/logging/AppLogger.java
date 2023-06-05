@@ -2,8 +2,7 @@ package com.app.ecommerce.logging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -12,6 +11,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -35,6 +35,8 @@ public class AppLogger extends OncePerRequestFilter {
     @Autowired
     private LoggingUtils loggingUtils;
 
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -45,21 +47,21 @@ public class AppLogger extends OncePerRequestFilter {
         loggingUtils.logSeparator();
 
 
-        Map<String, Object> requestInformation = httpRequestResponseInterceptorUtils.getRequestInformationMap(request, requestWrapper);
-        String requestInformationJsonString = objectMapper.writeValueAsString(requestInformation);
-
-        log.info(
-                " METHOD = {}; REQUESTURI = {}; \n\n REQUEST = {}; ",
-                request.getMethod(), request.getRequestURI(), requestInformationJsonString
-        );
+        logRequest(request, requestWrapper);
 
         long startTime = System.currentTimeMillis();
         filterChain.doFilter(requestWrapper, responseWrapper);
         long timeTaken = System.currentTimeMillis() - startTime;
 
 
+        logResponse(response, responseWrapper, timeTaken);
 
 
+        loggingUtils.logSeparator();
+        responseWrapper.copyBodyToResponse();
+    }
+
+    public void logResponse(HttpServletResponse response, ContentCachingResponseWrapper responseWrapper, long timeTaken) throws JsonProcessingException {
         Map<String, Object> responseBodyMap = httpRequestResponseInterceptorUtils.getResponseInformationMap(response, responseWrapper);
         String responseBodyInformation = objectMapper.writeValueAsString(responseBodyMap);
 
@@ -67,16 +69,26 @@ public class AppLogger extends OncePerRequestFilter {
                 "\n\n RESPONSE = {}; \n\n TIME TAKEN = {} \n\n",
                     responseBodyInformation, timeTaken
         );
+    }
+    public void logResponse(HttpServletResponse response, ContentCachingResponseWrapper responseWrapper) throws JsonProcessingException {
+        Map<String, Object> responseBodyMap = httpRequestResponseInterceptorUtils.getResponseInformationMap(response, responseWrapper);
+        String responseBodyInformation = objectMapper.writeValueAsString(responseBodyMap);
 
-
-
-        loggingUtils.logSeparator();
-        responseWrapper.copyBodyToResponse();
+        log.info(
+                "\n\n RESPONSE = {}; \n\n",
+                responseBodyInformation
+        );
     }
 
+    public void logRequest(HttpServletRequest request, ContentCachingRequestWrapper requestWrapper) throws JsonProcessingException {
+        Map<String, Object> requestInformation = httpRequestResponseInterceptorUtils.getRequestInformationMap(request, requestWrapper);
+        String requestInformationJsonString = objectMapper.writeValueAsString(requestInformation);
 
-
-
+        log.info(
+                " METHOD = {}; REQUESTURI = {}; \n\n REQUEST = {}; ",
+                request.getMethod(), request.getRequestURI(), requestInformationJsonString
+        );
+    }
 
 
     @Pointcut("within(@org.springframework.stereotype.Service *)")

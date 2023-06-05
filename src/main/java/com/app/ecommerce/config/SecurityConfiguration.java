@@ -1,18 +1,23 @@
 package com.app.ecommerce.config;
 
 
+import com.app.ecommerce.logging.AppLogger;
 import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
 import com.app.ecommerce.security.filters.JwtAuthenticationFilter;
 import com.app.ecommerce.security.handler.CustomBearerTokenAccessDeniedHandler;
 import com.app.ecommerce.security.handler.CustomBearerTokenAuthenticationEntryPoint;
+import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -30,6 +35,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableMethodSecurity(
@@ -57,6 +63,8 @@ public class SecurityConfiguration {
     @Autowired
     private UserRepo repository;
 
+    @Autowired
+    private AppLogger appLogger;
 
     private  String[] whiteListEndPoints =
             {
@@ -124,6 +132,21 @@ public class SecurityConfiguration {
         ;
 
         return http.build();
+    }
+
+
+    // Invoke MyFilter before the security filter chain
+    // it gives my AppLogger an @Order which is the smallest value as possible to be the first filter
+    // in the chain to log request and response
+    // as an example : AppLogger : -101 --> JwtFilterChain assume order 1 --> .. and so on the
+    // remaining filter chains will be applied
+    @Bean
+    public FilterRegistrationBean<Filter> registerAppLoggerAsFirstFilterInFilterChain() {
+        FilterRegistrationBean<Filter> regBean= new FilterRegistrationBean<>();
+        regBean.setFilter(appLogger);
+        regBean.addUrlPatterns("/*");
+        regBean.setOrder(SecurityProperties.DEFAULT_FILTER_ORDER - 1);
+        return regBean;
     }
 }
 
