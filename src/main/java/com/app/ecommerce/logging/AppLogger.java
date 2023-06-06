@@ -11,6 +11,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,10 +21,18 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
 import java.util.*;
 
+
+// Invoke AppLogger Filter before the security filter chain
+// it gives my AppLogger an @Order which is the smallest value as possible to be the first filter ( negative id ) to be the first filter
+// before the spring security filters executed
+// in the chain to log request and response
+// as an example : AppLogger : -101 --> JwtFilterChain assume order 1 --> .. and so on the
+// remaining filter chains will be applied
 @Aspect
 @Component
 @Log4j2
 @AllArgsConstructor
+@Order(SecurityProperties.DEFAULT_FILTER_ORDER - 1)
 public class AppLogger extends OncePerRequestFilter {
 
     @Autowired

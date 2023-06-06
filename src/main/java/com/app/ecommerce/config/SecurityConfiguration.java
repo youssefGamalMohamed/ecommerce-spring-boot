@@ -63,9 +63,6 @@ public class SecurityConfiguration {
     @Autowired
     private UserRepo repository;
 
-    @Autowired
-    private AppLogger appLogger;
-
     private  String[] whiteListEndPoints =
             {
                 "/auth/register",
@@ -134,20 +131,6 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-
-    // Invoke MyFilter before the security filter chain
-    // it gives my AppLogger an @Order which is the smallest value as possible to be the first filter
-    // in the chain to log request and response
-    // as an example : AppLogger : -101 --> JwtFilterChain assume order 1 --> .. and so on the
-    // remaining filter chains will be applied
-    @Bean
-    public FilterRegistrationBean<Filter> registerAppLoggerAsFirstFilterInFilterChain() {
-        FilterRegistrationBean<Filter> regBean= new FilterRegistrationBean<>();
-        regBean.setFilter(appLogger);
-        regBean.addUrlPatterns("/*");
-        regBean.setOrder(SecurityProperties.DEFAULT_FILTER_ORDER - 1);
-        return regBean;
-    }
 }
 
 
