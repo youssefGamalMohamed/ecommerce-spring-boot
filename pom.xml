@@ -116,6 +116,16 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <!-- End of Converting Java Objects to JSON Strings -->
+
+
+        <!-- to Customize Logging of SQL Statements of Spring JPA -->
+        <dependency>
+            <groupId>com.github.gavlyukovskiy</groupId>
+            <artifactId>datasource-proxy-spring-boot-starter</artifactId>
+            <version>1.9.0</version>
+        </dependency>
+        <!-- End of Customize Logging of SQL Statements of Spring JPA -->
+
     </dependencies>
 
     <profiles>
