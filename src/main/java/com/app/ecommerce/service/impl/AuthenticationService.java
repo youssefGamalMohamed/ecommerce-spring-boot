@@ -15,6 +15,8 @@ import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
 import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
+import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
+import com.app.ecommerce.mq.activemq.sender.EmailQueueSender;
 import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
 import com.app.ecommerce.security.handler.CustomLogoutHandler;
@@ -27,9 +29,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -49,7 +49,8 @@ public class AuthenticationService implements IAuthenticationService {
 
     private final CustomLogoutHandler logoutHandler;
 
-
+    private final EmailQueueSender emailQueueSender;
+    
     public RegisterResponseBody register(RegisterRequestBody request) {
 
         if(userRepo.existsByEmail(request.getEmail()))
@@ -61,6 +62,16 @@ public class AuthenticationService implements IAuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
+        
+        // send message to EmailQueue to send to user email to great him/her
+        emailQueueSender.sendToQueue(
+                EmailQueueMessage.builder()
+                        .email(user.getEmail())
+                        .firstname(user.getFirstname())
+                        .lastname(user.getLastname())
+                        .build()
+        );
+        
         return RegisterResponseBody.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)

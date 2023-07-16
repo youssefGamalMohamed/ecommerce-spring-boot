@@ -1,7 +1,7 @@
 package com.app.ecommerce.mq.activemq.sender;
 
 
-import com.app.ecommerce.mq.activemq.message_queue_model.EmailQueueMessage;
+import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
