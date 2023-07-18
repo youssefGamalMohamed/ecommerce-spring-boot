@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
 @Getter
@@ -23,4 +26,15 @@ public class EmailConfiguration {
 
     @Value("${spring.mail.password}")
     private String password;
+
+
+    @Bean
+    public JavaMailSender getJavaMailSender() {
+        JavaMailSenderImpl mailSenderImpl = new JavaMailSenderImpl();
+        mailSenderImpl.setHost(host);
+        mailSenderImpl.setPort(port);
+        mailSenderImpl.setUsername(username);
+        mailSenderImpl.setPassword(password);
+        return mailSenderImpl;
+    }
 }

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 
 @Component
 public class UserFactory {
@@ -36,6 +38,7 @@ public class UserFactory {
         user.setEmail(registerRequestBody.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequestBody.getPassword()));
         user.setRole(registerRequestBody.getRole());
+        user.setCreatedAt(LocalDateTime.now());
 
         return user;
     }

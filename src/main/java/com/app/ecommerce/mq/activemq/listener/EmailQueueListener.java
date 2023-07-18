@@ -33,7 +33,7 @@ public class EmailQueueListener {
         TextMessage textMessage = (TextMessage) message;
         String payload = textMessage.getText();
         EmailQueueMessage emailQueueMessage = objectMapper.readValue(payload , EmailQueueMessage.class);
-        log.info("Received <" + emailQueueMessage + ">");
+        log.info("Received From Queue = " + emailQueue + " , Message = \n" + emailQueueMessage + "\n");
 
         greetingNewRegisteredUserEmailService.sendGreetingMessageToNewRegisteredUser(
                 GreetingNewRegisteredUserMessageDetails.builder()
