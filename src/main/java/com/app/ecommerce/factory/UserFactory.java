@@ -38,7 +38,7 @@ public class UserFactory {
         user.setEmail(registerRequestBody.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequestBody.getPassword()));
         user.setRole(registerRequestBody.getRole());
-        user.setCreatedAt(LocalDateTime.now());
+        //user.setCreatedAt(LocalDateTime.now());
 
         return user;
     }

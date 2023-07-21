@@ -4,6 +4,9 @@ import com.app.ecommerce.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,16 +17,16 @@ import java.util.Collection;
 import java.util.List;
 
 @SuperBuilder
-@Entity
-@Table(name = "User")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "User")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="user_type", discriminatorType = DiscriminatorType.STRING)
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,9 +43,6 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Token> tokens;
-
-    @Column
-    private LocalDateTime createdAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
