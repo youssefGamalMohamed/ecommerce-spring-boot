@@ -28,4 +28,13 @@ public class CustomerController implements ICustomerController {
                 customerService.findOrdersForCustomer(customerId)
         );
     }
+
+
+    @RolesAllowed({"ADMIN"})
+    @GetMapping("/customers")
+    public ResponseEntity<?> finAllCustomers() {
+        return ResponseEntity.ok(
+                customerService.findAllCustomers()
+        );
+    }
 }

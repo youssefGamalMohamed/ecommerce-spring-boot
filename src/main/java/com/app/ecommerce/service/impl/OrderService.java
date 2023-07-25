@@ -3,6 +3,7 @@ package com.app.ecommerce.service.impl;
 import java.time.LocalDateTime;
 
 import com.app.ecommerce.exception.type.EmailNotFoundException;
+import com.app.ecommerce.models.response.endpoints.GetCustomerResponse;
 import com.app.ecommerce.mq.activemq.model.InventoryQueueMessage;
 import com.app.ecommerce.mq.activemq.sender.InventoryQueueSender;
 import com.app.ecommerce.repository.UserRepo;
@@ -86,10 +87,22 @@ public class OrderService implements IOrderService {
 
 	@Override
 	public GetOrderByIdResponse findById(Long orderId) {
-		
+		Order order = orderRepo.findById(orderId).orElseThrow(() -> new IdNotFoundException("No Such Order With This Id , Id Not Found "));
+
 		return GetOrderByIdResponse.builder()
-				.order(
-						orderRepo.findById(orderId).orElseThrow(() -> new IdNotFoundException("No Such Order With This Id , Id Not Found "))
+				.id(order.getId())
+				.paymentType(order.getPaymentType())
+				.totalPrice(order.getTotalPrice())
+				.deliveryInfo(order.getDeliveryInfo())
+				.cart(order.getCart())
+				.customer(
+						GetCustomerResponse
+								.builder()
+								.id(order.getCustomer().getId())
+								.firstname(order.getCustomer().getFirstname())
+								.lastname(order.getCustomer().getLastname())
+								.email(order.getCustomer().getEmail())
+								.build()
 				)
 				.build();
 	}
