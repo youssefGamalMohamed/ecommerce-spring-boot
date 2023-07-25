@@ -18,8 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-
-public class Delivery {
+public class DeliveryInfo {
 	
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.NOT_MOVED_OUT_FROM_WAREHOUSE;

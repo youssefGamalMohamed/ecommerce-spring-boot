@@ -1,7 +1,6 @@
 package com.app.ecommerce.entity;
 
 
-import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.app.ecommerce.enums.PaymentType;
 import jakarta.persistence.AttributeOverride;
@@ -20,14 +19,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Table(name = "`order`")
 @Entity(name = "`order`")
-@Builder
+@SuperBuilder
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -50,18 +49,14 @@ public class Order extends BaseEntity {
 		  @AttributeOverride( name = "address", column = @Column(name = "delivery_address")),
 		  @AttributeOverride( name = "date", column = @Column(name = "delivery_date"))
 	})
-	private Delivery delivery;
+	private DeliveryInfo deliveryInfo;
 	
 	@OneToOne(mappedBy = "order" , cascade = CascadeType.ALL)
 	private Cart cart;
 	
-	
-	@Column
-	private LocalDateTime createdAt;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "customer_id")
-	@JsonIgnore
 	private Customer customer;
 	
 }

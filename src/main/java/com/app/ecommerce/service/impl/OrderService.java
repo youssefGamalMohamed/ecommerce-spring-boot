@@ -3,6 +3,8 @@ package com.app.ecommerce.service.impl;
 import java.time.LocalDateTime;
 
 import com.app.ecommerce.exception.type.EmailNotFoundException;
+import com.app.ecommerce.mq.activemq.model.InventoryQueueMessage;
+import com.app.ecommerce.mq.activemq.sender.InventoryQueueSender;
 import com.app.ecommerce.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.entity.Cart;
 import com.app.ecommerce.entity.Customer;
-import com.app.ecommerce.entity.Delivery;
+import com.app.ecommerce.entity.DeliveryInfo;
 import com.app.ecommerce.entity.Order;
 import com.app.ecommerce.enums.Status;
 import com.app.ecommerce.exception.type.IdNotFoundException;
@@ -34,7 +36,10 @@ public class OrderService implements IOrderService {
 		
 	@Autowired
 	private ICartService cartService;
-	
+
+	@Autowired
+	private InventoryQueueSender inventoryQueueSender;
+
 	@Override
 	public CreateNewOrderResponse createNewOrder(PostOrderRequestBody orderRequestBody) {
 
@@ -45,7 +50,7 @@ public class OrderService implements IOrderService {
 				.orElseThrow(() -> new EmailNotFoundException("Can Not Create Order Because Customer Email Not Exist"));
 		
 		
-		Delivery delivery = Delivery.builder()
+		DeliveryInfo deliveryInfo = DeliveryInfo.builder()
 				.status(Status.NOT_MOVED_OUT_FROM_WAREHOUSE)
 				.address(orderRequestBody.getDeliveryAddress())
 				.date(orderRequestBody.getDeliveryDate())
@@ -57,7 +62,7 @@ public class OrderService implements IOrderService {
 		Order order = Order.builder()
 				.customer(customer)
 				.totalPrice(orderRequestBody.getTotalPrice())
-				.delivery(delivery)
+				.deliveryInfo(deliveryInfo)
 				.cart(cart)
 				.paymentType(orderRequestBody.getPaymentType())
 				.createdAt(LocalDateTime.now())
@@ -65,7 +70,15 @@ public class OrderService implements IOrderService {
 				
 		cart.setOrder(order);
 		orderRepo.save(order);
-		
+
+		// send to order queue for process it from inventory
+		// then inventory will reply to me with the response for this order in other queue named NewOrderResponseQueueSender
+		inventoryQueueSender.sendToQueue(
+				InventoryQueueMessage.builder()
+						.order(order)
+						.build()
+		);
+
 		return CreateNewOrderResponse.builder()
 				.id(order.getId())
 				.build();
@@ -88,10 +101,19 @@ public class OrderService implements IOrderService {
 				.orderStatus(
 							orderRepo.findById(orderId)
 							.orElseThrow(() -> new IdNotFoundException("No Such Order , Id Not Found"))
-							.getDelivery()
+							.getDeliveryInfo()
 							.getStatus()
 						)
 				.build();
+	}
+
+	@Override
+	public void updateOrderStatus(Long orderId, Status orderStatus) {
+		Order order = orderRepo.findById(orderId).get();
+
+		order.getDeliveryInfo().setStatus(orderStatus);
+
+		orderRepo.save(order);
 	}
 
 }

@@ -30,11 +30,11 @@ public class PostOrderRequestBody {
 	@Min(2)
 	private double totalPrice;
 
-	@NotBlank(message = "Delivery Date Should Not Be Null or Empty")
+	@NotBlank(message = "DeliveryInfo Date Should Not Be Null or Empty")
 	private String deliveryDate;
 
 
-	@NotBlank(message = "Delivery Address Should Not Be Null or Empty")
+	@NotBlank(message = "DeliveryInfo Address Should Not Be Null or Empty")
 	private String deliveryAddress;
 
 

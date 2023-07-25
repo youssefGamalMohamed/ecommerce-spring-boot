@@ -1,6 +1,7 @@
 package com.app.ecommerce.entity;
 
 import com.app.ecommerce.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -36,11 +37,15 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(unique = true)
     private String email;
+
+    @JsonIgnore
     private String password;
 
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Token> tokens;
 

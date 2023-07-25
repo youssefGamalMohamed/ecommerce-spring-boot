@@ -1,7 +1,7 @@
 package com.app.ecommerce.mq.activemq.sender;
 
 
-import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
+import com.app.ecommerce.mq.activemq.model.InventoryQueueMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
@@ -13,15 +13,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Log4j2
-public class EmailQueueSender {
+public class InventoryQueueSender {
 
-    @Value("${activemq.EmailQueue}")
-    private String emailQueue;
+    @Value("${activemq.InventoryQueue}")
+    private String inventoryQueue;
 
     @Autowired
     private DefaultQueueSender defaultQueueSender;
 
-    public boolean sendToQueue(EmailQueueMessage emailQueueMessage) {
-        return defaultQueueSender.sendToQueue(emailQueue , emailQueueMessage);
+    public boolean sendToQueue(InventoryQueueMessage inventoryQueueMessage) {
+        return defaultQueueSender.sendToQueue(inventoryQueue , inventoryQueueMessage);
     }
 }
