@@ -3,6 +3,7 @@ package com.app.ecommerce.service.impl;
 import com.app.ecommerce.entity.Customer;
 import com.app.ecommerce.entity.Order;
 import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.models.response.endpoints.GetCustomerOrdersResponseBody;
 import com.app.ecommerce.repository.OrderRepo;
 import com.app.ecommerce.repository.UserRepo;
 import com.app.ecommerce.service.framework.ICustomerService;
@@ -18,10 +19,12 @@ public class CustomerService implements ICustomerService {
     private UserRepo userRepo;
 
     @Override
-    public List<Order> findOrdersForCustomer(Long customerId) {
+    public GetCustomerOrdersResponseBody findOrdersForCustomer(Long customerId) {
         Customer customer = (Customer) userRepo.findById(customerId)
                 .orElseThrow(() -> new IdNotFoundException("Can Not Retrieve Orders for Customer , Id Not Found"));
 
-        return customer.getOrders();
+        return GetCustomerOrdersResponseBody.builder()
+                .orders(customer.getOrders())
+                .build();
     }
 }
