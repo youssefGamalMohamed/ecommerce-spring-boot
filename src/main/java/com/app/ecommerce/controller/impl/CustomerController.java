@@ -32,6 +32,7 @@ public class CustomerController implements ICustomerController {
 
     @RolesAllowed({"ADMIN"})
     @GetMapping("/customers")
+    @Override
     public ResponseEntity<?> finAllCustomers() {
         return ResponseEntity.ok(
                 customerService.findAllCustomers()

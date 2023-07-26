@@ -1,6 +1,7 @@
 package com.app.ecommerce.controller.impl;
 
 import com.app.ecommerce.controller.framework.IOrderController;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class OrderController implements IOrderController {
 	@RolesAllowed({"USER"})
 	@PostMapping("/orders")
 	@Override
-	public ResponseEntity<?> createNewOrder(@RequestBody PostOrderRequestBody orderRequestBody) {
+	public ResponseEntity<?> createNewOrder(@RequestBody PostOrderRequestBody orderRequestBody) throws JsonProcessingException {
 		System.out.println(orderRequestBody);
 		return new ResponseEntity<>(
 					orderService.createNewOrder(orderRequestBody) ,

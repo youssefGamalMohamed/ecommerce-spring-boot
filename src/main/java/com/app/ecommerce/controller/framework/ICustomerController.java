@@ -2,6 +2,7 @@ package com.app.ecommerce.controller.framework;
 
 import com.app.ecommerce.models.request.PostOrderRequestBody;
 import com.app.ecommerce.models.response.endpoints.CreateNewOrderResponse;
+import com.app.ecommerce.models.response.endpoints.GetAllCustomersResponse;
 import com.app.ecommerce.models.response.endpoints.GetCustomerOrdersResponseBody;
 import com.app.ecommerce.models.response.endpoints.GetOrderByIdResponse;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
@@ -45,4 +46,20 @@ public interface ICustomerController {
     )
     ResponseEntity<?> finAllOrdersForCustomerById(@PathVariable("id") Long customerId);
 
+
+
+    @Operation(summary = "Find All Customers , this endpoint accessed for ( Customer )")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Customers Retrieved Successfully",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = GetAllCustomersResponse.class)
+                            )
+                    }
+            )
+    }
+    )
+    ResponseEntity<?> finAllCustomers();
 }

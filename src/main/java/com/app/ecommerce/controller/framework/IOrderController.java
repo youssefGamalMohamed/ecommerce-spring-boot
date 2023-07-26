@@ -4,6 +4,7 @@ import com.app.ecommerce.models.request.PostOrderRequestBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
 import com.app.ecommerce.models.response.http.NotFoundResponse;
 import com.app.ecommerce.models.response.endpoints.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -47,7 +48,7 @@ public interface IOrderController {
             )
     }
     )
-    ResponseEntity<?> createNewOrder(@Valid @RequestBody PostOrderRequestBody orderRequestBody);
+    ResponseEntity<?> createNewOrder(@Valid @RequestBody PostOrderRequestBody orderRequestBody) throws JsonProcessingException;
 
 
     @Operation(summary = "Find Order By Id , this endpoint accessed for ( Admin , User )")

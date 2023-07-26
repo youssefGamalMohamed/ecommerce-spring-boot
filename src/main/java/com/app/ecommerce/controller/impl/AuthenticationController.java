@@ -1,9 +1,11 @@
 package com.app.ecommerce.controller.impl;
 
 import com.app.ecommerce.controller.framework.IAuthenticationController;
+import com.app.ecommerce.exception.type.JsonParsingException;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.service.impl.AuthenticationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -25,7 +27,7 @@ public class AuthenticationController implements IAuthenticationController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestBody registerRequestBody) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestBody registerRequestBody) throws JsonParsingException {
         return ResponseEntity.ok(service.register(registerRequestBody));
     }
 

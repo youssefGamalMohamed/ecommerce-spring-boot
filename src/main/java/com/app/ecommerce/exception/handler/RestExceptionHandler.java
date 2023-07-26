@@ -3,6 +3,12 @@ package com.app.ecommerce.exception.handler;
 
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.models.response.http.*;
+import jakarta.jms.JMSException;
+import jakarta.persistence.PersistenceException;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Log4j2
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
@@ -100,4 +107,29 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleAuthenticationExceptionException(AuthenticationException exception) {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
+
+    @ExceptionHandler(value = JMSException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ResponseEntity<?> handleJMSException(JMSException exception) {
+        return new ResponseEntity<>(
+                ServiceUnavailableResponse.builder()
+                        .message("Service is Currently Unavailable According to Some Issues in MQ")
+                        .build(),
+                HttpStatus.SERVICE_UNAVAILABLE
+        );
+    }
+
+    @ExceptionHandler(value = { InvalidDataAccessResourceUsageException.class })
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ResponseEntity<?> handleFailedDatabaseConnectionException(InvalidDataAccessResourceUsageException exception) {
+        log.error("The Database Deleted or Table of Database Deleted , Check DB and Tables");
+        return new ResponseEntity<>(
+                ServiceUnavailableResponse.builder()
+                        .message("Service is Currently Unavailable According to Some Issues in Database")
+                        .build(),
+                HttpStatus.SERVICE_UNAVAILABLE
+        );
+    }
+
 }

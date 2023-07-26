@@ -7,6 +7,7 @@ import com.app.ecommerce.models.response.endpoints.GetCustomerResponse;
 import com.app.ecommerce.mq.activemq.model.InventoryQueueMessage;
 import com.app.ecommerce.mq.activemq.sender.InventoryQueueSender;
 import com.app.ecommerce.repository.UserRepo;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,7 +43,7 @@ public class OrderService implements IOrderService {
 	private InventoryQueueSender inventoryQueueSender;
 
 	@Override
-	public CreateNewOrderResponse createNewOrder(PostOrderRequestBody orderRequestBody) {
+	public CreateNewOrderResponse createNewOrder(PostOrderRequestBody orderRequestBody) throws JsonProcessingException {
 
 		String customerEmail = ( (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal() ).getUsername();
 

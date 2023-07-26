@@ -1,6 +1,7 @@
 package com.app.ecommerce.mq.activemq.sender;
 
 
+import com.app.ecommerce.exception.type.JsonParsingException;
 import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +22,7 @@ public class EmailQueueSender {
     @Autowired
     private DefaultQueueSender defaultQueueSender;
 
-    public boolean sendToQueue(EmailQueueMessage emailQueueMessage) {
+    public boolean sendToQueue(EmailQueueMessage emailQueueMessage) throws JsonParsingException {
         return defaultQueueSender.sendToQueue(emailQueue , emailQueueMessage);
     }
 }

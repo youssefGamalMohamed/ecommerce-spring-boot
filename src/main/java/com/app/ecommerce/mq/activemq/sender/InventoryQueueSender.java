@@ -21,7 +21,7 @@ public class InventoryQueueSender {
     @Autowired
     private DefaultQueueSender defaultQueueSender;
 
-    public boolean sendToQueue(InventoryQueueMessage inventoryQueueMessage) {
+    public boolean sendToQueue(InventoryQueueMessage inventoryQueueMessage) throws JsonProcessingException,JmsException {
         return defaultQueueSender.sendToQueue(inventoryQueue , inventoryQueueMessage);
     }
 }

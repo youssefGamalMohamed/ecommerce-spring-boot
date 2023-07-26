@@ -7,6 +7,7 @@ import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +46,7 @@ public interface IAuthenticationController {
                     )
             }
     )
-    ResponseEntity<?> register(@Valid @RequestBody RegisterRequestBody registerRequestBody);
+    ResponseEntity<?> register(@Valid @RequestBody RegisterRequestBody registerRequestBody) throws JsonProcessingException;
 
 
     @Operation(summary = "Login with UserName and Password")

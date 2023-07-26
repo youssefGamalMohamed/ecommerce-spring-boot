@@ -2,6 +2,7 @@ package com.app.ecommerce.mq.activemq.listener;
 
 import com.app.ecommerce.email.model.GreetingNewRegisteredUserMessageDetails;
 import com.app.ecommerce.email.service.GreetingNewRegisteredUserEmailService;
+import com.app.ecommerce.exception.type.JsonParsingException;
 import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,10 +30,15 @@ public class EmailQueueListener {
     private GreetingNewRegisteredUserEmailService greetingNewRegisteredUserEmailService;
 
     @JmsListener(destination = "EmailQueue")
-    public void receiveMessage(Message message) throws JMSException, JsonProcessingException {
+    public void receiveMessage(Message message) throws JMSException, JsonParsingException {
         TextMessage textMessage = (TextMessage) message;
         String payload = textMessage.getText();
-        EmailQueueMessage emailQueueMessage = objectMapper.readValue(payload , EmailQueueMessage.class);
+        EmailQueueMessage emailQueueMessage = null;
+        try {
+            emailQueueMessage = objectMapper.readValue(payload , EmailQueueMessage.class);
+        } catch (JsonProcessingException e) {
+            throw new JsonParsingException("Can not Parse JSON String = " + payload + " to Object of Type " + emailQueueMessage.getClass().getSimpleName());
+        }
         log.info("Received From Queue = " + emailQueue + " , Message = \n" + emailQueueMessage + "\n");
 
         greetingNewRegisteredUserEmailService.sendGreetingMessageToNewRegisteredUser(

@@ -7,6 +7,7 @@ import com.app.ecommerce.entity.Token;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.TokenType;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.exception.type.JsonParsingException;
 import com.app.ecommerce.exception.type.MissingRefreshTokenException;
 import com.app.ecommerce.factory.UserFactory;
 import com.app.ecommerce.models.request.LoginRequestBody;
@@ -21,6 +22,7 @@ import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
 import com.app.ecommerce.security.handler.CustomLogoutHandler;
 import com.app.ecommerce.service.framework.IAuthenticationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +53,7 @@ public class AuthenticationService implements IAuthenticationService {
 
     private final EmailQueueSender emailQueueSender;
     
-    public RegisterResponseBody register(RegisterRequestBody request) {
+    public RegisterResponseBody register(RegisterRequestBody request) throws JsonParsingException {
 
         if(userRepo.existsByEmail(request.getEmail()))
             throw new DuplicatedUniqueColumnValueException("Email Already Exist Before , Try another one");
