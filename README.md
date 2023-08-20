@@ -30,4 +30,6 @@ Backend E-commerce Application that enables Customers to buy products online and
 	  . Change Mail Host from "spring.mail.port" to your port Email Provider 
 	  . Change your e-commerce organization email to from properties file from "ecommerce.email" to your organization email 
 
-	  
+
+### Postman Collection ###
+  - Download Postman Collection from: [here](https://github.com/youssefGamalMohamed/Ecommerce-Spring-Boot-App/blob/main/Ecommerce.postman_collection.json)
