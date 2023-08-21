@@ -49,6 +49,9 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     private List<Token> tokens;
 
+
+    private boolean isEnabled = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -81,6 +84,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.isEnabled;
     }
 }

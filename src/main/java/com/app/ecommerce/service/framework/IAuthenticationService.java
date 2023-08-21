@@ -1,6 +1,7 @@
 package com.app.ecommerce.service.framework;
 
 import com.app.ecommerce.entity.User;
+import com.app.ecommerce.enums.TokenType;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
@@ -20,7 +21,7 @@ public interface IAuthenticationService {
     LoginResponseBody authenticate(LoginRequestBody request);
 
 
-    void saveUserToken(User user, String jwtToken);
+    void saveUserToken(User user, String jwtToken , TokenType tokenType);
 
     void revokeAllUserTokens(User user);
 
@@ -30,5 +31,5 @@ public interface IAuthenticationService {
     LogoutResponseBody logout();
 
 
-
+    String verifyEmailByVerificationToken(String verificationToken);
 }

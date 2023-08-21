@@ -1,7 +1,7 @@
 package com.app.ecommerce.mq.activemq.listener;
 
-import com.app.ecommerce.email.model.GreetingNewRegisteredUserMessageDetails;
-import com.app.ecommerce.email.service.GreetingNewRegisteredUserEmailService;
+import com.app.ecommerce.email.model.VerificationRegistrationMessageDetails;
+import com.app.ecommerce.email.service.VerificationRegistrationEmailService;
 import com.app.ecommerce.exception.type.JsonParsingException;
 import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,11 +9,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
+import jakarta.mail.MessagingException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
+
+import java.io.UnsupportedEncodingException;
 
 @Component
 @Log4j2
@@ -27,10 +30,10 @@ public class EmailQueueListener {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private GreetingNewRegisteredUserEmailService greetingNewRegisteredUserEmailService;
+    private VerificationRegistrationEmailService verificationRegistrationEmailService;
 
     @JmsListener(destination = "EmailQueue")
-    public void receiveMessage(Message message) throws JMSException, JsonParsingException {
+    public void receiveMessage(Message message) throws JMSException, JsonParsingException, MessagingException, UnsupportedEncodingException {
         TextMessage textMessage = (TextMessage) message;
         String payload = textMessage.getText();
         EmailQueueMessage emailQueueMessage = null;
@@ -41,11 +44,12 @@ public class EmailQueueListener {
         }
         log.info("Received From Queue = " + emailQueue + " , Message = \n" + emailQueueMessage + "\n");
 
-        greetingNewRegisteredUserEmailService.sendGreetingMessageToNewRegisteredUser(
-                GreetingNewRegisteredUserMessageDetails.builder()
+        verificationRegistrationEmailService.sendVerificationEmailToRegisteredUser(
+                VerificationRegistrationMessageDetails.builder()
                         .email(emailQueueMessage.getEmail())
                         .firstName(emailQueueMessage.getFirstname())
                         .lastName(emailQueueMessage.getLastname())
+                        .verificationToken(emailQueueMessage.getVerificationToken())
                         .build()
         );
     }

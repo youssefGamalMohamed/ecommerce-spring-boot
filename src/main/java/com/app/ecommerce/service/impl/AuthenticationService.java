@@ -32,6 +32,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -46,24 +47,22 @@ public class AuthenticationService implements IAuthenticationService {
     private final TokenRepo tokenRepo;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
     private final UserFactory userFactory;
 
     private final CustomLogoutHandler logoutHandler;
 
     private final EmailQueueSender emailQueueSender;
     
-    public RegisterResponseBody register(RegisterRequestBody request) throws JsonParsingException {
+    public RegisterResponseBody register(RegisterRequestBody registerRequestBody) throws JsonParsingException {
 
-        if(userRepo.existsByEmail(request.getEmail()))
+        if(userRepo.existsByEmail(registerRequestBody.getEmail()))
             throw new DuplicatedUniqueColumnValueException("Email Already Exist Before , Try another one");
 
-        var user = userFactory.getUser(request);
+        var user = userFactory.getUser(registerRequestBody);
 
         var savedUser = userRepo.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, jwtToken);
+        var verificationToken = jwtService.generateVerificationToken(user);
+        saveUserToken(savedUser, verificationToken , TokenType.VERIFICATION);
         
         // send message to EmailQueue to send to user email to great him/her
         emailQueueSender.sendToQueue(
@@ -71,12 +70,13 @@ public class AuthenticationService implements IAuthenticationService {
                         .email(user.getEmail())
                         .firstname(user.getFirstname())
                         .lastname(user.getLastname())
+                        .verificationToken(verificationToken)
                         .build()
         );
-        
+
         return RegisterResponseBody.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
+                .accessToken("")
+                .refreshToken("")
                 .build();
     }
 
@@ -92,18 +92,18 @@ public class AuthenticationService implements IAuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
+        saveUserToken(user, jwtToken , TokenType.BEARER);
         return LoginResponseBody.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public void saveUserToken(User user, String jwtToken) {
+    public void saveUserToken(User user, String jwtToken , TokenType tokenType) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
-                .tokenType(TokenType.BEARER)
+                .tokenType(tokenType)
                 .expired(false)
                 .revoked(false)
                 .build();
@@ -149,7 +149,7 @@ public class AuthenticationService implements IAuthenticationService {
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
+                saveUserToken(user, accessToken , TokenType.BEARER);
                 return RefreshTokenResponseBody.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
@@ -174,5 +174,25 @@ public class AuthenticationService implements IAuthenticationService {
         return LogoutResponseBody.builder()
                 .message("Logout Done Successfully")
                 .build();
+    }
+
+    @Override
+    public String verifyEmailByVerificationToken(String verificationToken) {
+        var verificationTokenFromDB = tokenRepo.findByToken(verificationToken);
+        if(!verificationTokenFromDB.isPresent()) {
+            return "This Verification Token Not in DB";
+        }
+        if(jwtService.isTokenExpired(verificationTokenFromDB.get().getToken())) {
+            return "verification token expired";
+        }
+
+        User user = verificationTokenFromDB.get().getUser();
+        if(user.isEnabled()) {
+            return "User Account Activated Before";
+        }
+        user.setEnabled(true);
+        userRepo.save(user);
+
+        return "Activated Successfully";
     }
 }

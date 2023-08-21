@@ -7,8 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class GreetingNewRegisteredUserMessageDetails {
+public class VerificationRegistrationMessageDetails {
     private String email;
     private String firstName;
     private String lastName;
+    private String verificationToken;
 }

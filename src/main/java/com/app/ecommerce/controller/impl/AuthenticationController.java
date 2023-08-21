@@ -5,16 +5,12 @@ import com.app.ecommerce.exception.type.JsonParsingException;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.service.impl.AuthenticationService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -46,5 +42,8 @@ public class AuthenticationController implements IAuthenticationController {
         return ResponseEntity.ok(service.logout());
     }
 
-
+    @GetMapping("/verify-registration/{token}")
+    public ResponseEntity<String> verifyRegisteredAccount(@PathVariable(value = "token") String verificationToken) {
+        return ResponseEntity.ok(service.verifyEmailByVerificationToken(verificationToken));
+    }
 }

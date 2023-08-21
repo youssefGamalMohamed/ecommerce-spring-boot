@@ -16,4 +16,5 @@ public class EmailQueueMessage {
 
     private String email;
 
+    private String verificationToken;
 }
