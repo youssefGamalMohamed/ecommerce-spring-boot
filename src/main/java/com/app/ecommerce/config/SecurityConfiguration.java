@@ -69,6 +69,8 @@ public class SecurityConfiguration {
                 "/auth/login",
                 "/auth/refresh-token",
                 "/auth/verify-registration/**",
+                "/auth/forget-password/**",
+                "/auth/reset-password",
                 "/swagger-resources",
                 "/swagger-resources/**",
                 "/configuration/ui",

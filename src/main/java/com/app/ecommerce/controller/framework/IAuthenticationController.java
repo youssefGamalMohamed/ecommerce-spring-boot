@@ -1,7 +1,10 @@
 package com.app.ecommerce.controller.framework;
 
+import com.app.ecommerce.exception.type.JsonParsingException;
+import com.app.ecommerce.models.request.ForgetPasswordRequestBody;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
+import com.app.ecommerce.models.request.ResetPasswordRequestBody;
 import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
@@ -18,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.io.IOException;
 
@@ -111,4 +115,11 @@ public interface IAuthenticationController {
             }
     )
     ResponseEntity<?> logout( HttpServletRequest request, HttpServletResponse response );
+
+
+    ResponseEntity<?> forgetPassword(@RequestBody ForgetPasswordRequestBody forgetPasswordRequestBody) throws JsonParsingException;
+
+
+    ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestBody resetPasswordRequestBody);
+
 }

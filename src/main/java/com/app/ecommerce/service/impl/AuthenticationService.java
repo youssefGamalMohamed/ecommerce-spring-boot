@@ -10,6 +10,7 @@ import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.JsonParsingException;
 import com.app.ecommerce.exception.type.MissingRefreshTokenException;
 import com.app.ecommerce.factory.UserFactory;
+import com.app.ecommerce.models.request.ForgetPasswordRequestBody;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
@@ -17,7 +18,9 @@ import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
 import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
+import com.app.ecommerce.mq.activemq.model.ForgetPasswordQueueMessage;
 import com.app.ecommerce.mq.activemq.sender.EmailQueueSender;
+import com.app.ecommerce.mq.activemq.sender.ForgetPasswordQueueSender;
 import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
 import com.app.ecommerce.security.handler.CustomLogoutHandler;
@@ -26,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -33,6 +37,7 @@ import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -52,7 +57,15 @@ public class AuthenticationService implements IAuthenticationService {
     private final CustomLogoutHandler logoutHandler;
 
     private final EmailQueueSender emailQueueSender;
-    
+
+    private final ForgetPasswordQueueSender forgetPasswordQueueSender;
+
+    private final UserDetailsService userDetailsService;
+
+
+
+    private final PasswordEncoder passwordEncoder;
+
     public RegisterResponseBody register(RegisterRequestBody registerRequestBody) throws JsonParsingException {
 
         if(userRepo.existsByEmail(registerRequestBody.getEmail()))
@@ -179,10 +192,12 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     public String verifyEmailByVerificationToken(String verificationToken) {
         var verificationTokenFromDB = tokenRepo.findByToken(verificationToken);
-        if(!verificationTokenFromDB.isPresent()) {
+        if(verificationTokenFromDB.isEmpty()) {
             return "This Verification Token Not in DB";
         }
-        if(jwtService.isTokenExpired(verificationTokenFromDB.get().getToken())) {
+        if(jwtService.isTokenExpired(verificationTokenFromDB.get().getToken()) || verificationTokenFromDB.get().isExpired()
+                || verificationTokenFromDB.get().isRevoked()
+                ) {
             return "verification token expired";
         }
 
@@ -193,6 +208,58 @@ public class AuthenticationService implements IAuthenticationService {
         user.setEnabled(true);
         userRepo.save(user);
 
+        verificationTokenFromDB.get().setExpired(true);
+        verificationTokenFromDB.get().setRevoked(true);
+        tokenRepo.save(verificationTokenFromDB.get());
+
         return "Activated Successfully";
     }
+
+    @Override
+    public boolean forgetPassword(ForgetPasswordRequestBody forgetPasswordRequestBody) throws JsonParsingException {
+        var user = userRepo.findByEmail(forgetPasswordRequestBody.getEmail())
+                .orElseThrow();
+        var userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        var resetPasswordToken = jwtService.generateResetPasswordToken(userDetails);
+        saveUserToken(user , resetPasswordToken , TokenType.RESET);
+        forgetPasswordQueueSender.sendToQueue(
+                ForgetPasswordQueueMessage.builder()
+                        .firstname(user.getFirstname())
+                        .lastname(user.getLastname())
+                        .email(user.getEmail())
+                        .forgetPasswordToken(resetPasswordToken)
+                        .build()
+        );
+        return true;
+    }
+
+    @Override
+    public String resetPassword(String resetPasswordToken, String newPassword) {
+        if(jwtService.isTokenExpired(resetPasswordToken))
+            return "reset password token are not valid";
+
+        var resetPasswordTokenFromDB = tokenRepo.findByToken(resetPasswordToken);
+        if(resetPasswordTokenFromDB.isEmpty())
+            return "this reset token is not exist in the system";
+
+        if(resetPasswordTokenFromDB.get().isExpired() || resetPasswordTokenFromDB.get().isRevoked())
+            return "this reset token are expired or revoked";
+
+        var username = jwtService.extractUsername(resetPasswordToken);
+        var user = userRepo.findByEmail(username);
+
+        if(user.isEmpty())
+            return "Failed , This Reset Password does not belong to any user";
+
+        user.get().setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user.get());
+
+        resetPasswordTokenFromDB.get().setRevoked(true);
+        resetPasswordTokenFromDB.get().setExpired(true);
+        tokenRepo.save(resetPasswordTokenFromDB.get());
+
+        return "Password Reset Successfully";
+    }
+
+
 }

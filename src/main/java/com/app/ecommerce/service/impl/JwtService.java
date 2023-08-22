@@ -28,6 +28,9 @@ public class JwtService implements IJwtService {
     @Value("${application.security.jwt.verification-token.expiration}")
     private long verificationTokenExpiration;
 
+    @Value("${application.security.jwt.reset-password-token.expiration}")
+    private long resetPasswordTokenExpiration;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -60,6 +63,11 @@ public class JwtService implements IJwtService {
         return buildToken(new HashMap<>(), userDetails, verificationTokenExpiration);
     }
 
+    public String generateResetPasswordToken(
+            UserDetails userDetails
+    ) {
+        return buildToken(new HashMap<>(), userDetails, resetPasswordTokenExpiration);
+    }
 
     public String buildToken(
             Map<String, Object> extraClaims,

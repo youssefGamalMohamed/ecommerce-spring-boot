@@ -2,6 +2,8 @@ package com.app.ecommerce.service.framework;
 
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.TokenType;
+import com.app.ecommerce.exception.type.JsonParsingException;
+import com.app.ecommerce.models.request.ForgetPasswordRequestBody;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
@@ -32,4 +34,9 @@ public interface IAuthenticationService {
 
 
     String verifyEmailByVerificationToken(String verificationToken);
+
+
+    boolean forgetPassword(ForgetPasswordRequestBody forgetPasswordRequestBody) throws JsonParsingException;
+
+    String resetPassword(String resetPasswordToken, String newPassword);
 }
