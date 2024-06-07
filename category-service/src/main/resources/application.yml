@@ -22,6 +22,8 @@ logging:
     org:
       springframework:
         security: trace
+      zalando:
+        logbook: trace
 
 
 # security
