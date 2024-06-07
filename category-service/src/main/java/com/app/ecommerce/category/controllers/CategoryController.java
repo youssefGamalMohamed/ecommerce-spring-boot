@@ -40,8 +40,9 @@ public class CategoryController {
     }
 
     @GetMapping("/api/v1/categories")
-    public ResponseEntity<?> findAll() {
-        List<Category> categories = categoryService.findAll();
+    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
+        List<Category> categories = categoryService.findAll(page,size);
         Collection<CategoryDto> responseBody = CategoryMapper.toDto(categories);
         log.info("findAll() : Response Category Dto : {}", responseBody);
         return ResponseEntity.ok(responseBody);

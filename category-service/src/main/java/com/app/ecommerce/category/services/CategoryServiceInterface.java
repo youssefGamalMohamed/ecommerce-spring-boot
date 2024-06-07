@@ -13,7 +13,7 @@ public interface CategoryServiceInterface {
 
     void deleteById(Long categoryId) throws NoSuchElementException;
 
-    List<Category> findAll();
+    List<Category> findAll(int page, int size);
 
     Category findById(Long categoryId);
 

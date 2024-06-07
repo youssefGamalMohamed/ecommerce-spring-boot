@@ -5,6 +5,8 @@ import com.app.ecommerce.category.entities.Product;
 import com.app.ecommerce.category.repos.CategoryRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +33,9 @@ public class CategoryServiceImpl implements CategoryServiceInterface {
     }
 
     @Override
-    public List<Category> findAll() {
-        return categoryRepo.findAll();
+    public List<Category> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return categoryRepo.findAll(pageable).getContent();
     }
 
     @Override
