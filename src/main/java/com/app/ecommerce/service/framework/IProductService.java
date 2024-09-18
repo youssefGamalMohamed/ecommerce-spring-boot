@@ -1,21 +1,18 @@
 package com.app.ecommerce.service.framework;
 
-import com.app.ecommerce.models.request.PostProductRequestBody;
-import com.app.ecommerce.models.request.PutProductRequestBody;
-import com.app.ecommerce.models.response.endpoints.AddNewProductResponse;
-import com.app.ecommerce.models.response.endpoints.DeleteProductByIdResponse;
-import com.app.ecommerce.models.response.endpoints.GetAllProductsByCategoryNameResponse;
-import com.app.ecommerce.models.response.endpoints.UpdateProductResponse;
+import java.util.Set;
+
+import com.app.ecommerce.entity.Product;
 
 
 public interface IProductService {
 
-    AddNewProductResponse addNewProduct(PostProductRequestBody productDTO);
+    Product save(Product productDTO);
 
-    GetAllProductsByCategoryNameResponse findProductsByCategoryName(String categoryName);
+    Set<Product> findProductsByCategoryName(String categoryName);
     
-    UpdateProductResponse updateProductById(Long productId , PutProductRequestBody updatedProductRequestBody);
+    Product updateProductById(Long productId , Product updatedProductRequestBody);
 
-    DeleteProductByIdResponse deleteProductById(Long productId);
+    void deleteProductById(Long productId);
 
 }

@@ -75,22 +75,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = DuplicatedUniqueColumnValueException.class)
     public ResponseEntity<?> handleDuplicatedUniqueValueException(DuplicatedUniqueColumnValueException exception) {
     	return new ResponseEntity<>(
-    				ConflictResponse.builder()
-    				.message(exception.getMessage())
-    				.build()
-    				 , HttpStatus.CONFLICT
-    			
+    				 HttpStatus.CONFLICT
     			);
     }
 
     @ExceptionHandler(value = NoSuchElementException.class)
     public ResponseEntity<?> handleNoSuchElementException(NoSuchElementException exception) {
     	return new ResponseEntity<>(
-    				NotFoundResponse.builder()
-    				.message(exception.getMessage())
-    				.build()
-    				 , HttpStatus.NOT_FOUND
-    			
+    				HttpStatus.NOT_FOUND
     			);
     }
 
@@ -113,9 +105,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ResponseEntity<?> handleJMSException(JMSException exception) {
         return new ResponseEntity<>(
-                ServiceUnavailableResponse.builder()
-                        .message("Service is Currently Unavailable According to Some Issues in MQ")
-                        .build(),
                 HttpStatus.SERVICE_UNAVAILABLE
         );
     }
@@ -125,9 +114,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleFailedDatabaseConnectionException(InvalidDataAccessResourceUsageException exception) {
         log.error("The Database Deleted or Table of Database Deleted , Check DB and Tables");
         return new ResponseEntity<>(
-                ServiceUnavailableResponse.builder()
-                        .message("Service is Currently Unavailable According to Some Issues in Database")
-                        .build(),
                 HttpStatus.SERVICE_UNAVAILABLE
         );
     }

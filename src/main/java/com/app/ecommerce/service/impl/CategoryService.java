@@ -6,24 +6,17 @@ import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.exception.type.NameNotFoundException;
-import com.app.ecommerce.models.request.PostCategoryRequestBody;
-import com.app.ecommerce.models.request.PutCategoryRequestBody;
-import com.app.ecommerce.models.response.endpoints.AddNewCategoryResponse;
-import com.app.ecommerce.models.response.endpoints.DeleteCategoryResponse;
-import com.app.ecommerce.models.response.endpoints.GetAllCategoriesResponse;
-import com.app.ecommerce.models.response.endpoints.GetCategoryByIdResponse;
-import com.app.ecommerce.models.response.endpoints.UpdateCategoryResponse;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.service.framework.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Iterator;
+
+import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,27 +27,21 @@ public class CategoryService implements ICategoryService {
 
 
     @Override
-    public AddNewCategoryResponse add(PostCategoryRequestBody categoryRequestBody) throws DuplicatedUniqueColumnValueException {
-    	if(categoryRepo.findByName(categoryRequestBody.getName()).isPresent())
+    public Category save(Category category) throws DuplicatedUniqueColumnValueException {
+    	if(categoryRepo.findByName(category.getName()).isPresent())
     		throw new DuplicatedUniqueColumnValueException("Category Name Already Exist" +
     					"and Should Not Be Duplicated"
     				);
     	
-        Category category = categoryRepo.save(
+        return categoryRepo.save(
         			Category.builder()
-        			.name(categoryRequestBody.getName())
+        			.name(category.getName())
         			.build()
         		);
-          
-        categoryRepo.save(category);
-        
-        return AddNewCategoryResponse.builder()
-        		.id(category.getId())
-        		.build();
     }
 
     @Override
-    public DeleteCategoryResponse deleteById(Long categoryId) throws IdNotFoundException {
+    public void deleteById(Long categoryId) throws IdNotFoundException {
     	
         Category category = categoryRepo.findById(categoryId).orElseThrow(
         				() -> new IdNotFoundException("Category Id Not Exist to Delete")
@@ -66,44 +53,27 @@ public class CategoryService implements ICategoryService {
         
 
         categoryRepo.deleteById(categoryId);
-
-        return DeleteCategoryResponse.builder()
-        		.message("Category Deleted Successfully")
-        		.build();
     }
 
     @Override
-    public GetAllCategoriesResponse findAll(int page , int size) {
-		Pageable paging = PageRequest.of(page, size);
-
-        return 	GetAllCategoriesResponse.builder()
-        		.categories(
-        				categoryRepo.findAll(paging)
-        		)
-        		.build();
+    public List<Category> findAll() {
+    	return categoryRepo.findAll();
     }
 
 	@Override
-	public GetCategoryByIdResponse findById(Long categoryId) {
-		return GetCategoryByIdResponse.builder()
-				.category(
-					categoryRepo.findById(categoryId).orElseThrow(() -> new IdNotFoundException("No Category To Retrieve, Id Not Found"))
-				 )
-				.build();
+	public Category findById(Long categoryId) {
+		return categoryRepo.findById(categoryId)
+				.orElseThrow(() -> new IdNotFoundException("No Category To Retrieve, Id Not Found"));
 	}
 
 	@Override
-	public UpdateCategoryResponse updateById(Long categoryId, PutCategoryRequestBody updatedCategory) {
+	public Category updateById(Long categoryId, Category updatedCategory) {
 		
 		Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new IdNotFoundException("No Category Update, Id Not Found"));
 		
 		category.setName(updatedCategory.getName());
 		
-		categoryRepo.save(category);
-		
-		return UpdateCategoryResponse.builder()
-				.id(categoryId)
-				.build();
+		return categoryRepo.save(category);
 	}
 
 	@Override

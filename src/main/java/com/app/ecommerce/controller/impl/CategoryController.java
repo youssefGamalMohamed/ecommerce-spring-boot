@@ -1,9 +1,10 @@
 package com.app.ecommerce.controller.impl;
 
 import com.app.ecommerce.controller.framework.ICategoryController;
+import com.app.ecommerce.dtos.CategoryDto;
+import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.PostCategoryRequestBody;
-import com.app.ecommerce.models.request.PutCategoryRequestBody;
+import com.app.ecommerce.mappers.CategoryMapper;
 import com.app.ecommerce.service.framework.ICategoryService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -23,9 +24,11 @@ public class CategoryController implements ICategoryController {
     @RolesAllowed({"ADMIN"})
     @PostMapping("/categories")
     @Override
-    public ResponseEntity<?> addNewCategory(@Valid @RequestBody PostCategoryRequestBody categoryRequestBody) {
+    public ResponseEntity<?> save(@Valid @RequestBody CategoryDto categoryDto) {
+    	Category newCreatedCategory = categoryService.save(CategoryMapper.INSTANCE.mapToEntity(categoryDto));
+    	
         return new ResponseEntity<>(
-        		    categoryService.add(categoryRequestBody) ,
+        		     CategoryMapper.INSTANCE.mapToDto(newCreatedCategory),
         		    HttpStatus.CREATED
         		);
     }
@@ -34,31 +37,31 @@ public class CategoryController implements ICategoryController {
     @DeleteMapping("/categories/{id}")
     @Override
     public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long categoryId) throws IdNotFoundException {
+    	categoryService.deleteById(categoryId);
     	return new ResponseEntity<>(
-    			categoryService.deleteById(categoryId) 
-    			, HttpStatus.NO_CONTENT
+    			 HttpStatus.NO_CONTENT
     		);
     }
 
     @RolesAllowed({"ADMIN" , "USER"})
     @GetMapping("/categories")
     @Override
-    public ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(categoryService.findAll(page,size));
+    public ResponseEntity<?> findAll() {
+        return ResponseEntity.ok(CategoryMapper.INSTANCE.mapToDtos(categoryService.findAll()));
     }
 
     @RolesAllowed({"ADMIN" , "USER"})
     @GetMapping("/categories/{id}")
     @Override
     public ResponseEntity<?> findById(@PathVariable("id") Long categoryId) {
-        return ResponseEntity.ok(categoryService.findById(categoryId));
+        return ResponseEntity.ok(CategoryMapper.INSTANCE.mapToDto(categoryService.findById(categoryId)));
     }
 
     @RolesAllowed({"ADMIN"})
     @PutMapping("/categories/{id}")
     @Override
-    public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody PutCategoryRequestBody updatedBody) {
-        return ResponseEntity.ok(categoryService.updateById(categoryId, updatedBody));
+    public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody CategoryDto updatedBody) {
+        return ResponseEntity.ok(categoryService.updateById(categoryId, CategoryMapper.INSTANCE.mapToEntity(updatedBody)));
     }
 
 

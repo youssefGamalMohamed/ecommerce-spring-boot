@@ -1,16 +1,11 @@
 package com.app.ecommerce.service.impl;
 
 
+import com.app.ecommerce.dtos.ProductDto;
 import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.exception.type.NameNotFoundException;
-import com.app.ecommerce.models.request.PostProductRequestBody;
-import com.app.ecommerce.models.request.PutProductRequestBody;
-import com.app.ecommerce.models.response.endpoints.AddNewProductResponse;
-import com.app.ecommerce.models.response.endpoints.DeleteProductByIdResponse;
-import com.app.ecommerce.models.response.endpoints.GetAllProductsByCategoryNameResponse;
-import com.app.ecommerce.models.response.endpoints.UpdateProductResponse;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.IProductService;
@@ -18,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductService implements IProductService {
 
@@ -29,60 +26,53 @@ public class ProductService implements IProductService {
 
 
     @Override
-    public AddNewProductResponse addNewProduct(PostProductRequestBody productRequestBody) {
+    public Product save(Product newProduct) {
 
-        Set<Category> categories = categoryService.getCategories(productRequestBody.getCategoriesId());
+        Set<Category> categories = categoryService.getCategories(
+        				newProduct.getCategories().stream()
+        							.map(Category::getId).collect(Collectors.toSet())
+        		);
 
         Product product = Product.builder()
-        		.name(productRequestBody.getName())
-        		.description(productRequestBody.getDescription())
-        		.price(productRequestBody.getPrice())
-        		.quantity(productRequestBody.getQuantity())
+        		.name(newProduct.getName())
+        		.description(newProduct.getDescription())
+        		.price(newProduct.getPrice())
+        		.quantity(newProduct.getQuantity())
         		.categories(categories)
         		.build();
         
-        return AddNewProductResponse.builder()
-        		.id(
-        				productRepo.save(product).getId()
-        		)
-        		.build();
-      
+        return productRepo.save(product);
     }
 
 
 	@Override
-	public GetAllProductsByCategoryNameResponse findProductsByCategoryName(String categoryName) {
+	public Set<Product> findProductsByCategoryName(String categoryName) {
 		Set<Product> productSet = categoryService.getAllProductsByCategoryName(categoryName);
-
-		return GetAllProductsByCategoryNameResponse.builder()
-				.products(productSet)
-				.build();
+		return productSet;
 	}
 
 
 	@Override
-	public UpdateProductResponse updateProductById(Long productId, PutProductRequestBody updatedProductRequestBody) {
+	public Product updateProductById(Long productId, Product updatedProductData) {
 			
 		Product product = productRepo.findById(productId)
 				.orElseThrow(() -> new IdNotFoundException("Can Not Update Product , Id Not Found"));
 		
-        Set<Category> categories = categoryService.getCategories(updatedProductRequestBody.getCategoriesId());
+        Set<Category> categories = categoryService.getCategories(updatedProductData.getCategories()
+        		.stream().map(Category::getId).collect(Collectors.toSet()));
         
-        product.setName(updatedProductRequestBody.getName());
-        product.setDescription(updatedProductRequestBody.getDescription());
-        product.setPrice(updatedProductRequestBody.getPrice());
-        product.setQuantity(updatedProductRequestBody.getQuantity());
+        product.setName(updatedProductData.getName());
+        product.setDescription(updatedProductData.getDescription());
+        product.setPrice(updatedProductData.getPrice());
+        product.setQuantity(updatedProductData.getQuantity());
         product.getCategories().addAll(categories);
         
-        productRepo.save(product);
+        return productRepo.save(product);
         
-        return UpdateProductResponse.builder()
-        		.id(productId)
-        		.build();
 	}
 
 	@Override
-	public DeleteProductByIdResponse deleteProductById(Long productId) {
+	public void deleteProductById(Long productId) {
 		Product product = productRepo.findById(productId)
 				.orElseThrow(() -> new IdNotFoundException("Product Id Not Found to Delete"));
 
@@ -92,10 +82,5 @@ public class ProductService implements IProductService {
 		product.getCategories().clear();
 
 		productRepo.deleteById(productId);
-
-
-		return DeleteProductByIdResponse.builder()
-				.message("Product Deleted Successfully")
-				.build();
 	}
 }

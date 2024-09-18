@@ -1,12 +1,8 @@
 package com.app.ecommerce.controller.framework;
 
+import com.app.ecommerce.dtos.CategoryDto;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.PostCategoryRequestBody;
-import com.app.ecommerce.models.request.PutCategoryRequestBody;
 import com.app.ecommerce.models.response.http.BadRequestResponse;
-import com.app.ecommerce.models.response.http.ConflictResponse;
-import com.app.ecommerce.models.response.http.NotFoundResponse;
-import com.app.ecommerce.models.response.endpoints.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +13,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Categories", description = "contains All Category operation for Customer and Admin")
 public interface ICategoryController {
@@ -30,18 +25,12 @@ public interface ICategoryController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = AddNewCategoryResponse.class)
+                                    schema = @Schema(implementation = CategoryDto.class)
                             )
                     }
             ),
             @ApiResponse(
-                    responseCode = "409", description = "Trying to Add Existing Category Name",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ConflictResponse.class)
-                            )
-                    }
+                    responseCode = "409", description = "Trying to Add Existing Category Name"
             ),
             @ApiResponse(
                     responseCode = "400", description = "Validation Error",
@@ -52,26 +41,16 @@ public interface ICategoryController {
             )
     }
     )
-    ResponseEntity<?> addNewCategory(@Valid @RequestBody PostCategoryRequestBody categoryRequestBody);
+    ResponseEntity<?> save(@Valid @RequestBody CategoryDto categoryDto);
 
 
     @Operation(summary = "Delete Category By Id , this endpoint accessed for ( Admin )")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "204", description = "Category Deleted Successfully",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = DeleteCategoryResponse.class)
-                            )
-                    }
+                    responseCode = "204", description = "Category Deleted Successfully"
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Category Not Found with this ID",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Category Not Found with this ID"
             )
     }
     )
@@ -85,13 +64,13 @@ public interface ICategoryController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = GetAllCategoriesResponse.class)
+                                    schema = @Schema(implementation = CategoryDto[].class)
                             )
                     }
             )
     }
     )
-    ResponseEntity<?> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size);
+    ResponseEntity<?> findAll();
 
 
     @Operation(summary = "Find Category By Id , this endpoint accessed for ( Admin , User )")
@@ -101,16 +80,12 @@ public interface ICategoryController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = GetCategoryByIdResponse.class)
+                                    schema = @Schema(implementation = CategoryDto.class)
                             )
                     }
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Category Not Found with this ID",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Category Not Found with this ID"
             )
     }
     )
@@ -124,27 +99,19 @@ public interface ICategoryController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = UpdateCategoryResponse.class)
+                                    schema = @Schema(implementation = CategoryDto.class)
                             )
                     }
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Category Not Found with this ID",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Category Not Found with this ID"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "Validation Error",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = BadRequestResponse.class))
-                    }
+                    responseCode = "400", description = "Validation Error"
             )
     }
     )
-    ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody PutCategoryRequestBody updatedBody);
+    ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody CategoryDto categoryDto);
 
 
 }

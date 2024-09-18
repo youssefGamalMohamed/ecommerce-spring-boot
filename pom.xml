@@ -14,6 +14,9 @@
     <description>Ecommerce</description>
     <properties>
         <java.version>17</java.version>
+        <org.mapstruct.version>1.6.0</org.mapstruct.version> <!-- map struct -->
+        <maven.version>3.13.0</maven.version>
+        <lombok.mapstruct.binding>0.2.0</lombok.mapstruct.binding>
     </properties>
     <dependencies>
         <dependency>
@@ -161,6 +164,13 @@
         </dependency>
         <!-- End of Spring Mail Dependecy -->
 
+
+        <!-- For Map Struct -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
     </dependencies>
 
 
@@ -176,6 +186,32 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.version}</version>
+                <configuration>
+                    <source>${java.version}</source> <!-- depending on your project -->
+                    <target>${java.version}</target> <!-- depending on your project -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                        <path>
+			                <groupId>org.projectlombok</groupId>
+			                <artifactId>lombok</artifactId>			               
+            			</path>
+            			<path>
+			                <groupId>org.projectlombok</groupId>
+			                <artifactId>lombok-mapstruct-binding</artifactId>
+			                <version>${lombok.mapstruct.binding}</version>
+            			</path>
+                        <!-- other annotation processors -->
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,13 +1,16 @@
 package com.app.ecommerce.controller.impl;
 
 import com.app.ecommerce.controller.framework.IProductController;
+import com.app.ecommerce.dtos.ProductDto;
+import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.PostProductRequestBody;
-import com.app.ecommerce.models.request.PutProductRequestBody;
+import com.app.ecommerce.mappers.ProductMapper;
 import com.app.ecommerce.service.framework.IProductService;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
+
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +27,10 @@ public class ProductController implements IProductController {
     @RolesAllowed({"ADMIN"})
     @PostMapping("/products")
     @Override
-    public ResponseEntity<?> addNewProduct(@Valid @RequestBody PostProductRequestBody productRequestBody) {
+    public ResponseEntity<?> save(@RequestBody ProductDto productDto) {
+    	Product product = productService.save(ProductMapper.INSTANCE.mapToEntity(productDto));
         return new ResponseEntity<>(
-        			productService.addNewProduct(productRequestBody) ,
+        			ProductMapper.INSTANCE.mapToDto(product),
         			HttpStatus.CREATED
         		);
     }
@@ -35,16 +39,19 @@ public class ProductController implements IProductController {
     @GetMapping("/products")
     @Override
     public ResponseEntity<?> findProductsByCategoryName(@RequestParam(value = "category") String categoryName) {
-		return ResponseEntity.ok(productService.findProductsByCategoryName(categoryName));
+    	Set<Product> productDtos = productService.findProductsByCategoryName(categoryName);
+		return ResponseEntity.ok(ProductMapper.INSTANCE.mapToDtos(productDtos));
     }
 
     @RolesAllowed({"ADMIN"})
     @PutMapping("/products/{id}")
     @Override
     public ResponseEntity<?> updateProduct(@PathVariable(value = "id") Long productId 
-    		, @Valid @RequestBody PutProductRequestBody updatedProductRequestBody) {
+    		, @Valid @RequestBody ProductDto productDto) {
+    	
+    	Product updateProduct = productService.updateProductById(productId, ProductMapper.INSTANCE.mapToEntity(productDto));
 		return new ResponseEntity<>(
-					productService.updateProductById(productId, updatedProductRequestBody) ,
+					ProductMapper.INSTANCE.mapToDto(updateProduct),
 					HttpStatus.OK
 				);
     }
@@ -53,8 +60,8 @@ public class ProductController implements IProductController {
     @RolesAllowed({"ADMIN"})
     @Override
     public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long productId) throws IdNotFoundException {
+    	productService.deleteProductById(productId);
         return new ResponseEntity<>(
-                productService.deleteProductById(productId) ,
                 HttpStatus.NO_CONTENT
         );
     }
