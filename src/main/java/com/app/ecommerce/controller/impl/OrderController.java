@@ -1,6 +1,9 @@
 package com.app.ecommerce.controller.impl;
 
 import com.app.ecommerce.controller.framework.IOrderController;
+import com.app.ecommerce.dtos.OrderDto;
+import com.app.ecommerce.entity.Order;
+import com.app.ecommerce.mappers.OrderMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.app.ecommerce.models.request.PostOrderRequestBody;
 import com.app.ecommerce.service.impl.OrderService;
 
 @RestController
@@ -24,10 +25,12 @@ public class OrderController implements IOrderController {
 	@RolesAllowed({"USER"})
 	@PostMapping("/orders")
 	@Override
-	public ResponseEntity<?> createNewOrder(@RequestBody PostOrderRequestBody orderRequestBody) throws JsonProcessingException {
-		System.out.println(orderRequestBody);
+	public ResponseEntity<?> createNewOrder(@RequestBody OrderDto orderDto) throws JsonProcessingException {
+		System.out.println(orderDto);
+		Order createdOrder = orderService.createNewOrder(OrderMapper.INSTANCE.mapToEntity(orderDto));
+		
 		return new ResponseEntity<>(
-					orderService.createNewOrder(orderRequestBody) ,
+					OrderMapper.INSTANCE.mapToDto(createdOrder),
 					HttpStatus.CREATED
 				);
 	}
@@ -36,9 +39,10 @@ public class OrderController implements IOrderController {
 	@GetMapping("/orders/{id}")
 	@Override
 	public ResponseEntity<?> findOrderById(@PathVariable("id") Long orderId) {
+		Order order = orderService.findById(orderId);
 		
 		return new ResponseEntity<> (
-					orderService.findById(orderId),
+					OrderMapper.INSTANCE.mapToDto(order),
 					HttpStatus.OK
 				);
 	}

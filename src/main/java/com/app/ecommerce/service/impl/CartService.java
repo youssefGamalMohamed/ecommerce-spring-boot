@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.ecommerce.entity.Cart;
-import com.app.ecommerce.models.request.PostCartRequestBody;
 import com.app.ecommerce.service.framework.ICartItemService;
 import com.app.ecommerce.service.framework.ICartService;
 
@@ -17,7 +16,7 @@ public class CartService implements ICartService {
 	private ICartItemService cartItemService;
 	
 	@Override
-	public Cart createNewCart(PostCartRequestBody cartRequestBody) {		
+	public Cart createNewCart(Cart cartRequestBody) {		
 		
 		Cart cart = Cart.builder()
 						.cartItems(

@@ -6,7 +6,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.app.ecommerce.entity.CartItem;
-import com.app.ecommerce.models.request.PostCartItemRequestBody;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.ICartItemService;
 
@@ -18,15 +17,15 @@ public class CartItemService implements ICartItemService {
 	private ProductRepo productRepo;
 	
 	@Override
-	public CartItem createNewCartItem(PostCartItemRequestBody cartItemRequestBody) {
+	public CartItem createNewCartItem(CartItem cartItemRequestBody) {
 		return CartItem.builder()
-				.product(productRepo.findById(cartItemRequestBody.getProductId()).get())
-				.productQuantity(cartItemRequestBody.getQuantity())
+				.product(productRepo.findById(cartItemRequestBody.getProduct().getId()).get())
+				.productQuantity(cartItemRequestBody.getProductQuantity())
 				.build();
 	}
 
 	@Override
-	public Set<CartItem> createNewCartItemsSet(Set<PostCartItemRequestBody> cartItemsSetRequestBody) {
+	public Set<CartItem> createNewCartItemsSet(Set<CartItem> cartItemsSetRequestBody) {
 		Set<CartItem> cartItems = new HashSet<>();
 
 		cartItemsSetRequestBody.forEach(item -> {

@@ -1,11 +1,7 @@
 package com.app.ecommerce.controller.framework;
 
+import com.app.ecommerce.dtos.ProductDto;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.PostProductRequestBody;
-import com.app.ecommerce.models.request.PutProductRequestBody;
-import com.app.ecommerce.models.response.http.BadRequestResponse;
-import com.app.ecommerce.models.response.http.NotFoundResponse;
-import com.app.ecommerce.models.response.endpoints.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,27 +24,19 @@ public interface IProductController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = AddNewProductResponse.class)
+                                    schema = @Schema(implementation = ProductDto.class)
                             )
                     }
             ),
             @ApiResponse(
-                    responseCode = "400", description = "Validation Error",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = BadRequestResponse.class))
-                    }
+                    responseCode = "400", description = "Validation Error"
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Category Not Found with this ID , to make this Product of this specific Id",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Category Not Found with this ID , to make this Product of this specific Id"
             )
     }
     )
-    ResponseEntity<?> addNewProduct(@Valid @RequestBody PostProductRequestBody productRequestBody);
+    ResponseEntity<?> save(@Valid @RequestBody ProductDto productDto);
 
 
     @Operation(summary = "Find All Products with Specific Category Name , this endpoint accessed for ( Admin , User )")
@@ -58,21 +46,19 @@ public interface IProductController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = GetAllProductsByCategoryNameResponse.class)
+                                    schema = @Schema(implementation = ProductDto[].class)
                             )
                     }
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Category Name Not Found",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Category Name Not Found"
             )
     }
     )
     ResponseEntity<?> findProductsByCategoryName(@RequestParam(value = "category") String categoryName);
 
+    
+    
     @Operation(summary = "Update Product By Id , this endpoint accessed for ( Admin )")
     @ApiResponses(value = {
             @ApiResponse(
@@ -80,47 +66,29 @@ public interface IProductController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = UpdateProductResponse.class)
+                                    schema = @Schema(implementation = ProductDto.class)
                             )
                     }
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Product Not Found with this ID",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Product Not Found with this ID"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "Validation Error",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = BadRequestResponse.class))
-                    }
+                    responseCode = "400", description = "Validation Error"
             )
     }
     )
-    ResponseEntity<?> updateProduct(@PathVariable(value = "id") Long productId , @Valid @RequestBody PutProductRequestBody updatedProductRequestBody);
+    ResponseEntity<?> updateProduct(@PathVariable(value = "id") Long productId , @Valid @RequestBody ProductDto productDto);
 
 
 
     @Operation(summary = "Delete Product By Id , this endpoint accessed for ( Admin )")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "204", description = "Product Deleted Successfully",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = DeleteProductByIdResponse.class)
-                            )
-                    }
+                    responseCode = "204", description = "Product Deleted Successfully"
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Product Not Found with this ID",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Product Not Found with this ID"
             )
     }
     )

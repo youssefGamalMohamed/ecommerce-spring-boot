@@ -4,6 +4,7 @@ package com.app.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class Category extends BaseEntity {
     @ManyToMany(mappedBy = "categories" , fetch = FetchType.EAGER
             , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.DETACH , CascadeType.REFRESH })
     @JsonIgnore
-    private Set<Product> products;
+    private Set<Product> products = new HashSet<>();
 
 	@Override
 	public String toString() {

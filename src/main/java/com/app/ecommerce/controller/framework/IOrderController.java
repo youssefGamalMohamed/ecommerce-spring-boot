@@ -1,9 +1,6 @@
 package com.app.ecommerce.controller.framework;
 
-import com.app.ecommerce.models.request.PostOrderRequestBody;
-import com.app.ecommerce.models.response.http.BadRequestResponse;
-import com.app.ecommerce.models.response.http.NotFoundResponse;
-import com.app.ecommerce.models.response.endpoints.*;
+import com.app.ecommerce.dtos.OrderDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,27 +25,19 @@ public interface IOrderController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = CreateNewOrderResponse.class)
+                                    schema = @Schema(implementation = OrderDto.class)
                             )
                     }
             ),
             @ApiResponse(
-                    responseCode = "400", description = "Validation Error",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = BadRequestResponse.class))
-                    }
+                    responseCode = "400", description = "Validation Error"
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Customer Email Not Found to make this Order for this Customer Email",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Customer Email Not Found to make this Order for this Customer Email"
             )
     }
     )
-    ResponseEntity<?> createNewOrder(@Valid @RequestBody PostOrderRequestBody orderRequestBody) throws JsonProcessingException;
+    ResponseEntity<?> createNewOrder(@Valid @RequestBody OrderDto orderDto) throws JsonProcessingException;
 
 
     @Operation(summary = "Find Order By Id , this endpoint accessed for ( Admin , User )")
@@ -58,16 +47,12 @@ public interface IOrderController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = GetOrderByIdResponse.class)
+                                    schema = @Schema(implementation = OrderDto.class)
                             )
                     }
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Order Not Found with this ID",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = NotFoundResponse.class))
-                    }
+                    responseCode = "404", description = "Order Not Found with this ID"
             )
     }
     )

@@ -3,7 +3,6 @@ package com.app.ecommerce.service.impl;
 import java.time.LocalDateTime;
 
 import com.app.ecommerce.exception.type.EmailNotFoundException;
-import com.app.ecommerce.models.response.endpoints.GetCustomerResponse;
 import com.app.ecommerce.mq.activemq.model.InventoryQueueMessage;
 import com.app.ecommerce.mq.activemq.sender.InventoryQueueSender;
 import com.app.ecommerce.repository.UserRepo;
@@ -19,10 +18,6 @@ import com.app.ecommerce.entity.DeliveryInfo;
 import com.app.ecommerce.entity.Order;
 import com.app.ecommerce.enums.Status;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.request.PostOrderRequestBody;
-import com.app.ecommerce.models.response.endpoints.CreateNewOrderResponse;
-import com.app.ecommerce.models.response.endpoints.GetOrderByIdResponse;
-import com.app.ecommerce.models.response.endpoints.GetOrderStatusByIdResponse;
 import com.app.ecommerce.repository.OrderRepo;
 import com.app.ecommerce.service.framework.ICartService;
 import com.app.ecommerce.service.framework.IOrderService;
@@ -43,7 +38,7 @@ public class OrderService implements IOrderService {
 	private InventoryQueueSender inventoryQueueSender;
 
 	@Override
-	public CreateNewOrderResponse createNewOrder(PostOrderRequestBody orderRequestBody) throws JsonProcessingException {
+	public Order createNewOrder(Order newOrderInfo) throws JsonProcessingException {
 
 		String customerEmail = ( (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal() ).getUsername();
 
@@ -54,19 +49,19 @@ public class OrderService implements IOrderService {
 		
 		DeliveryInfo deliveryInfo = DeliveryInfo.builder()
 				.status(Status.NOT_MOVED_OUT_FROM_WAREHOUSE)
-				.address(orderRequestBody.getDeliveryAddress())
-				.date(orderRequestBody.getDeliveryDate())
+				.address(newOrderInfo.getDeliveryInfo().getAddress())
+				.date(newOrderInfo.getDeliveryInfo().getDate())
 				.build();
 		
 		
-		Cart cart = cartService.createNewCart(orderRequestBody.getCart());
+		Cart cart = cartService.createNewCart(newOrderInfo.getCart());
 				
 		Order order = Order.builder()
 				.customer(customer)
-				.totalPrice(orderRequestBody.getTotalPrice())
+				.totalPrice(newOrderInfo.getTotalPrice())
 				.deliveryInfo(deliveryInfo)
 				.cart(cart)
-				.paymentType(orderRequestBody.getPaymentType())
+				.paymentType(newOrderInfo.getPaymentType())
 				.createdAt(LocalDateTime.now())
 				.build();
 				
@@ -81,44 +76,21 @@ public class OrderService implements IOrderService {
 						.build()
 		);
 
-		return CreateNewOrderResponse.builder()
-				.id(order.getId())
-				.build();
+		return order;
 	}
 
 	@Override
-	public GetOrderByIdResponse findById(Long orderId) {
+	public Order findById(Long orderId) {
 		Order order = orderRepo.findById(orderId).orElseThrow(() -> new IdNotFoundException("No Such Order With This Id , Id Not Found "));
-
-		return GetOrderByIdResponse.builder()
-				.id(order.getId())
-				.paymentType(order.getPaymentType())
-				.totalPrice(order.getTotalPrice())
-				.deliveryInfo(order.getDeliveryInfo())
-				.cart(order.getCart())
-				.customer(
-						GetCustomerResponse
-								.builder()
-								.id(order.getCustomer().getId())
-								.firstname(order.getCustomer().getFirstname())
-								.lastname(order.getCustomer().getLastname())
-								.email(order.getCustomer().getEmail())
-								.build()
-				)
-				.build();
+		return order;
 	}
 
 	@Override
-	public GetOrderStatusByIdResponse findOrderStatusById(Long orderId) {
+	public Order findOrderStatusById(Long orderId) {
 		
-		return GetOrderStatusByIdResponse.builder()
-				.orderStatus(
-							orderRepo.findById(orderId)
-							.orElseThrow(() -> new IdNotFoundException("No Such Order , Id Not Found"))
-							.getDeliveryInfo()
-							.getStatus()
-						)
-				.build();
+		return orderRepo.findById(orderId)
+							.orElseThrow(() -> new IdNotFoundException("No Such Order , Id Not Found"));
+				
 	}
 
 	@Override
