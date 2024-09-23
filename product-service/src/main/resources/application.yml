@@ -1,12 +1,11 @@
 server:
   servlet:
     context-path: /ecommerce/api/v1
-  port: 9091
-
+  port: 9092
 spring:
-  application.name: category-service
+  application.name: product-service
   datasource:
-    url: jdbc:mysql://localhost:3306/category-service-db
+    url: jdbc:mysql://localhost:3306/product-service-db
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
