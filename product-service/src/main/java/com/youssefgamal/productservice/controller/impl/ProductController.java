@@ -16,6 +16,7 @@ import com.youssefgamal.productservice.dtos.ProductDto;
 import com.youssefgamal.productservice.entity.Product;
 import com.youssefgamal.productservice.exception.type.IdNotFoundException;
 import com.youssefgamal.productservice.mappers.ProductMapper;
+import com.youssefgamal.productservice.service.framework.ICategoryService;
 import com.youssefgamal.productservice.service.framework.IProductService;
 
 @RestController
@@ -25,6 +26,9 @@ public class ProductController implements IProductController {
 
     @Autowired
     private IProductService productService;
+    
+    @Autowired
+    private ICategoryService categoryService;
 
     @RolesAllowed({"ADMIN"})
     @PostMapping("/products")
@@ -39,13 +43,23 @@ public class ProductController implements IProductController {
     }
 
     @RolesAllowed({"ADMIN" , "USER"})
-    @GetMapping("/products")
+    @GetMapping("/products/{categoryName}")
     @Override
-    public ResponseEntity<?> findProductsByCategoryName(@RequestParam(value = "category") String categoryName) {
+    public ResponseEntity<?> findProductsByCategoryName(@RequestParam(value = "categoryName") String categoryName) {
     	Set<Product> productDtos = productService.findProductsByCategoryName(categoryName);
 		return ResponseEntity.ok(ProductMapper.INSTANCE.mapToDtos(productDtos));
     }
 
+    
+    @RolesAllowed({"ADMIN" , "USER"})
+    @GetMapping("/products")
+    @Override
+    public ResponseEntity<?> findAll() {
+    	Set<Product> productDtos = productService.findAll();
+		return ResponseEntity.ok(ProductMapper.INSTANCE.mapToDtos(productDtos));
+    }
+    
+    
     @RolesAllowed({"ADMIN"})
     @PutMapping("/products")
     @Override
@@ -68,5 +82,24 @@ public class ProductController implements IProductController {
         );
     }
 
+    
+
+    @DeleteMapping("/products/{productId}/categories/{categoryId}")
+	@Override
+	public ResponseEntity<?> deleteCategoryFromProduct(@PathVariable Long productId, @PathVariable Long categoryId) {
+    	productService.deleteCategoryFromProduct(productId,categoryId);
+		return ResponseEntity.noContent()
+				.build();
+	}
+
+    @DeleteMapping("/products")
+	@Override
+	public ResponseEntity<?> deleteCategory(@RequestParam(name = "categoryId") Long categoryId) {
+    	log.info("deleteCategory({})", categoryId);
+    	categoryService.deleteAllCatgoriesByCategoryId(categoryId);
+		return ResponseEntity.ok().build();
+	}
+
+    
 }
 

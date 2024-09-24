@@ -121,4 +121,31 @@ public class ProductService implements IProductService {
 
 		productRepo.deleteById(productId);
 	}
+
+
+	@Override
+	public Set<Product> findAll() {
+		return productRepo.findAll()
+				.stream()
+				.collect(Collectors.toSet());
+	}
+
+
+	@Override
+	public void deleteCategoryFromProduct(Long productId, Long categoryId) {
+		Product product = productRepo.findById(productId)
+				.orElseThrow();
+		
+		Category category = product.getCategories()
+				.stream()
+				.filter(o -> o.getId().equals(categoryId))
+				.findFirst()
+				.orElseThrow();
+		
+		
+		product.getCategories().remove(category);
+		
+		productRepo.save(product);
+		
+	}
 }

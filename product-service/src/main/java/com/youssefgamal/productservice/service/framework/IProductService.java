@@ -16,4 +16,8 @@ public interface IProductService {
 
     void deleteProductById(Long productId);
 
+	Set<Product> findAll();
+
+	void deleteCategoryFromProduct(Long productId, Long categoryId);
+
 }

@@ -98,4 +98,50 @@ public interface IProductController {
     ResponseEntity<?> deleteById(@PathVariable(name = "id") Long productId) throws IdNotFoundException;
 
 
+    
+    @Operation(summary = "Find All Products, this endpoint accessed for ( Admin , User )")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Products Retrieved Successfully",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ProductDto[].class)
+                            )
+                    }
+            )
+    }
+    )
+    ResponseEntity<?> findAll();
+    
+    
+    
+    
+    
+    @Operation(summary = "Delete Category From Product Categories List, this endpoint accessed for ( Admin )")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204", description = "Category Removed From the Product Categories List"
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Product Or Category Not Found with this ID"
+            )
+    }
+    )
+    ResponseEntity<?> deleteCategoryFromProduct(@PathVariable Long productId, @PathVariable Long categoryId);
+    
+
+
+    
+    @Operation(summary = "Delete Category, this endpoint accessed for ( Admin )")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204", description = "Category Removed From the Product Categories List"
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Product Or Category Not Found with this ID"
+            )
+    }
+    )
+    ResponseEntity<?> deleteCategory(@RequestParam Long categoryId);
 }

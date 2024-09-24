@@ -31,5 +31,10 @@ public class CategoryService implements ICategoryService {
 		return categoryRepo.findById(id);
 	}
 
+	@Override
+	public void deleteAllCatgoriesByCategoryId(Long categoryId) {
+		categoryRepo.deleteById(categoryId);
+	}
+
 
 }

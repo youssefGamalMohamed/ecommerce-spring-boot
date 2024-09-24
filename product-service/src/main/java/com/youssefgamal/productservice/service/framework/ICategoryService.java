@@ -13,4 +13,6 @@ public interface ICategoryService {
 	Set<Category> findCategoriesByNameIgnoreCase(String name);
 	
 	Optional<Category> findById(Long id);
+
+	void deleteAllCatgoriesByCategoryId(Long categoryId);
 }

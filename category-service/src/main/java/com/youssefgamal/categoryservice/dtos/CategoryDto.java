@@ -11,6 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class CategoryDto {
 	
     private Long id;

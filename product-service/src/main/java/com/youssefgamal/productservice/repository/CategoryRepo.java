@@ -21,4 +21,6 @@ public interface CategoryRepo extends JpaRepository<Category,Long> {
 	Optional<Category> findByIdAndProduct(Long id, Product product);
 	
 	Set<Category> findByNameIgnoreCase(String name);
+	
+	void deleteById(Long id);
 }
