@@ -1,13 +1,14 @@
 package com.app.ecommerce.exception.handler;
 
 
-import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
-import com.app.ecommerce.models.response.http.*;
-import jakarta.jms.JMSException;
-import jakarta.persistence.PersistenceException;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,8 +23,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.models.response.http.BadRequestResponse;
+
+import jakarta.jms.JMSException;
+import lombok.extern.log4j.Log4j2;
 
 @RestControllerAdvice
 @Log4j2

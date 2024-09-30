@@ -1,6 +1,7 @@
 package com.app.ecommerce.models.request;
 
 import com.app.ecommerce.enums.Role;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

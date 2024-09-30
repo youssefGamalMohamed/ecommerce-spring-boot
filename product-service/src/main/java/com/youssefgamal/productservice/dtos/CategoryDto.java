@@ -22,6 +22,5 @@ import lombok.ToString;
 public class CategoryDto {
 	
     private Long id;
-    private String name;
     
 }

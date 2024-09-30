@@ -1,5 +1,7 @@
 package com.app.ecommerce.service.framework;
 
+import java.io.IOException;
+
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.TokenType;
 import com.app.ecommerce.exception.type.JsonParsingException;
@@ -11,10 +13,6 @@ import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
 
 public interface IAuthenticationService {
 

@@ -3,6 +3,21 @@ package com.app.ecommerce.service.impl;
 
 
 
+import java.io.IOException;
+import java.util.Objects;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import com.app.ecommerce.entity.Token;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.TokenType;
@@ -25,25 +40,10 @@ import com.app.ecommerce.repository.TokenRepo;
 import com.app.ecommerce.repository.UserRepo;
 import com.app.ecommerce.security.handler.CustomLogoutHandler;
 import com.app.ecommerce.service.framework.IAuthenticationService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
-import java.io.IOException;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor

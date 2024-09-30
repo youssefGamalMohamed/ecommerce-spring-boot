@@ -1,18 +1,18 @@
 package com.app.ecommerce.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.app.ecommerce.entity.Customer;
 import com.app.ecommerce.entity.Order;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.Role;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.repository.OrderRepo;
 import com.app.ecommerce.repository.UserRepo;
 import com.app.ecommerce.service.framework.ICustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CustomerService implements ICustomerService {

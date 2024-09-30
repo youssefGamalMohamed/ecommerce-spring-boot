@@ -13,8 +13,13 @@ import com.youssefgamal.productservice.entity.Category;
 public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
-
-    Category mapToEntity(CategoryDto categoryDto);  
+    
+    @Mapping(source = "id", target = "categoryId")
+    Category mapToEntity(CategoryDto categoryDto);
+    
+    
+    @Mapping(source = "categoryId", target = "id")
     CategoryDto mapToDto(Category category);
+    
     List<CategoryDto> mapToDtos(List<Category> categories);
 }

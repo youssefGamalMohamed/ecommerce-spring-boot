@@ -1,14 +1,11 @@
 package com.app.ecommerce.repository;
 
-import com.app.ecommerce.entity.Category;
-
-
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.app.ecommerce.entity.Category;
 
 @Repository
 public interface CategoryRepo extends JpaRepository<Category,Long> {

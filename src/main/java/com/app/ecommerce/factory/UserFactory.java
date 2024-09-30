@@ -1,16 +1,15 @@
 package com.app.ecommerce.factory;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
 import com.app.ecommerce.entity.Admin;
 import com.app.ecommerce.entity.Customer;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.Role;
 import com.app.ecommerce.models.request.RegisterRequestBody;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 
 @Component

@@ -1,13 +1,13 @@
 package com.app.ecommerce.service.framework;
 
 
+import java.util.List;
+import java.util.Set;
+
 import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-
-import java.util.List;
-import java.util.Set;
 
 
 public interface ICategoryService {

@@ -41,25 +41,6 @@ public interface IProductController {
     )
     ResponseEntity<?> save(@Valid @RequestBody ProductDto productDto) throws Exception;
 
-
-    @Operation(summary = "Find All Products with Specific Category Name , this endpoint accessed for ( Admin , User )")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200", description = "Products Retrieved Successfully",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ProductDto[].class)
-                            )
-                    }
-            ),
-            @ApiResponse(
-                    responseCode = "404", description = "Category Name Not Found"
-            )
-    }
-    )
-    ResponseEntity<?> findProductsByCategoryName(@RequestParam(value = "category") String categoryName);
-
     
     
     @Operation(summary = "Update Product By Id , this endpoint accessed for ( Admin )")
@@ -117,31 +98,27 @@ public interface IProductController {
     
     
     
-    
-    @Operation(summary = "Delete Category From Product Categories List, this endpoint accessed for ( Admin )")
+    @Operation(summary = "Delete All Products By Category Id , this endpoint accessed for ( Admin )")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "204", description = "Category Removed From the Product Categories List"
-            ),
-            @ApiResponse(
-                    responseCode = "404", description = "Product Or Category Not Found with this ID"
+                    responseCode = "200", description = "Products Deleted Successfully"
             )
     }
     )
-    ResponseEntity<?> deleteCategoryFromProduct(@PathVariable Long productId, @PathVariable Long categoryId);
+    ResponseEntity<?> deleteByCategoryId(@RequestParam(name = "category_id") Long category_id);
     
-
-
     
-    @Operation(summary = "Delete Category, this endpoint accessed for ( Admin )")
+    
+    
+    @Operation(summary = "Find Product By Id , this endpoint accessed for ( Admin, Customer )")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "204", description = "Category Removed From the Product Categories List"
+                    responseCode = "200", description = "Product Fetched Successfully"
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Product Or Category Not Found with this ID"
+                    responseCode = "404", description = "Product Not Found with this ID"
             )
     }
     )
-    ResponseEntity<?> deleteCategory(@RequestParam Long categoryId);
+    ResponseEntity<?> findById(@PathVariable Long id);
 }

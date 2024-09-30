@@ -1,16 +1,22 @@
 package com.app.ecommerce.controller.framework;
 
+import java.io.IOException;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.app.ecommerce.exception.type.JsonParsingException;
 import com.app.ecommerce.models.request.ForgetPasswordRequestBody;
 import com.app.ecommerce.models.request.LoginRequestBody;
 import com.app.ecommerce.models.request.RegisterRequestBody;
 import com.app.ecommerce.models.request.ResetPasswordRequestBody;
+import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
 import com.app.ecommerce.models.response.endpoints.LogoutResponseBody;
 import com.app.ecommerce.models.response.endpoints.RefreshTokenResponseBody;
-import com.app.ecommerce.models.response.http.BadRequestResponse;
-import com.app.ecommerce.models.response.endpoints.LoginResponseBody;
 import com.app.ecommerce.models.response.endpoints.RegisterResponseBody;
+import com.app.ecommerce.models.response.http.BadRequestResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,9 +26,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import java.io.IOException;
 
 
 @Tag(name = "Authentication", description = "contains Login and Register endpoints for authentication")

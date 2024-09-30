@@ -3,9 +3,10 @@ package com.app.ecommerce.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.app.ecommerce.entity.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import com.app.ecommerce.entity.Token;
 
 public interface TokenRepo extends JpaRepository<Token, Integer> {
 

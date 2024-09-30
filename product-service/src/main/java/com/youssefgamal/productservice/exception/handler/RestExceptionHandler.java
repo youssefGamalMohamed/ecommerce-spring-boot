@@ -1,7 +1,14 @@
 package com.youssefgamal.productservice.exception.handler;
 
 
-import lombok.extern.log4j.Log4j2;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -14,8 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.youssefgamal.productservice.exception.type.DuplicatedUniqueColumnValueException;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j2;
 
 @RestControllerAdvice
 @Log4j2

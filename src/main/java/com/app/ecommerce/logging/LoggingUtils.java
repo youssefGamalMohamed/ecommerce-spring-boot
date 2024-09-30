@@ -1,7 +1,8 @@
 package com.app.ecommerce.logging;
 
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.log4j.Log4j2;
 
 
 @Component

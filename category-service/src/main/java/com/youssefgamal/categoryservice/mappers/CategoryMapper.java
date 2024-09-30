@@ -1,11 +1,12 @@
 package com.youssefgamal.categoryservice.mappers;
 
-import com.youssefgamal.categoryservice.dtos.CategoryDto;
-import com.youssefgamal.categoryservice.entity.Category;
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-import java.util.List;
+import com.youssefgamal.categoryservice.dtos.CategoryDto;
+import com.youssefgamal.categoryservice.entity.Category;
 
 @Mapper
 public interface CategoryMapper {

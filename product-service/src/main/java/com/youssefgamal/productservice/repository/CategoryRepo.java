@@ -3,24 +3,22 @@ package com.youssefgamal.productservice.repository;
 
 
 
-import java.util.Optional;
-import java.util.Set;
-
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.youssefgamal.productservice.entity.Category;
-import com.youssefgamal.productservice.entity.Product;
+
+import jakarta.transaction.Transactional;
 
 
 @Repository
 public interface CategoryRepo extends JpaRepository<Category,Long> {
 	
-	Optional<Category> findByName(String name);
-	
-	Optional<Category> findByIdAndProduct(Long id, Product product);
-	
-	Set<Category> findByNameIgnoreCase(String name);
-	
-	void deleteById(Long id);
+    // Custom query to delete Category by 'id'
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Category c WHERE c.categoryId = :categoryId")
+    void deleteAllCategoriesByCategoryIdFromCategoryService(Long categoryId);
 }

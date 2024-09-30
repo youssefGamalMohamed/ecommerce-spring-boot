@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import com.app.ecommerce.dtos.CartDto;
-import com.app.ecommerce.entity.CartItem;
 import com.app.ecommerce.entity.Cart;
 
 @Mapper(uses = {CartItemMapper.class})

@@ -1,8 +1,20 @@
 package com.youssefgamal.productservice.entity;
 
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 
 @Table(name = "Category")
@@ -17,13 +29,10 @@ public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryIdAutoIncrement;
+    private Long id_auto_increment;
     
-    private Long id;
+    private Long categoryId;
 
-    private String name;
-
-    
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     Product product = new Product();

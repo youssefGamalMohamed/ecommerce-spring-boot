@@ -1,6 +1,10 @@
 package com.app.ecommerce.email.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @RequiredArgsConstructor

@@ -1,11 +1,12 @@
 package com.app.ecommerce.service.framework;
 
-import io.jsonwebtoken.Claims;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.security.Key;
 import java.util.Map;
 import java.util.function.Function;
+
+import org.springframework.security.core.userdetails.UserDetails;
+
+import io.jsonwebtoken.Claims;
 
 public interface IJwtService {
 

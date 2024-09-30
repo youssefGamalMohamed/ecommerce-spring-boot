@@ -1,16 +1,14 @@
 package com.app.ecommerce.mq.activemq.sender;
 
 
-import com.app.ecommerce.exception.type.JsonParsingException;
-import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jms.JmsException;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+
+import com.app.ecommerce.exception.type.JsonParsingException;
+import com.app.ecommerce.mq.activemq.model.EmailQueueMessage;
+
+import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2

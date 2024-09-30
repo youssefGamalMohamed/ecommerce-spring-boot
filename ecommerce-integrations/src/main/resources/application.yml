@@ -1,0 +1,20 @@
+spring:
+  application.name: ecommerce-integrations
+
+camel:
+  servlet:
+    mapping:
+      context-path: /rest/*			
+ecommerce:
+  product-service:
+    port: 9092
+    host: localhost
+    url: http://${ecommerce.product-service.host}:${ecommerce.product-service.port}/ecommerce/api/v1/products
+  category-service:
+    port: 9091
+    host: localhost
+    url: http://${ecommerce.category-service.host}:${ecommerce.category-service.port}/ecommerce/api/v1/categories
+
+logging:
+  level:
+    org.apache.camel: INFO

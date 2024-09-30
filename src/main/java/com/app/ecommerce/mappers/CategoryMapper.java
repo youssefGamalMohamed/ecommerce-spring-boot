@@ -3,12 +3,10 @@ package com.app.ecommerce.mappers;
 import java.util.List;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.app.ecommerce.dtos.CategoryDto;
 import com.app.ecommerce.entity.Category;
-import com.app.ecommerce.entity.User;
 
 @Mapper
 public interface CategoryMapper {

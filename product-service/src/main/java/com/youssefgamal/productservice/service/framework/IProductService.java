@@ -9,8 +9,6 @@ import com.youssefgamal.productservice.entity.Product;
 public interface IProductService {
 
     Product save(Product productDTO) throws Exception;
-
-    Set<Product> findProductsByCategoryName(String categoryName);
     
     Product updateProductById(Product updatedProduct);
 
@@ -18,6 +16,8 @@ public interface IProductService {
 
 	Set<Product> findAll();
 
-	void deleteCategoryFromProduct(Long productId, Long categoryId);
+	void deleteAllProductsWithCategoryId(Long category_id);
+
+	Product findById(Long id);
 
 }
