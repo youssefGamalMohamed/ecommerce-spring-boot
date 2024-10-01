@@ -3,6 +3,7 @@ package com.youssefgamal.ecommerce_integrations.camel.routes.exceptions;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.bean.validator.BeanValidationException;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -41,11 +42,19 @@ public class RestExceptionHandlingRoute extends RouteBuilder {
 			            	
 		            	
 	            .otherwise()
-	            	.log(LoggingLevel.ERROR, "Exception Details ${exception}")
-	            	.log(LoggingLevel.ERROR, "HttpStatus Code = 500, Internal Server Error Other exception")
-	            	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(HttpStatus.INTERNAL_SERVER_ERROR.value()))
-	            	.setBody(simple(""))
-	            	.to("direct:LogResponseRoute")
+	            	.choice()
+	            		.when(exchange -> exchange.getProperty(Exchange.EXCEPTION_CAUGHT) instanceof BeanValidationException)
+	            			.log(LoggingLevel.ERROR, "VALIDATION-EXCEPTION = ${exception.message}")
+			            	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(HttpStatus.BAD_REQUEST.value()))
+			            	.setBody(simple(""))
+			            	.to("direct:LogResponseRoute")
+	            		.otherwise()
+			            	.log(LoggingLevel.ERROR, "Exception Details ${exception}")
+			            	.log(LoggingLevel.ERROR, "HttpStatus Code = 500, Internal Server Error Other exception")
+			            	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+			            	.setBody(simple(""))
+			            	.to("direct:LogResponseRoute")
+			        .endChoice()
 	            .endChoice()
 	        .end()
 			;

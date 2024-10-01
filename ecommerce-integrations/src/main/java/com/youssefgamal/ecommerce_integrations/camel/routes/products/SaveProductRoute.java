@@ -5,6 +5,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
+import com.youssefgamal.ecommerce_integrations.camel.dtos.ProductDto;
+
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -22,6 +24,9 @@ public class SaveProductRoute extends RouteBuilder {
 	    .doTry()
 	        .routeId("SaveProductRoute")
 	        .to("direct:LogRequestRoute")
+	        .unmarshal().json(ProductDto.class)
+	        .to("bean-validator:validateSavedProductDto")
+	        .marshal().json()
 	        .log("Before Calling Backend ==> BODY = ${body} , HEADERS = ${headers}")
 	        .setHeader(Exchange.HTTP_METHOD, constant(HttpMethod.POST))
 	        .toD("{{ecommerce.product-service.url}}?bridgeEndpoint=true")
