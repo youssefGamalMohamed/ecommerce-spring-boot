@@ -37,7 +37,7 @@ public class ProductController implements IProductController {
     @Autowired
     private ICategoryService categoryService;
 
-    @RolesAllowed({"ADMIN"})
+    
     @PostMapping("/products")
     @Override
     public ResponseEntity<?> save(@RequestBody ProductDto productDto) throws Exception {
@@ -50,7 +50,7 @@ public class ProductController implements IProductController {
     }
 
     
-    @RolesAllowed({"ADMIN" , "USER"})
+    
     @GetMapping("/products")
     @Override
     public ResponseEntity<?> findAll() {
@@ -59,12 +59,12 @@ public class ProductController implements IProductController {
     }
     
     
-    @RolesAllowed({"ADMIN"})
-    @PutMapping("/products")
+    
+    @PutMapping("/products/{id}")
     @Override
-    public ResponseEntity<?> updateProduct(@Valid @RequestBody ProductDto productDto) {
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDto productDto) {
     	
-    	Product updateProduct = productService.updateProductById(ProductMapper.INSTANCE.mapToEntity(productDto));
+    	Product updateProduct = productService.updateProductById(id, ProductMapper.INSTANCE.mapToEntity(productDto));
 		return new ResponseEntity<>(
 					ProductMapper.INSTANCE.mapToDto(updateProduct),
 					HttpStatus.OK
@@ -72,7 +72,6 @@ public class ProductController implements IProductController {
     }
 
     @DeleteMapping("/products/{id}")
-    @RolesAllowed({"ADMIN"})
     @Override
     public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long productId) throws IdNotFoundException {
     	productService.deleteProductById(productId);

@@ -55,24 +55,17 @@ public class ProductService implements IProductService {
 
 
 	@Override
-	public Product updateProductById(Product updatedProduct) {
+	public Product updateProductById(Long id, Product updatedProduct) {
 			
-		Product product = productRepo.findById(updatedProduct.getId())
+		Product product = productRepo.findById(id)
 				.orElseThrow(() -> new IdNotFoundException("Can Not Update Product , Id Not Found"));
 		
-		Set<Category> categories = updatedProduct.getCategories()
-				.stream()
-				.peek(category -> category.setProduct(product))
-				.peek(category -> product.getCategories().add(category))
-				.collect(Collectors.toSet());
-		
-        product.setName(updatedProduct.getName());
+	    product.setName(updatedProduct.getName());
         product.setDescription(updatedProduct.getDescription());
         product.setPrice(updatedProduct.getPrice());
         product.setQuantity(updatedProduct.getQuantity());
-        product.getCategories().addAll(categories);
         
-        
+       
         return productRepo.save(product);
 	}
 

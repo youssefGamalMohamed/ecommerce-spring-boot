@@ -13,7 +13,7 @@ public class UpdateProductRoute extends RouteBuilder {
 			.to("direct:LogRequestRoute")
 			.doTry()
 				.log("Before Calling PUT /product/${headers.id} with body = ${body}")
-				.toD("http://localhost:9092/ecommerce/api/v1/products?bridgeEndpoint=true")
+				.toD("http://localhost:9092/ecommerce/api/v1/products/${headers.id}?bridgeEndpoint=true")
 				.log("After Calling PUT /product/${headers.id} with body = ${body}")
 				.to("direct:LogResponseRoute")
 			.doCatch(Exception.class)

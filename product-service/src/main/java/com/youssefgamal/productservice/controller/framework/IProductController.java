@@ -62,7 +62,7 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> updateProduct(@Valid @RequestBody ProductDto productDto);
+    ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDto productDto);
 
 
 

@@ -10,7 +10,7 @@ public interface IProductService {
 
     Product save(Product productDTO) throws Exception;
     
-    Product updateProductById(Product updatedProduct);
+    Product updateProductById(Long id, Product updatedProduct);
 
     void deleteProductById(Long productId);
 

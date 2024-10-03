@@ -28,7 +28,7 @@ public class ProductRESTApi extends RouteBuilder {
 	        	.to("direct:FindAllProductsRoute")
 	        .delete("/api/v1/products/{id}")
 	        	.to("direct:DeleteProductByIdRoute")
-	        .put("/api/v1/products")
+	        .put("/api/v1/products/{id}")
 	        	.consumes(MediaType.APPLICATION_JSON_VALUE)
 	        	.produces(MediaType.APPLICATION_JSON_VALUE)
 	        	.type(ProductDto.class)
