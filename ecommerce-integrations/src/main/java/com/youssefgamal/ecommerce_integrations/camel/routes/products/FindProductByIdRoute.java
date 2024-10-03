@@ -35,6 +35,7 @@ public class FindProductByIdRoute extends RouteBuilder {
 		    .log("Product GET /categories/${headers.id} Successfully with id = ${headers.id}, body = ${body}")
 		    .setProperty("copyOfBodyJSONProductAsString", simple("${bodyAs(String)}"))
 		    .split(jsonpath("$.categories.*"), new JsonListGroupedBodyAggregator())
+		    	.parallelProcessing()
 		    	.setHeader("id", simple("${body[id]}"))
             	.log("Full Category = ${body}")
 	        	.log("ALL HEADERS = ${headers}")
