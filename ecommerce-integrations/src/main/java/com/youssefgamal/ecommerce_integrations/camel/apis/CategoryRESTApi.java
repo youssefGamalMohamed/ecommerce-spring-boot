@@ -1,6 +1,9 @@
 package com.youssefgamal.ecommerce_integrations.camel.apis;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +37,11 @@ public class CategoryRESTApi extends RouteBuilder {
         		.produces(MediaType.APPLICATION_JSON_VALUE)
         		.outType(CategoryDto.class)
         		.to("direct:FindCategoryByIdRoute")
-        	
+        	.head("/api/v1/categories")
+        		.to("direct:HeadCategoriesRoute")
         	;	
 		
+       
 	}
 
 }

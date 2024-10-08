@@ -34,6 +34,9 @@ public class ProductRESTApi extends RouteBuilder {
 	        	.type(ProductDto.class)
 	        	.outType(ProductDto.class)
 	        	.to("direct:UpdateProductRoute")
+	        .head("/api/v1/products")
+	        	.to("direct:HeadProductsRoute")
+	        
         	;	
 		
        
