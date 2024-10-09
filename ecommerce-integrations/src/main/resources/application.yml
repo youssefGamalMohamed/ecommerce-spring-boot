@@ -1,10 +1,13 @@
 spring:
   application.name: ecommerce-integrations
-
+server:
+  port: 8080
 camel:
   servlet:
     mapping:
-      context-path: /rest/*			
+      context-path: /rest/ecommerce/api/v1/*
+  springboot:
+    tracing: true
 ecommerce:
   product-service:
     port: 9092
