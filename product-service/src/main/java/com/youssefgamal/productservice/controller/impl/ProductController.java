@@ -22,7 +22,6 @@ import com.youssefgamal.productservice.mappers.ProductMapper;
 import com.youssefgamal.productservice.service.framework.ICategoryService;
 import com.youssefgamal.productservice.service.framework.IProductService;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 

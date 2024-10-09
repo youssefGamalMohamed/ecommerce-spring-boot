@@ -1,16 +1,13 @@
 package com.youssefgamal.ecommerce_integrations.camel.apis;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import com.youssefgamal.ecommerce_integrations.camel.dtos.CategoryDto;
-import org.apache.camel.model.rest.RestBindingMode;
 @Component
 public class CategoryRESTApi extends RouteBuilder {
 
