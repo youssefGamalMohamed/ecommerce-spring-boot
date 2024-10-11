@@ -125,8 +125,18 @@
 		    <artifactId>camel-swagger-java-starter</artifactId>
 		    <version>3.22.2</version>
 		</dependency>
-
-        
+		<dependency>
+		    <groupId>org.apache.camel</groupId>
+		    <artifactId>camel-spring-redis</artifactId>
+		    <version>${camel.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.apache.camel.springboot</groupId>
+		  <artifactId>camel-spring-redis-starter</artifactId>
+		  <version>${camel.version}</version>
+		</dependency>
+		
+		
         <!-- Spring Boot Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -140,7 +150,13 @@
             <version>${camel.version}</version>
         </dependency>
         
-        
+        <!-- Redis Config -->
+        <dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		
+		
         <dependency>
 		    <groupId>commons-io</groupId>
 		    <artifactId>commons-io</artifactId>

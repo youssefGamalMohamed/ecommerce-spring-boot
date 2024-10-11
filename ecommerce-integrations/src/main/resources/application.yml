@@ -1,5 +1,9 @@
 spring:
   application.name: ecommerce-integrations
+  data:
+    redis:
+      host: localhost
+      port: 6379
 server:
   port: 8080
 camel:
@@ -7,7 +11,7 @@ camel:
     mapping:
       context-path: /rest/ecommerce/api/v1/*
   springboot:
-    tracing: true
+    tracing: false
 ecommerce:
   product-service:
     port: 9092
