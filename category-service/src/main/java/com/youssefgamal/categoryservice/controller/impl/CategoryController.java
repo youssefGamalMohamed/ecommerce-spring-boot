@@ -1,6 +1,8 @@
 package com.youssefgamal.categoryservice.controller.impl;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +54,10 @@ public class CategoryController implements ICategoryController {
     @GetMapping("/categories")
     @Override
     public ResponseEntity<?> findAll() {
-        return ResponseEntity.ok(CategoryMapper.INSTANCE.mapToDtos(categoryService.findAll()));
+    	log.info("findAll()");
+    	List<CategoryDto> categoryDtos = CategoryMapper.INSTANCE.mapToDtos(categoryService.findAll());
+    	log.info("findAll(): {}", categoryDtos);
+        return ResponseEntity.ok(categoryDtos);
     }
 
 //    @RolesAllowed({"ADMIN" , "USER"})

@@ -23,3 +23,10 @@ logging:
     org:
       zalando:
         logbook: trace
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+tracing:
+  url: http://localhost:4317
