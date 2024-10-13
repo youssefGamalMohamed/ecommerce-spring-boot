@@ -18,6 +18,10 @@ spring:
   sql:
     init:
       mode: always
+management:
+  tracing:
+    sampling:
+      probability: 1.0  # to help zipkin and micrometer to export logs
 logging:
   level:
     org:
