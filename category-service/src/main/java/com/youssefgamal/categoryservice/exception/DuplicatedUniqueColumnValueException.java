@@ -1,4 +1,4 @@
-package com.youssefgamal.categoryservice.exception.type;
+package com.youssefgamal.categoryservice.exception;
 
 public class DuplicatedUniqueColumnValueException extends RuntimeException {
 	

@@ -1,4 +1,4 @@
-package com.youssefgamal.categoryservice.service.impl;
+package com.youssefgamal.categoryservice.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -7,22 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.youssefgamal.categoryservice.entity.Category;
-import com.youssefgamal.categoryservice.exception.type.DuplicatedUniqueColumnValueException;
+import com.youssefgamal.categoryservice.exception.DuplicatedUniqueColumnValueException;
 import com.youssefgamal.categoryservice.repository.CategoryRepo;
-import com.youssefgamal.categoryservice.service.framework.ICategoryService;
-import com.youssefgamal.categoryservice.service.framework.IProductService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class CategoryService implements ICategoryService {
+public class CategoryServiceImpl implements CategoryServiceIfc {
 
     @Autowired
     private CategoryRepo categoryRepo;
     
-    @Autowired
-    private IProductService productService;
     
     @Override
     public Category save(Category category) throws DuplicatedUniqueColumnValueException {
@@ -38,33 +34,40 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public void deleteById(Long categoryId) throws NoSuchElementException {
-    	
+    	log.info("starting deleteById({})", categoryId);
         Category category = categoryRepo.findById(categoryId).orElseThrow(
         				() -> new NoSuchElementException("Category Id Not Exist to Delete")
         		);        
         categoryRepo.deleteById(categoryId);
-        productService.deleteAllProductsByCategoryId(categoryId);
-        
+        log.info("end deleteById({})", categoryId);
     }
 
     @Override
     public List<Category> findAll() {
-    	return categoryRepo.findAll();
+    	log.info("start findAll()");
+    	List<Category> categories = categoryRepo.findAll();
+    	log.info("start findAll(): " + categories);
+    	return categories;
     }
 
 	@Override
 	public Category findById(Long categoryId) {
-		return categoryRepo.findById(categoryId)
+		log.info("start findById({})", categoryId);
+		Category category =  categoryRepo.findById(categoryId)
 				.orElseThrow(() -> new NoSuchElementException("No Category To Retrieve, Id Not Found"));
+		log.info("end findById({}): " + category);
+		return category;
 	}
 
 	@Override
 	public Category updateById(Long categoryId, Category updatedCategory) {
-		
+		log.info("start updateById(id: {}, updatedCategory: {})", categoryId, updatedCategory);
 		Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new NoSuchElementException("No Category Update, Id Not Found"));
 		
 		category.setName(updatedCategory.getName());
 		
-		return categoryRepo.save(category);
+		category = categoryRepo.save(category);
+		log.info("end updateById(id: {}, updatedCategory: {})", categoryId, updatedCategory);
+		return category;
 	}
 }

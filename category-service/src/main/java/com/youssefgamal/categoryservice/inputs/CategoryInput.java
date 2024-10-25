@@ -1,8 +1,9 @@
-package com.youssefgamal.categoryservice.dtos;
+package com.youssefgamal.categoryservice.inputs;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,9 +19,11 @@ import lombok.ToString;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
-public class CategoryDto {
+public class CategoryInput {
 	
     private Long id;
+    
+    @NotBlank(message = "Categroy Name Must Not Be Null or Empty")
     private String name;
     
 }

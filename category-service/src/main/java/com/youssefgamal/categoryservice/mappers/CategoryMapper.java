@@ -3,17 +3,15 @@ package com.youssefgamal.categoryservice.mappers;
 import java.util.List;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
-import com.youssefgamal.categoryservice.dtos.CategoryDto;
 import com.youssefgamal.categoryservice.entity.Category;
+import com.youssefgamal.categoryservice.inputs.CategoryInput;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
-
-    CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
-
-    Category mapToEntity(CategoryDto categoryDto);
-    CategoryDto mapToDto(Category category);
-    List<CategoryDto> mapToDtos(List<Category> categories);
+	
+    Category mapToEntity(CategoryInput categoryDto);
+    CategoryInput mapToInput(Category category);
+    List<CategoryInput> mapToDtos(List<Category> categories);
+    
 }
