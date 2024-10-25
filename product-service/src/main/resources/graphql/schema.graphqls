@@ -1,0 +1,55 @@
+# Defines the Category type for category data within products
+type Category {
+    id: ID
+    name: String
+}
+
+# Defines the Product type for product data with nested categories
+type Product {
+    id: ID
+    name: String
+    description: String
+    price: Float
+    quantity: Int
+    categories: [Category]
+}
+
+# Input type for creating or updating a category within a product
+input CategoryInput {
+    id: ID
+    name: String
+}
+
+# Input type for creating or updating a product with nested categories
+input ProductInput {
+    id: ID
+    name: String
+    description: String
+    price: Float
+    quantity: Int
+    categories: [CategoryInput]
+}
+
+# Queries for fetching products and categories
+type Query {
+    # Fetch all products
+    findAll: [Product]
+
+    # Fetch a specific product by its ID
+    findById(id: ID!): Product
+}
+
+# Mutations for creating, updating, and deleting products
+type Mutation {
+    # Save a new product
+    save(product: ProductInput!): Product
+
+    # Update an existing product by its ID
+    updateProduct(id: ID!, product: ProductInput!): Product
+
+    # Delete a product by its ID
+    deleteById(id: ID!): Boolean
+
+    # Delete all products with a specific category ID
+    deleteByCategoryId(categoryId: ID!): Boolean
+}

@@ -4,22 +4,20 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-import com.youssefgamal.productservice.dtos.CategoryDto;
+import com.youssefgamal.productservice.dtos.CategoryInput;
 import com.youssefgamal.productservice.entity.Category;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
-    CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
     
     @Mapping(source = "id", target = "id")
-    Category mapToEntity(CategoryDto categoryDto);
+    Category mapToEntity(CategoryInput categoryInput);
     
     
     @Mapping(source = "id", target = "id")
-    CategoryDto mapToDto(Category category);
+    CategoryInput mapToInput(Category category);
     
-    List<CategoryDto> mapToDtos(List<Category> categories);
+    List<CategoryInput> mapToDtos(List<Category> categories);
 }

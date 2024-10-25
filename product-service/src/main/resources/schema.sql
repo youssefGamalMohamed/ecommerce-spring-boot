@@ -17,7 +17,7 @@ CREATE TABLE Product (
 
 -- Schema for the 'Category' table
 CREATE TABLE Category (
-    id_auto_increment_from_category_service BIGINT AUTO_INCREMENT PRIMARY KEY,
+    table_id_auto_increment BIGINT AUTO_INCREMENT PRIMARY KEY,
     id BIGINT,  -- This refers to the ID from the category-service
     name VARCHAR(255) NOT NULL,
     product_id BIGINT,  -- Foreign key to Product table

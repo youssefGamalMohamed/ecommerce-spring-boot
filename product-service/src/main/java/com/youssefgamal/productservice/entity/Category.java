@@ -29,7 +29,7 @@ public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idAutoIncrementFromCategoryService;
+    private Long tableIdAutoIncrement;
     
     // id of the category in category-service
     private Long id;

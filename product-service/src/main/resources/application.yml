@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /ecommerce/api/v1
+    context-path: /ecommerce/api/v1/products
   port: 9092
 spring:
   application.name: product-service
@@ -17,6 +17,9 @@ spring:
   sql:
     init:
       mode: always
+  graphql:
+    graphiql:
+      enabled: true
 logging:
   level:
     org:

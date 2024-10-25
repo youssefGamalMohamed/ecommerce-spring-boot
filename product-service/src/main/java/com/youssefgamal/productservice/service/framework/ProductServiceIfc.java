@@ -6,7 +6,7 @@ import com.youssefgamal.productservice.entity.Product;
 
 
 
-public interface IProductService {
+public interface ProductServiceIfc {
 
     Product save(Product productDTO) throws Exception;
     

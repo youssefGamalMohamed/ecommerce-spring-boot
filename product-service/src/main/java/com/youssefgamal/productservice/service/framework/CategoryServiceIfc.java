@@ -5,7 +5,7 @@ import java.util.Optional;
 import com.youssefgamal.productservice.entity.Category;
 
 
-public interface ICategoryService {
+public interface CategoryServiceIfc {
 		
 	Category save(Category category);
 	
