@@ -10,7 +10,7 @@ import com.youssefgamal.productservice.dtos.ProductDto;
 import com.youssefgamal.productservice.entity.Product;
 
 
-@Mapper(uses = {CategoryMapper.class})
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class})
 public interface ProductMapper {
 
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);

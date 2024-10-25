@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 import com.youssefgamal.categoryservice.dtos.CategoryDto;
 import com.youssefgamal.categoryservice.entity.Category;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);

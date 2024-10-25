@@ -10,6 +10,7 @@ import com.youssefgamal.categoryservice.entity.Category;
 import com.youssefgamal.categoryservice.exception.type.DuplicatedUniqueColumnValueException;
 import com.youssefgamal.categoryservice.repository.CategoryRepo;
 import com.youssefgamal.categoryservice.service.framework.ICategoryService;
+import com.youssefgamal.categoryservice.service.framework.IProductService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +20,9 @@ public class CategoryService implements ICategoryService {
 
     @Autowired
     private CategoryRepo categoryRepo;
+    
+    @Autowired
+    private IProductService productService;
     
     @Override
     public Category save(Category category) throws DuplicatedUniqueColumnValueException {
@@ -39,6 +43,7 @@ public class CategoryService implements ICategoryService {
         				() -> new NoSuchElementException("Category Id Not Exist to Delete")
         		);        
         categoryRepo.deleteById(categoryId);
+        productService.deleteAllProductsByCategoryId(categoryId);
         
     }
 

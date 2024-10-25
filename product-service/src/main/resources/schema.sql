@@ -1,27 +1,29 @@
--- Drop tables if they already exist
-DROP TABLE IF EXISTS `category`;
-DROP TABLE IF EXISTS `product`;
+-- Drop the 'Category' table if it exists
+DROP TABLE IF EXISTS Category;
 
--- Create Product table
-CREATE TABLE IF NOT EXISTS `product` (
-    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(255) NOT NULL,
-    `description` TEXT,
-    `price` DOUBLE NOT NULL,
-    `quantity` INT,
-    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- Drop the 'Product' table if it exists
+DROP TABLE IF EXISTS Product;
+
+-- Schema for the 'Product' table
+CREATE TABLE Product (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    quantity INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Create Category table
-CREATE TABLE IF NOT EXISTS `category` (
-    `id_auto_increment` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `category_id` BIGINT NOT NULL,
-    `product_id` BIGINT,
-    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_product
-        FOREIGN KEY (`product_id`) 
-        REFERENCES `product`(`id`)
-        ON DELETE CASCADE
+-- Schema for the 'Category' table
+CREATE TABLE Category (
+    id_auto_increment_from_category_service BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT,  -- This refers to the ID from the category-service
+    name VARCHAR(255) NOT NULL,
+    product_id BIGINT,  -- Foreign key to Product table
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Establish foreign key relationship to Product
+    CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES Product(id) ON DELETE CASCADE
 );

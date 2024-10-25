@@ -94,8 +94,10 @@ public class ProductService implements IProductService {
 
 	@Override
 	public Product findById(Long id) {
-		return productRepo.findById(id)
-				.orElseThrow();
+		Product product = productRepo.findById(id)
+								.orElseThrow();
+		
+		return product;
 	}
 
 }

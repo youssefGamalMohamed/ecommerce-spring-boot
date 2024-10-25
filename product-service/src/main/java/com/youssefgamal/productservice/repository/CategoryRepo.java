@@ -19,6 +19,6 @@ public interface CategoryRepo extends JpaRepository<Category,Long> {
     // Custom query to delete Category by 'id'
     @Modifying
     @Transactional
-    @Query("DELETE FROM Category c WHERE c.categoryId = :categoryId")
+    @Query("DELETE FROM Category c WHERE c.id = :categoryId")
     void deleteAllCategoriesByCategoryIdFromCategoryService(Long categoryId);
 }

@@ -1,6 +1,7 @@
 package com.youssefgamal.categoryservice.controller.framework;
 
-import org.springframework.http.ResponseEntity;
+import java.util.Collection;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -37,7 +38,7 @@ public interface ICategoryController {
             )
     }
     )
-    ResponseEntity<?> save(@Valid @RequestBody CategoryDto categoryDto);
+    CategoryDto save(@Valid @RequestBody CategoryDto categoryDto);
 
 
     @Operation(summary = "Delete Category By Id , this endpoint accessed for ( Admin )")
@@ -50,7 +51,7 @@ public interface ICategoryController {
             )
     }
     )
-    ResponseEntity<?> deleteById(@PathVariable(name = "id") Long categoryId);
+    void deleteById(@PathVariable(name = "id") Long categoryId);
 
 
     @Operation(summary = "Get All Category , this endpoint accessed for ( Admin , User )")
@@ -66,7 +67,7 @@ public interface ICategoryController {
             )
     }
     )
-    ResponseEntity<?> findAll();
+    Collection<CategoryDto> findAll();
 
 
     @Operation(summary = "Find Category By Id , this endpoint accessed for ( Admin , User )")
@@ -85,7 +86,7 @@ public interface ICategoryController {
             )
     }
     )
-    ResponseEntity<?> findById(@PathVariable("id") Long categoryId);
+    CategoryDto findById(@PathVariable("id") Long categoryId);
 
 
     @Operation(summary = "Update Category By Id , this endpoint accessed for ( Admin )")
@@ -107,7 +108,7 @@ public interface ICategoryController {
             )
     }
     )
-    ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody CategoryDto categoryDto);
+    CategoryDto updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody CategoryDto categoryDto);
 
 
 }

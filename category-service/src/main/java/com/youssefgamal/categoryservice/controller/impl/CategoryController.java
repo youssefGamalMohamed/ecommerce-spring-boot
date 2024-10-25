@@ -1,15 +1,16 @@
 package com.youssefgamal.categoryservice.controller.impl;
 
-import java.net.URI;
+import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.youssefgamal.categoryservice.controller.framework.ICategoryController;
@@ -30,43 +31,43 @@ public class CategoryController implements ICategoryController {
     @Autowired
     private ICategoryService categoryService;
 
-//    @RolesAllowed({"ADMIN"})
+    @Override
     @PostMapping("/categories")
-    @Override
-    public ResponseEntity<?> save(@Valid @RequestBody CategoryDto categoryDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryDto save(@Valid @RequestBody CategoryDto categoryDto) {
     	Category newCreatedCategory = categoryService.save(CategoryMapper.INSTANCE.mapToEntity(categoryDto));
-        return ResponseEntity.created(URI.create("/categories/"+newCreatedCategory.getId()))
-        		.body(CategoryMapper.INSTANCE.mapToDto(newCreatedCategory));
+        CategoryDto newCreatedCategoryDto = CategoryMapper.INSTANCE.mapToDto(newCreatedCategory);
+        return newCreatedCategoryDto;
     }
 
-//    @RolesAllowed({"ADMIN"})
+    @Override
     @DeleteMapping("/categories/{id}")
-    @Override
-    public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long categoryId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable(name = "id") Long categoryId) {
     	categoryService.deleteById(categoryId);
-    	return ResponseEntity.noContent()
-    			.build();
     }
 
-//    @RolesAllowed({"ADMIN" , "USER"})
     @GetMapping("/categories")
+    @ResponseStatus(HttpStatus.OK)
     @Override
-    public ResponseEntity<?> findAll() {
-        return ResponseEntity.ok(CategoryMapper.INSTANCE.mapToDtos(categoryService.findAll()));
+    public Collection<CategoryDto> findAll() {
+        Collection<CategoryDto> categoryDtos = CategoryMapper.INSTANCE.mapToDtos(categoryService.findAll());
+        return categoryDtos;
     }
 
-//    @RolesAllowed({"ADMIN" , "USER"})
+    @Override
     @GetMapping("/categories/{id}")
-    @Override
-    public ResponseEntity<?> findById(@PathVariable("id") Long categoryId) {
-        return ResponseEntity.ok(CategoryMapper.INSTANCE.mapToDto(categoryService.findById(categoryId)));
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto findById(@PathVariable("id") Long categoryId) {
+        return CategoryMapper.INSTANCE.mapToDto(categoryService.findById(categoryId));
     }
 
-//    @RolesAllowed({"ADMIN"})
-    @PutMapping("/categories/{id}")
     @Override
-    public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody CategoryDto updatedBody) {
-        return ResponseEntity.ok(categoryService.updateById(categoryId, CategoryMapper.INSTANCE.mapToEntity(updatedBody)));
+    @PutMapping("/categories/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody CategoryDto updatedBody) {
+        Category updatedCategory = categoryService.updateById(categoryId, CategoryMapper.INSTANCE.mapToEntity(updatedBody));
+        return CategoryMapper.INSTANCE.mapToDto(updatedCategory);
     }
 
 

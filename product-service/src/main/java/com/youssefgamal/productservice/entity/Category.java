@@ -29,9 +29,12 @@ public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_auto_increment;
+    private Long idAutoIncrementFromCategoryService;
     
-    private Long categoryId;
+    // id of the category in category-service
+    private Long id;
+    
+    private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")

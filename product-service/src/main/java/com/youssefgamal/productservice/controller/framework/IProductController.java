@@ -1,7 +1,8 @@
 package com.youssefgamal.productservice.controller.framework;
 
 
-import org.springframework.http.ResponseEntity;
+import java.util.Collection;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,7 +40,7 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> save(@Valid @RequestBody ProductDto productDto) throws Exception;
+    ProductDto save(@Valid @RequestBody ProductDto productDto) throws Exception;
 
     
     
@@ -62,7 +63,7 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDto productDto);
+    ProductDto updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDto productDto);
 
 
 
@@ -76,7 +77,7 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> deleteById(@PathVariable(name = "id") Long productId) throws IdNotFoundException;
+    void deleteById(@PathVariable(name = "id") Long productId) throws IdNotFoundException;
 
 
     
@@ -93,7 +94,7 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> findAll();
+    Collection<ProductDto> findAll();
     
     
     
@@ -105,7 +106,7 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> deleteByCategoryId(@RequestParam(name = "category_id") Long category_id);
+    void deleteByCategoryId(@RequestParam(name = "category_id") Long category_id);
     
     
     
@@ -120,5 +121,5 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> findById(@PathVariable Long id);
+    ProductDto findById(@PathVariable Long id);
 }
