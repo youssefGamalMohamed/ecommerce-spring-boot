@@ -1,7 +1,6 @@
 # Defines the Category type for category data within products
 type Category {
     id: ID
-    name: String
 }
 
 # Defines the Product type for product data with nested categories
@@ -17,7 +16,6 @@ type Product {
 # Input type for creating or updating a category within a product
 input CategoryInput {
     id: ID
-    name: String
 }
 
 # Input type for creating or updating a product with nested categories
