@@ -16,7 +16,7 @@ import lombok.ToString;
 public class CartItemInput {
 	
 	private Long id;
-	private ProductInput product;
+	private Long productId;
 	private Integer quantity;
 	
 }

@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import com.youssefgamal.cart_service.dtos.CartItemInput;
 import com.youssefgamal.cart_service.entity.CartItem;
 
-@Mapper(componentModel = "spring", uses = ProductMapper.class)
+@Mapper(componentModel = "spring")
 public interface CartItemMapper {
 
 	

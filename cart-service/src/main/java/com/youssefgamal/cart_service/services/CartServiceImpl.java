@@ -18,7 +18,6 @@ public class CartServiceImpl implements CartServiceIfc {
 	public Cart creatCart(Cart cart) {
 		log.info("creatCart({})", cart);
 		cart.getCartItems().forEach(cartItem -> cartItem.setCart(cart));
-		cart.getCartItems().forEach(cartItem -> cartItem.getProduct().setCartItem(cartItem));
 		Cart newCreatedCart = cartRepository.save(cart);
 		log.info("creatCart({})", newCreatedCart);
 		return newCreatedCart;
