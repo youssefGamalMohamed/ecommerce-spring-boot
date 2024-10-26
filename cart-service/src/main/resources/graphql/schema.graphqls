@@ -7,15 +7,7 @@ type Cart {
 
 type CartItem {
     id: ID
-    product: Product
-    quantity: Int
-}
-
-type Product {
-    id: ID
-    name: String
-    description: String
-    price: Float
+    productId: Int
     quantity: Int
 }
 
@@ -24,17 +16,10 @@ input CartInput {
 }
 
 input CartItemInput {
-    product: ProductInput
     quantity: Int
+    productId: Int
 }
 
-input ProductInput {
-	id: ID
-    name: String
-    description: String
-    price: Float
-    quantity: Int
-}
 
 type Query {
     findById(id: ID!): Cart
