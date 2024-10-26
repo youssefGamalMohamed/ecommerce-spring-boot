@@ -34,7 +34,6 @@ public class Category extends BaseEntity {
     // id of the category in category-service
     private Long id;
     
-    private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
