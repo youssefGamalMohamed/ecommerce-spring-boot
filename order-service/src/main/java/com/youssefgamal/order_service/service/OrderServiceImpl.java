@@ -17,10 +17,10 @@ public class OrderServiceImpl implements OrderServiceIfc {
 	
 	@Override
 	public Order createOrder(Order order) {
-		log.info("createOrder(): ", order);
-		order.getCarts().forEach(cart -> cart.setOrder(order));
+		log.info("createOrder(): " +  order);
+		order.getCart().setOrder(order);
 		Order createdOrder = orderRepository.save(order);
-		log.info("createOrder(): ", createdOrder);
+		log.info("createOrder(): " +  createdOrder);
 		return createdOrder;
 	}
 

@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.mapstruct.Mapper;
 
-import com.youssefgamal.order_service.dtos.OrderDto;
+import com.youssefgamal.order_service.dtos.OrderInput;
 import com.youssefgamal.order_service.entity.Order;
 
 
@@ -12,9 +12,9 @@ import com.youssefgamal.order_service.entity.Order;
 public interface OrderMapper {
 
 
-	OrderDto mapToDto(Order Order);	
-	Order mapToEntity(OrderDto OrderDto);
-	Collection<Order> mapToEntities(Collection<OrderDto> OrderDtos);
-	Collection<OrderDto> mapToDtos(Collection<Order> Orders);
+	OrderInput mapToDto(Order Order);	
+	Order mapToEntity(OrderInput OrderDto);
+	Collection<Order> mapToEntities(Collection<OrderInput> OrderDtos);
+	Collection<OrderInput> mapToDtos(Collection<Order> Orders);
 	
 }

@@ -1,0 +1,28 @@
+# schema.graphqls
+
+type Query {
+    findOrderById(id: ID!): Order
+}
+
+type Mutation {
+    createOrder(order: OrderInput!): Order
+}
+
+type Order {
+    id: ID!
+    userId: ID!
+    cart: Cart
+}
+
+input OrderInput {
+    userId: ID!
+    cart: CartInput
+}
+
+type Cart {
+    id: ID!
+}
+
+input CartInput {
+    id: ID
+}
