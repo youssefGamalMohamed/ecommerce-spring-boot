@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /ecommerce/api/v1
+    context-path: /ecommerce/api/v1/carts
   port: 9093
 spring:
   application.name: cart-service
@@ -17,6 +17,9 @@ spring:
   sql:
     init:
       mode: always
+  graphql:
+    graphiql:
+      enabled: true
 logging:
   level:
     org:

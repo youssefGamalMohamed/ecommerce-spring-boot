@@ -1,8 +1,5 @@
 package com.youssefgamal.cart_service.dtos;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -20,12 +17,12 @@ import lombok.ToString;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
-public class ProductDto {
+public class ProductInput {
 
     private Long id;
     private String name;
     private String description;
     private double price;
     private Integer quantity;
-    private Set<CategoryDto> categories = new HashSet<>();    
+   
 }

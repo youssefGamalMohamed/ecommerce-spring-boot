@@ -1,14 +1,10 @@
 package com.youssefgamal.cart_service.entity;
 
-import java.util.Set;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,13 +19,19 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
-public class Cart extends BaseEntity {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<CartItem> cartItems;
+public class Product extends BaseEntity {
 
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long tableIdAutoIncrement;
+	
+    private Long id;
+    private String name;
+    private String description;
+    private double price;
+    private Integer quantity;
+    
+    
+    @ToString.Exclude
+    @OneToOne
+    private CartItem cartItem;
 }

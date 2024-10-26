@@ -1,0 +1,45 @@
+# schema.graphqls
+
+type Cart {
+    id: ID
+    cartItems: [CartItem]
+}
+
+type CartItem {
+    id: ID
+    product: Product
+    quantity: Int
+}
+
+type Product {
+    id: ID
+    name: String
+    description: String
+    price: Float
+    quantity: Int
+}
+
+input CartInput {
+    cartItems: [CartItemInput]
+}
+
+input CartItemInput {
+    product: ProductInput
+    quantity: Int
+}
+
+input ProductInput {
+	id: ID
+    name: String
+    description: String
+    price: Float
+    quantity: Int
+}
+
+type Query {
+    findById(id: ID!): Cart
+}
+
+type Mutation {
+    createCart(cart: CartInput): Cart
+}
