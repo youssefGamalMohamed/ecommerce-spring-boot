@@ -1,13 +1,11 @@
 package com.app.ecommerce.mappers;
 
-import java.util.List;
-import java.util.Set;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
-
 import com.app.ecommerce.dtos.UserDto;
 import com.app.ecommerce.entity.User;
+import java.util.List;
+import java.util.Set;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface UserMapper {

@@ -1,13 +1,11 @@
 package com.app.ecommerce.mappers;
 
-import java.util.List;
-import java.util.Set;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
-
 import com.app.ecommerce.dtos.CartItemDto;
 import com.app.ecommerce.entity.CartItem;
+import java.util.List;
+import java.util.Set;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = {ProductMapper.class})
 public interface CartItemMapper {

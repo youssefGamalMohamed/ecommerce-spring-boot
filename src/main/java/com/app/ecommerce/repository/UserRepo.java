@@ -2,11 +2,10 @@ package com.app.ecommerce.repository;
 
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.Role;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepo extends JpaRepository<User,Long> {

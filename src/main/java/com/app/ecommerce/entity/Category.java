@@ -1,16 +1,13 @@
 package com.app.ecommerce.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
+import lombok.*;
 import org.hibernate.Hibernate;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Table(name = "Category")
 @Entity(name = "Category")
