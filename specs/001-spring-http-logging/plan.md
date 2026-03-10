@@ -6,11 +6,9 @@
 ## Summary
 
 Replace the three custom logging classes (`AppLogger`, `HttpRequestResponseInterceptorUtils`,
-`LoggingUtils`) with Spring's built-in `CommonsRequestLoggingFilter` (for request logging) and
-a minimal `HttpResponseLoggingFilter` (for status-aware response logging). Both are wired via
-`@Bean` declarations in a new `HttpLoggingConfiguration` class. No new Maven dependencies are
-required. The response filter wraps Spring Security so that 401/403 rejections are also captured
-and logged at WARN level.
+`LoggingUtils`) with Spring's built-in `CommonsRequestLoggingFilter` wired as a single `@Bean`
+in a new `HttpLoggingConfiguration` class. No new Maven dependencies are required and no custom
+filter class is introduced. Response status-code logging is out of scope.
 
 ## Technical Context
 
@@ -66,8 +64,8 @@ src/main/java/com/app/ecommerce/
 ├── logging/
 │   ├── AppLogger.java                    [DELETE]
 │   ├── HttpRequestResponseInterceptorUtils.java  [DELETE]
-│   ├── LoggingUtils.java                 [DELETE]
-│   └── HttpResponseLoggingFilter.java    [NEW] — OncePerRequestFilter for response logging
+│   └── LoggingUtils.java                 [DELETE]
+│   (package will be empty after migration — no new file added here)
 
 src/main/resources/
 └── application.properties                [MODIFY] — add CommonsRequestLoggingFilter log level
@@ -81,6 +79,5 @@ and `logging/` packages per constitution directory conventions.
 
 ## Complexity Tracking
 
-| Addition | Why Needed | Simpler Alternative Rejected Because |
-|---|---|---|
-| `HttpResponseLoggingFilter` (OncePerRequestFilter) | Spring has no built-in response logging filter; response status + body must be captured post-chain | `CommonsRequestLoggingFilter` only logs requests. No built-in alternative exists for response logging in Spring Boot 3.x. |
+No complexity justifications required. The feature uses a single Spring built-in bean
+(`CommonsRequestLoggingFilter`) with no custom filter classes added.

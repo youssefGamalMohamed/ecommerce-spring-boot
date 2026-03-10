@@ -17,7 +17,7 @@ src/main/java/com/app/ecommerce/
 ├── service/{framework,impl}/  — Business logic
 ├── repository/      — Spring Data JPA repos
 ├── security/{filters,handler}/  — JWT filter, access denied handlers
-├── logging/         — HttpResponseLoggingFilter (response logging)
+├── logging/         — (empty after 001-spring-http-logging migration)
 ├── mq/activemq/     — ActiveMQ senders/listeners
 └── exception/       — Global exception handler + custom types
 src/main/resources/application.properties
@@ -48,7 +48,7 @@ mvn test
 ## Recent Changes
 
 - 001-spring-http-logging: Replace AppLogger/HttpRequestResponseInterceptorUtils/LoggingUtils
-  with CommonsRequestLoggingFilter + HttpResponseLoggingFilter beans
+  with CommonsRequestLoggingFilter bean only (response status logging out of scope)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

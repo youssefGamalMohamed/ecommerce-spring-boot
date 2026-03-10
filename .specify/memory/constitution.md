@@ -1,29 +1,21 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.0.0 → 1.0.1 (PATCH — Principle VI updated to reflect HTTP logging migration)
+Version change: 1.0.1 → 1.0.2 (PATCH — Principle VI updated: HttpResponseLoggingFilter removed; response status logging out of scope)
 
-Modified principles: N/A (first fill; no prior named principles)
+Modified principles:
+  - Principle VI (Observability): removed HttpResponseLoggingFilter reference; logging/ package now empty
 
-Added sections:
-  - Core Principles (6 principles defined)
-  - Technology Stack
-  - Package & Directory Conventions
-  - Governance
+Added sections: N/A
 
 Removed sections: N/A
 
 Templates requiring updates:
-  ✅ .specify/templates/plan-template.md
-     — "Constitution Check" gates now have concrete principle names to validate against.
-     — Technical Context defaults updated to match this stack (Java 17, Spring Boot 3, Maven, MySQL).
-  ✅ .specify/templates/spec-template.md
-     — No structural changes required; template is technology-agnostic and compatible.
-  ✅ .specify/templates/tasks-template.md
-     — Path conventions updated note: use src/main/java/com/app/ecommerce/ not generic src/.
-     — Security tasks in Phase 2 must reference JWT filter + BCrypt wiring.
-  ✅ .specify/templates/agent-file-template.md
-     — No changes needed; template already generic.
+  ✅ CLAUDE.md — logging/ package comment and Recent Changes updated
+  ✅ specs/001-spring-http-logging/tasks.md — Phase 4 (HttpResponseLoggingFilter) removed
+  ✅ specs/001-spring-http-logging/quickstart.md — Steps 3/4 (response WARN/INFO) removed
+  ✅ specs/001-spring-http-logging/contracts/logging-contract.md — Response section removed
+  ✅ specs/001-spring-http-logging/research.md — Decisions 2/4/6 updated
 
 Deferred TODOs:
   - /products/** public access: Current SecurityConfiguration.java does NOT whitelist
@@ -130,10 +122,9 @@ All significant application events MUST be logged using SLF4J (via Lombok `@Slf4
 - HTTP **request** logging MUST use Spring's built-in `CommonsRequestLoggingFilter`
   configured as a `@Bean` in `HttpLoggingConfiguration`. Activation is controlled by
   `logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG`.
-- HTTP **response** logging MUST use `HttpResponseLoggingFilter`
-  (`com.app.ecommerce.logging.HttpResponseLoggingFilter`), a minimal `OncePerRequestFilter`
-  registered as a `@Bean` in `HttpLoggingConfiguration`. Response log level MUST be
-  differentiated by HTTP status family: INFO (2xx), WARN (4xx), ERROR (5xx).
+- HTTP **response** status-code logging is out of scope. No `HttpResponseLoggingFilter`
+  or any custom response-logging class MUST be created. The `com.app.ecommerce.logging`
+  package MUST remain empty after the 001-spring-http-logging migration.
 - The `Authorization` header value MUST NOT appear in any log line.
 - SQL statement logging is provided by `datasource-proxy-spring-boot-starter`
   and MUST remain enabled in non-production profiles.
@@ -181,7 +172,7 @@ src/main/java/com/app/ecommerce/
 │   ├── handler/     — @RestControllerAdvice global handler
 │   └── type/        — Custom exception classes
 ├── factory/         — Object factory helpers
-├── logging/         — HttpResponseLoggingFilter (response logging filter)
+├── logging/         — (empty; reserved for future logging filters)
 ├── mappers/         — MapStruct @Mapper interfaces
 ├── models/
 │   ├── request/     — Inbound DTO request bodies
@@ -236,4 +227,4 @@ for per-feature agent context generation; keep it in sync with any stack changes
 
 ---
 
-**Version**: 1.0.1 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-10
+**Version**: 1.0.2 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-10

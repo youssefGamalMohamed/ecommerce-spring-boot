@@ -30,43 +30,16 @@ After request [POST /ecommerce/api/v1/auth/login, payload=[{"email":"...","passw
 
 ---
 
-### Response Log Entry
+### Out of Scope
 
-Produced by `HttpResponseLoggingFilter` using plain SLF4J log calls — no custom format strings.
-
-**Format** (plain SLF4J):
-```
-[HTTP_METHOD] [URI] - [STATUS_CODE] ([ELAPSED]ms)
-```
-
-**Examples**:
-```
-INFO  HttpResponseLoggingFilter : POST /ecommerce/api/v1/auth/login - 200 (143ms)
-WARN  HttpResponseLoggingFilter : POST /ecommerce/api/v1/auth/login - 401 (12ms)
-ERROR HttpResponseLoggingFilter : GET  /ecommerce/api/v1/orders - 500 (3ms)
-```
-
-**Guaranteed fields**: Method, URI, status code, elapsed time.
-**Log logger name**: `com.app.ecommerce.logging.HttpResponseLoggingFilter`
-
----
-
-### Log Level Contract
-
-Applications and monitoring systems MAY use these log levels to filter operational signals:
-
-| Level | Trigger | Action expected |
-|---|---|---|
-| DEBUG | All 1xx, 3xx + request entries | Development / trace only |
-| INFO | 2xx responses | Normal operation |
-| WARN | 4xx responses | Client-side issues; may need attention |
-| ERROR | 5xx responses | Server-side failures; requires investigation |
+Response status-code logging (`HttpResponseLoggingFilter`) is **not part of this feature**.
+No log entries for HTTP response status codes (2xx/4xx/5xx) are produced.
 
 ---
 
 ### Security Guarantee
 
 The `Authorization` header value (JWT Bearer token) MUST NOT appear in any log entry
-produced by `CommonsRequestLoggingFilter` or `HttpResponseLoggingFilter`.
+produced by `CommonsRequestLoggingFilter`.
 
 Verified by: setting `setIncludeHeaders(false)` on `CommonsRequestLoggingFilter`.

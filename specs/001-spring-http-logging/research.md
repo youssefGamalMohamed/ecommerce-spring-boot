@@ -51,33 +51,16 @@ silenced automatically — which is the correct default security posture.
 
 ## Decision 2: Response Logging Mechanism
 
-**Decision**: Use a minimal `OncePerRequestFilter` subclass (`HttpResponseLoggingFilter`) registered
-as a `FilterRegistrationBean` `@Bean`. This is the only viable way to log HTTP responses in Spring —
-there is no built-in response logging filter.
+**Decision**: No response logging filter. Response status-code logging is out of scope for this
+feature (clarified decision — user does not want `HttpResponseLoggingFilter`).
 
-**Rationale**: Spring Framework provides `ContentCachingResponseWrapper` which buffers the response
-body so it can be read after the response has been written. A `OncePerRequestFilter` wrapping the
-entire filter chain with both a `ContentCachingRequestWrapper` and `ContentCachingResponseWrapper`
-is the idiomatic Spring pattern. It is registered as a `@Bean` (via `FilterRegistrationBean`) in
-the logging configuration class — satisfying the "bean implementation" requirement.
+**Rationale**: `CommonsRequestLoggingFilter` alone is used. While it cannot log HTTP response
+status codes, adding a custom `OncePerRequestFilter` for that purpose was explicitly rejected to
+keep the implementation minimal. The application will not break — request logging remains fully
+functional.
 
-**Status-aware log levels**:
-| Status Range | Log Level | Rationale |
-|---|---|---|
-| 1xx | DEBUG | Informational, rarely emitted |
-| 2xx | INFO | Nominal success |
-| 3xx | DEBUG | Redirects, low operational signal |
-| 4xx | WARN | Client-side problem, needs monitoring |
-| 5xx | ERROR | Server-side failure, requires immediate attention |
-
-**Critical implementation note**: `responseWrapper.copyBodyToResponse()` MUST be called in a
-`finally` block after the filter chain completes; otherwise the response body is never written to
-the client (cached but not flushed).
-
-**Alternatives considered**:
-- Spring Actuator `HttpExchangeRepository` — see Decision 1; does not emit log lines.
-- Using a `HandlerInterceptor` (`postHandle` / `afterCompletion`) — cannot reliably access response
-  body bytes via `HandlerInterceptorAdapter`.
+**Note for future consideration**: If response status logging is needed later, a minimal
+`OncePerRequestFilter` with `ContentCachingResponseWrapper` could be added in a separate feature.
 
 ---
 
@@ -101,24 +84,13 @@ URI provide sufficient context for debugging without requiring headers.
 
 ## Decision 4: Filter Ordering with Spring Security
 
-**Decision**: Register the response logging filter at `SecurityProperties.DEFAULT_FILTER_ORDER - 1`
-(one position before Spring Security's `FilterChainProxy`).
+**Decision**: No custom filter ordering required. `CommonsRequestLoggingFilter` is registered
+as a plain `@Bean` and Spring Boot handles its registration automatically.
 
-**Rationale**: To log every HTTP response including those rejected by Spring Security (e.g., 401
-Unauthorized, 403 Forbidden), the response logging filter MUST wrap the entire Spring Security
-filter chain. If the filter runs at a lower priority (higher order number), security rejections
-happen inside the chain before the wrapper captures the response. Using
-`SecurityProperties.DEFAULT_FILTER_ORDER - 1` mirrors the ordering the removed `AppLogger` used.
-
-**Outcome**: The filter execution order will be:
-```
-HttpResponseLoggingFilter (order: DEFAULT_FILTER_ORDER - 1)
-  └── Spring Security FilterChainProxy (order: DEFAULT_FILTER_ORDER)
-        └── JwtAuthenticationFilter
-              └── Controller / Exception handlers
-```
-
-This ensures 401/403 responses from Spring Security are also logged at WARN level.
+**Rationale**: Since no `HttpResponseLoggingFilter` is created, there is no need to position a
+custom filter relative to Spring Security's `FilterChainProxy`. `CommonsRequestLoggingFilter`
+registers itself at the default order and will log all requests regardless of whether they
+are subsequently rejected by Spring Security (the filter runs before authentication decisions).
 
 ---
 
@@ -145,10 +117,8 @@ upgrade is needed for this feature — all required classes exist in 3.0.0.
 
 **Files to create**:
 - `src/main/java/com/app/ecommerce/config/HttpLoggingConfiguration.java`
-  — `@Configuration` class containing the `CommonsRequestLoggingFilter` bean and the
-  `FilterRegistrationBean<HttpResponseLoggingFilter>` bean.
-- `src/main/java/com/app/ecommerce/logging/HttpResponseLoggingFilter.java`
-  — Minimal `OncePerRequestFilter` for status-aware response logging.
+  — `@Configuration` class containing only the `CommonsRequestLoggingFilter` `@Bean`.
+  No `HttpResponseLoggingFilter` is created.
 
 **Files to modify**:
 - `src/main/resources/application.properties`
