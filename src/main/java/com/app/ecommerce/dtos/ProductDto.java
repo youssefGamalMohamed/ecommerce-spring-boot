@@ -25,5 +25,6 @@ public class ProductDto {
     private String description;
     private double price;
     private Integer quantity;
+    @Builder.Default
     private Set<CategoryDto> categories = new HashSet<>();    
 }

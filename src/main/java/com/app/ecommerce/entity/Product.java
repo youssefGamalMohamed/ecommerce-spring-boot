@@ -37,6 +37,7 @@ public class Product extends BaseEntity {
     
     
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.DETACH , CascadeType.REFRESH })
     @JoinTable(
             name = "product_category",

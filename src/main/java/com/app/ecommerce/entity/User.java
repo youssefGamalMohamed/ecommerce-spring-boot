@@ -44,6 +44,7 @@ public class User extends BaseEntity implements UserDetails {
     private List<Token> tokens;
 
 
+    @Builder.Default
     private boolean isEnabled = false;
 
     @Override

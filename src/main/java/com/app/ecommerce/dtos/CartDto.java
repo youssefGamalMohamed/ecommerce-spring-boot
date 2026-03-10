@@ -20,5 +20,6 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartDto {
     private Long id;
+    @Builder.Default
     private Set<CartItemDto> cartItems = new HashSet<>();
 }

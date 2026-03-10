@@ -26,6 +26,7 @@ public class Category extends BaseEntity {
     private String name;
 
     
+    @Builder.Default
     @ManyToMany(mappedBy = "categories" , fetch = FetchType.EAGER
             , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.DETACH , CascadeType.REFRESH })
     @JsonIgnore
