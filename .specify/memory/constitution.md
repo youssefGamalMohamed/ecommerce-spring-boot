@@ -1,7 +1,7 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: [TEMPLATE] → 1.0.0 (initial ratification — all placeholders resolved)
+Version change: 1.0.0 → 1.0.1 (PATCH — Principle VI updated to reflect HTTP logging migration)
 
 Modified principles: N/A (first fill; no prior named principles)
 
@@ -125,14 +125,19 @@ prohibited.
 
 ### VI. Observability
 
-All significant application events MUST be logged through `AppLogger`
-(`com.app.ecommerce.logging.AppLogger`) using structured log output.
+All significant application events MUST be logged using SLF4J (via Lombok `@Slf4j`).
 
-- HTTP request/response logging MUST use `HttpRequestResponseInterceptorUtils`.
+- HTTP **request** logging MUST use Spring's built-in `CommonsRequestLoggingFilter`
+  configured as a `@Bean` in `HttpLoggingConfiguration`. Activation is controlled by
+  `logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter=DEBUG`.
+- HTTP **response** logging MUST use `HttpResponseLoggingFilter`
+  (`com.app.ecommerce.logging.HttpResponseLoggingFilter`), a minimal `OncePerRequestFilter`
+  registered as a `@Bean` in `HttpLoggingConfiguration`. Response log level MUST be
+  differentiated by HTTP status family: INFO (2xx), WARN (4xx), ERROR (5xx).
+- The `Authorization` header value MUST NOT appear in any log line.
 - SQL statement logging is provided by `datasource-proxy-spring-boot-starter`
   and MUST remain enabled in non-production profiles.
-- New services MUST NOT introduce raw `System.out.println`; use SLF4J via
-  Lombok `@Slf4j` or `AppLogger`.
+- New services MUST NOT introduce raw `System.out.println`; use SLF4J via `@Slf4j`.
 
 ## Technology Stack
 
@@ -176,7 +181,7 @@ src/main/java/com/app/ecommerce/
 │   ├── handler/     — @RestControllerAdvice global handler
 │   └── type/        — Custom exception classes
 ├── factory/         — Object factory helpers
-├── logging/         — AppLogger, interceptor utilities
+├── logging/         — HttpResponseLoggingFilter (response logging filter)
 ├── mappers/         — MapStruct @Mapper interfaces
 ├── models/
 │   ├── request/     — Inbound DTO request bodies
@@ -231,4 +236,4 @@ for per-feature agent context generation; keep it in sync with any stack changes
 
 ---
 
-**Version**: 1.0.0 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-10
+**Version**: 1.0.1 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-10
