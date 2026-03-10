@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import lombok.*;
-import org.hibernate.Hibernate;
 
 
 @Table(name = "Product")

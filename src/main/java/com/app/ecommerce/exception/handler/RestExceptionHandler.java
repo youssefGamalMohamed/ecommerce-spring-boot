@@ -4,17 +4,15 @@ package com.app.ecommerce.exception.handler;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.models.response.http.*;
 import jakarta.jms.JMSException;
-import jakarta.persistence.PersistenceException;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,7 +27,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex,
+                                                                    @NonNull  HttpHeaders headers, 
+                                                                    @NonNull HttpStatusCode status, 
+                                                                    @NonNull WebRequest request) {
 
 
         // get all attributes names that failed in validation

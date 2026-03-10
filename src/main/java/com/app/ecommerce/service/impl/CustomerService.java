@@ -5,7 +5,6 @@ import com.app.ecommerce.entity.Order;
 import com.app.ecommerce.entity.User;
 import com.app.ecommerce.enums.Role;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.repository.OrderRepo;
 import com.app.ecommerce.repository.UserRepo;
 import com.app.ecommerce.service.framework.ICustomerService;
 import java.util.List;

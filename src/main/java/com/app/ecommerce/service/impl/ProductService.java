@@ -1,15 +1,11 @@
 package com.app.ecommerce.service.impl;
 
 
-import com.app.ecommerce.dtos.ProductDto;
 import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.exception.type.NameNotFoundException;
-import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.IProductService;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
