@@ -6,12 +6,12 @@ import java.util.Set;
 
 public interface IProductService {
 
-    Product save(Product productDTO);
+    Product save(Product product);
 
-    Set<Product> findProductsByCategoryName(String categoryName);
+    Set<Product> findAllByCategoryName(String categoryName);
     
-    Product updateProductById(Long productId , Product updatedProductRequestBody);
+    Product updateById(Long productId , Product updatedProduct);
 
-    void deleteProductById(Long productId);
+    void deleteById(Long productId);
 
 }

@@ -1,10 +1,11 @@
 package com.app.ecommerce.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+
+
 import lombok.*;
 
 @Table(name = "Category")
@@ -23,19 +24,8 @@ public class Category extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    
+    @ToString.Exclude
     @Builder.Default
-    @ManyToMany(mappedBy = "categories" , fetch = FetchType.EAGER
-            , cascade = { CascadeType.PERSIST , CascadeType.MERGE , CascadeType.DETACH , CascadeType.REFRESH })
-    @JsonIgnore
+    @ManyToMany(mappedBy = "categories" , fetch = FetchType.EAGER, cascade = { CascadeType.REMOVE , CascadeType.MERGE , CascadeType.DETACH , CascadeType.REFRESH })
     private Set<Product> products = new HashSet<>();
-
-	@Override
-	public String toString() {
-		return "Category [id=" + id + ", name=" + name + "]";
-	}
-    
-    public void removeProduct(Product product) {
-        this.getProducts().remove(product);
-    }
 }

@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Table(name = "Cart")
@@ -30,5 +31,6 @@ public class Cart extends BaseEntity {
 	@OneToOne
 	@JoinColumn(name = "order_id")
 	@JsonIgnore
+	@ToString.Exclude
 	private Order order;
 }

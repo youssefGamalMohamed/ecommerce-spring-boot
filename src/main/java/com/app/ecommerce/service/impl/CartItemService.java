@@ -1,37 +1,22 @@
 package com.app.ecommerce.service.impl;
 
 import com.app.ecommerce.entity.CartItem;
-import com.app.ecommerce.repository.ProductRepo;
+import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.repository.CartItemRepo;
 import com.app.ecommerce.service.framework.ICartItemService;
-import java.util.HashSet;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class CartItemService implements ICartItemService {
 	
-	
-	@Autowired
-	private ProductRepo productRepo;
+	private final CartItemRepo cartItemRepo;
 	
 	@Override
-	public CartItem createNewCartItem(CartItem cartItemRequestBody) {
-		return CartItem.builder()
-				.product(productRepo.findById(cartItemRequestBody.getProduct().getId()).get())
-				.productQuantity(cartItemRequestBody.getProductQuantity())
-				.build();
-	}
-
-	@Override
-	public Set<CartItem> createNewCartItemsSet(Set<CartItem> cartItemsSetRequestBody) {
-		Set<CartItem> cartItems = new HashSet<>();
-
-		cartItemsSetRequestBody.forEach(item -> {
-			cartItems.add(this.createNewCartItem(item));
-		});
-		
-		return cartItems;
+	public CartItem findById(Long cartItemId) {
+		return cartItemRepo.findById(cartItemId)
+				.orElseThrow(() -> new IdNotFoundException("CartItem with id " + cartItemId + " not found"));
 	}
 
 }

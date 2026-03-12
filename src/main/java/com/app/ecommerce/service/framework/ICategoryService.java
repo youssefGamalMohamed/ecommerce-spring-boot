@@ -1,30 +1,22 @@
 package com.app.ecommerce.service.framework;
 
-
 import com.app.ecommerce.entity.Category;
-import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
 import java.util.List;
 import java.util.Set;
 
-
 public interface ICategoryService {
-	
+
     Category save(Category category) throws DuplicatedUniqueColumnValueException;
 
     void deleteById(Long categoryId) throws IdNotFoundException;
 
     List<Category> findAll();
 
-	Category findById(Long categoryId);
-	
-	Category updateById(Long categoryId , Category updatedCategory);
+    Category findById(Long categoryId);
 
-    Set<Category> getCategories(Set<Long> categoriesIds);
+    Category updateById(Long categoryId, Category updatedCategory);
 
-    Category getCategory(Long id);
-
-
-    Set<Product> getAllProductsByCategoryName(String categoryName);
+    Set<Category> getCategories(Set<Long> categories_ids);
 }

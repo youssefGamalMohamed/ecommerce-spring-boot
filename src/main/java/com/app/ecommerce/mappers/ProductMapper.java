@@ -5,15 +5,21 @@ import com.app.ecommerce.entity.Product;
 import java.util.List;
 import java.util.Set;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(uses = {CategoryMapper.class})
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper {
 
-    ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
+    Product mapToEntity(ProductDto productDto);  
+    ProductDto mapToDto(Product product);
+    List<ProductDto> mapToDtos(List<Product> products);
+    Set<ProductDto> mapToDtos(Set<Product> products);
 
-    Product mapToEntity(ProductDto ProductDto);  
-    ProductDto mapToDto(Product Product);
-    List<ProductDto> mapToDtos(List<Product> categories);
-    Set<ProductDto> mapToDtos(Set<Product> categories);
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "categories", ignore = true)
+    Product mapToEntity(Product product);
+
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "categories", ignore = true)
+    void updateEntityFromEntity(Product source, @org.mapstruct.MappingTarget Product target);
 }

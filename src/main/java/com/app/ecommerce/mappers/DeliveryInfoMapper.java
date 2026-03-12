@@ -5,14 +5,12 @@ import com.app.ecommerce.entity.DeliveryInfo;
 import java.util.List;
 import java.util.Set;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface DeliveryInfoMapper {
 
-    DeliveryInfoMapper INSTANCE = Mappers.getMapper(DeliveryInfoMapper.class);
-
     DeliveryInfo mapToEntity(DeliveryInfoDto deliveryInfoDto);  
+
     DeliveryInfoDto mapToDto(DeliveryInfo deliveryInfo);
     List<DeliveryInfoDto> mapToDtos(List<DeliveryInfo> deliveryInfos);
     Set<DeliveryInfoDto> mapToDtos(Set<DeliveryInfo> deliveryInfosDtos);

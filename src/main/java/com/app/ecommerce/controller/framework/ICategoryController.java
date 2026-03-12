@@ -2,7 +2,6 @@ package com.app.ecommerce.controller.framework;
 
 import com.app.ecommerce.dtos.CategoryDto;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.models.response.http.BadRequestResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,11 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "Categories", description = "contains All Category operation for Customer and Admin")
+@Tag(name = "Categories", description = "contains All Category operations")
 public interface ICategoryController {
 
 
-    @Operation(summary = "Add New Category , this endpoint accessed only for Admin")
+    @Operation(summary = "Add New Category")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201", description = "Category Added Successfully",
@@ -33,18 +32,14 @@ public interface ICategoryController {
                     responseCode = "409", description = "Trying to Add Existing Category Name"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "Validation Error",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = BadRequestResponse.class))
-                    }
+                    responseCode = "400", description = "Validation Error"
             )
     }
     )
     ResponseEntity<?> save(@Valid @RequestBody CategoryDto categoryDto);
 
 
-    @Operation(summary = "Delete Category By Id , this endpoint accessed for ( Admin )")
+    @Operation(summary = "Delete Category By Id")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "204", description = "Category Deleted Successfully"
@@ -57,7 +52,7 @@ public interface ICategoryController {
     ResponseEntity<?> deleteById(@PathVariable(name = "id") Long categoryId) throws IdNotFoundException;
 
 
-    @Operation(summary = "Get All Category , this endpoint accessed for ( Admin , User )")
+    @Operation(summary = "Get All Category")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Categories Retrieved Successfully",
@@ -73,7 +68,7 @@ public interface ICategoryController {
     ResponseEntity<?> findAll();
 
 
-    @Operation(summary = "Find Category By Id , this endpoint accessed for ( Admin , User )")
+    @Operation(summary = "Find Category By Id")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Category Retrieved Successfully",
@@ -92,7 +87,7 @@ public interface ICategoryController {
     ResponseEntity<?> findById(@PathVariable("id") Long categoryId);
 
 
-    @Operation(summary = "Update Category By Id , this endpoint accessed for ( Admin )")
+    @Operation(summary = "Update Category By Id")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Category Updated Successfully",

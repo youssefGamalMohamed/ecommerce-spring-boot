@@ -1,100 +1,93 @@
 package com.app.ecommerce.service.impl;
 
-
 import com.app.ecommerce.entity.Category;
-import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.exception.type.IdNotFoundException;
-import com.app.ecommerce.exception.type.NameNotFoundException;
+import com.app.ecommerce.mappers.CategoryMapper;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.service.framework.ICategoryService;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class CategoryService implements ICategoryService {
 
-    @Autowired
-    private CategoryRepo categoryRepo;
+	private final CategoryRepo categoryRepo;
+	private final CategoryMapper categoryMapper;
 
+	@Override
+	public Category save(Category category) throws DuplicatedUniqueColumnValueException {
+		log.info("Saving new category with name = {}", category.getName());
 
-    @Override
-    public Category save(Category category) throws DuplicatedUniqueColumnValueException {
-    	if(categoryRepo.findByName(category.getName()).isPresent())
-    		throw new DuplicatedUniqueColumnValueException("Category Name Already Exist" +
-    					"and Should Not Be Duplicated"
-    				);
-    	
-        return categoryRepo.save(
-        			Category.builder()
-        			.name(category.getName())
-        			.build()
-        		);
-    }
+		if (categoryRepo.findByName(category.getName()).isPresent())
+			throw new DuplicatedUniqueColumnValueException("Category Name Already Exist and Should Not Be Duplicated");
 
-    @Override
-    public void deleteById(Long categoryId) throws IdNotFoundException {
-    	
-        Category category = categoryRepo.findById(categoryId).orElseThrow(
-        				() -> new IdNotFoundException("Category Id Not Exist to Delete")
-        		);
+		Category newCreatedCategory = categoryRepo.save(category);
+		log.info("Category added/saved succesffully with id = {}", newCreatedCategory.getId());
 
-		for (Product product : category.getProducts()) {
-			product.removeCategory(category);
-		}
-        
+		return newCreatedCategory;
+	}
 
-        categoryRepo.deleteById(categoryId);
-    }
+	@Override
+	public void deleteById(Long categoryId) throws IdNotFoundException {
+		log.info("deleteById({})", categoryId);
+		if (categoryId == null)
+			throw new IllegalArgumentException("Category Id Not Exist to Delete");
 
-    @Override
-    public List<Category> findAll() {
-    	return categoryRepo.findAll();
-    }
+		Category category = categoryRepo.findById(categoryId)
+				.orElseThrow(() -> new IdNotFoundException("Category Id Not Exist to Delete"));
+
+		log.info("Category exists with id = {}", category.getId());
+		categoryRepo.deleteById(categoryId);
+
+		log.info("Category deleted successfully with id = {}", categoryId);
+	}
+
+	@Override
+	public List<Category> findAll() {
+		log.info("findAll() - Retrieving all categories");
+		return categoryRepo.findAll();
+	}
 
 	@Override
 	public Category findById(Long categoryId) {
+		log.info("findById({})", categoryId);
+		if (categoryId == null)
+			throw new IllegalArgumentException("Category Id Not Exist to Retrieve");
+
 		return categoryRepo.findById(categoryId)
-				.orElseThrow(() -> new IdNotFoundException("No Category To Retrieve, Id Not Found"));
+				.orElseThrow(() -> new IdNotFoundException(
+						"No Category To Retrieve, Id Not Found with value = " + categoryId));
 	}
 
 	@Override
 	public Category updateById(Long categoryId, Category updatedCategory) {
-		
-		Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new IdNotFoundException("No Category Update, Id Not Found"));
-		
-		category.setName(updatedCategory.getName());
-		
-		return categoryRepo.save(category);
+		log.info("updateById({}, {})");
+		if (categoryId == null || updatedCategory == null)
+			throw new IllegalArgumentException("Category Id Not Exist to Update");
+
+		Category category = categoryRepo.findById(categoryId)
+				.orElseThrow(() -> new IdNotFoundException("No Category Update, Id Not Found"));
+
+		categoryMapper.updateFrom(updatedCategory, category);
+
+		Category updCategory = categoryRepo.save(category);
+
+		log.info("updated category with id = {}", updCategory.getId());
+
+		return updCategory;
 	}
 
 	@Override
-	public Set<Category> getCategories(Set<Long> categoriesIds) {
-
-		return categoriesIds.stream()
-				.map(this::getCategory)
-				.collect(Collectors.toSet());
-
+	public Set<Category> getCategories(Set<Long> categories_ids) {
+		log.info("get cateogries with ids = {}", categories_ids);
+		return categoryRepo.findByIdIn(categories_ids);
 	}
-
-	@Override
-	public Category getCategory(Long id) {
-		return categoryRepo.findById(id)
-				.orElseThrow(
-						() -> new IdNotFoundException("Can Not Create New Product"
-									+ " , Some of Assigned Categories with Id " + id)
-				);
-	}
-
-	@Override
-	public Set<Product> getAllProductsByCategoryName(String categoryName) {
-		return categoryRepo.findByName(categoryName)
-				.orElseThrow(() -> new NameNotFoundException("Category Name does not exist to retrieve associated Products"))
-				.getProducts();
-	}
-
 
 }

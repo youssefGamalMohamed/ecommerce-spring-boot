@@ -44,21 +44,8 @@ public class Product extends BaseEntity {
     )
     private Set<Category> categories = new HashSet<>();
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "product")
     @JsonIgnore
     private List<CartItem> cartItem;
-    
-
-
-	@Override
-	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", description=" + description + ", price=" + price
-				+ ", quantity=" + quantity + "]";
-	}
-    
-
-
-    public void removeCategory(Category category) {
-        this.getCategories().remove(category);
-    }
 }

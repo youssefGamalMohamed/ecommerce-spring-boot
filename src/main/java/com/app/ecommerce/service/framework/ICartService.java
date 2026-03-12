@@ -5,5 +5,5 @@ import com.app.ecommerce.entity.Cart;
 
 
 public interface ICartService {
-	Cart createNewCart(Cart cartRequestBody);
+	Cart findById(Long cartId);
 }

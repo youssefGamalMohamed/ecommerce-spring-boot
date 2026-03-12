@@ -2,30 +2,22 @@ package com.app.ecommerce.service.impl;
 
 
 import com.app.ecommerce.entity.Cart;
-import com.app.ecommerce.service.framework.ICartItemService;
+import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.repository.CartRepo;
 import com.app.ecommerce.service.framework.ICartService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class CartService implements ICartService {
 	
-	
-	@Autowired
-	private ICartItemService cartItemService;
+	private final CartRepo cartRepo;
 	
 	@Override
-	public Cart createNewCart(Cart cartRequestBody) {		
-		
-		Cart cart = Cart.builder()
-						.cartItems(
-								cartItemService.createNewCartItemsSet(cartRequestBody.getCartItems())
-						)
-						.build();
-		
-		cart.getCartItems().forEach(cartItem -> cartItem.setCart(cart));
-		
-		return cart;
+	public Cart findById(Long cartId) {
+		return cartRepo.findById(cartId)
+				.orElseThrow(() -> new IdNotFoundException("Cart with id " + cartId + " not found"));
 	}
 
 }

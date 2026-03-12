@@ -5,15 +5,19 @@ import com.app.ecommerce.entity.Category;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
     @Mapping(target = "products", ignore = true)
-    Category mapToEntity(CategoryDto categoryDto);  
+    Category mapToEntity(CategoryDto categoryDto);
     CategoryDto mapToDto(Category category);
     List<CategoryDto> mapToDtos(List<Category> categories);
+
+    @Mapping(target = "products", ignore = true)
+    void updateFrom(Category updatedCategory, @MappingTarget Category category);
 }

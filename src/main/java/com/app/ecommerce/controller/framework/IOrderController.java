@@ -11,14 +11,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-@Tag(name = "Orders", description = "contains All Order operation for Customer")
+@Tag(name = "Orders", description = "contains All Order operations")
 public interface IOrderController {
 
 
-    @Operation(summary = "Add New Order , this endpoint accessed only for Customer")
+    @Operation(summary = "Add New Order")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201", description = "Order Added Successfully",
@@ -33,14 +34,28 @@ public interface IOrderController {
                     responseCode = "400", description = "Validation Error"
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Customer Email Not Found to make this Order for this Customer Email"
+                    responseCode = "404", description = "Order Not Found"
             )
     }
     )
     ResponseEntity<?> createNewOrder(@Valid @RequestBody OrderDto orderDto) throws JsonProcessingException;
 
 
-    @Operation(summary = "Find Order By Id , this endpoint accessed for ( Admin , User )")
+    @Operation(summary = "Update Order")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Order Updated Successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Order Not Found"
+            )
+    }
+    )
+    @PutMapping("/orders/{id}")
+    ResponseEntity<?> updateOrder(@PathVariable("id") Long orderId, @Valid @RequestBody OrderDto orderDto);
+
+
+    @Operation(summary = "Find Order By Id")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "Order Retrieved Successfully",

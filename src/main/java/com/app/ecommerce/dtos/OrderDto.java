@@ -24,5 +24,4 @@ public class OrderDto {
 	private PaymentType paymentType;
 	private DeliveryInfoDto deliveryInfo;
 	private CartDto cart;
-	private UserDto user;
 }

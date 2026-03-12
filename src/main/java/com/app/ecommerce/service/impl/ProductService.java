@@ -1,81 +1,64 @@
 package com.app.ecommerce.service.impl;
 
-
-import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.entity.Product;
 import com.app.ecommerce.exception.type.IdNotFoundException;
+import com.app.ecommerce.mappers.ProductMapper;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.IProductService;
 import java.util.Set;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class ProductService implements IProductService {
 
-    @Autowired
-    private ProductRepo productRepo;
-
-    @Autowired
-    private CategoryService categoryService;
-
-
-    @Override
-    public Product save(Product newProduct) {
-
-        Set<Category> categories = categoryService.getCategories(
-        				newProduct.getCategories().stream()
-        							.map(Category::getId).collect(Collectors.toSet())
-        		);
-
-        Product product = Product.builder()
-        		.name(newProduct.getName())
-        		.description(newProduct.getDescription())
-        		.price(newProduct.getPrice())
-        		.quantity(newProduct.getQuantity())
-        		.categories(categories)
-        		.build();
-        
-        return productRepo.save(product);
-    }
-
+	private final ProductRepo productRepo;
+	private final ProductMapper productMapper;
 
 	@Override
-	public Set<Product> findProductsByCategoryName(String categoryName) {
-		Set<Product> productSet = categoryService.getAllProductsByCategoryName(categoryName);
-		return productSet;
-	}
-
-
-	@Override
-	public Product updateProductById(Long productId, Product updatedProductData) {
-			
-		Product product = productRepo.findById(productId)
-				.orElseThrow(() -> new IdNotFoundException("Can Not Update Product , Id Not Found"));
-		
-        Set<Category> categories = categoryService.getCategories(updatedProductData.getCategories()
-        		.stream().map(Category::getId).collect(Collectors.toSet()));
-        
-        product.setName(updatedProductData.getName());
-        product.setDescription(updatedProductData.getDescription());
-        product.setPrice(updatedProductData.getPrice());
-        product.setQuantity(updatedProductData.getQuantity());
-        product.getCategories().addAll(categories);
-        
-        return productRepo.save(product);
-        
+	public Product save(Product product) {
+		log.info("save({})", product);
+		Product newProduct = productMapper.mapToEntity(product);
+		log.info("save(): Done Successfully, new product created with id = {}", newProduct.getId());
+		return productRepo.save(newProduct);
 	}
 
 	@Override
-	public void deleteProductById(Long productId) {
+	public Set<Product> findAllByCategoryName(String categoryName) {
+		log.info("findAllByCategoryName({})", categoryName);
+		return productRepo.findByCategories_Name(categoryName);
+	}
+
+	@Override
+	public Product updateById(Long productId, Product newDataForProduct) {
+		if (productId == null)
+			throw new IllegalArgumentException("productId == null");
+
 		Product product = productRepo.findById(productId)
-				.orElseThrow(() -> new IdNotFoundException("Product Id Not Found to Delete"));
+				.orElseThrow(() -> new IdNotFoundException(
+						"Can Not Update Product , Id Not Found with value = " + productId));
 
-		for(Category category : product.getCategories())
-			category.removeProduct(product);
+		productMapper.updateEntityFromEntity(newDataForProduct, product);
 
-		product.getCategories().clear();
+		Product updatedProductData = productRepo.save(product);
+
+		log.info("updated product with id = {}", updatedProductData.getId());
+		return updatedProductData;
+	}
+
+	@Override
+	public void deleteById(Long productId) {
+		if (productId == null)
+			throw new IllegalArgumentException("productId == null");
+
+		Product product = productRepo.findById(productId)
+				.orElseThrow(() -> new IdNotFoundException("Product Id = " + productId + " Not Found to Delete"));
+
+		log.info("product exists with id = {}", product.getId());
 
 		productRepo.deleteById(productId);
 	}

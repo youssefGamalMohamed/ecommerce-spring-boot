@@ -6,19 +6,16 @@ import java.util.List;
 import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = { CartItemMapper.class })
+@Mapper(componentModel = "spring", uses = { CartItemMapper.class })
 public interface CartMapper {
 
-    CartMapper INSTANCE = Mappers.getMapper(CartMapper.class);
-
     @Mapping(target = "order", ignore = true)
-    Cart mapToEntity(CartDto CartDto);
+    Cart mapToEntity(CartDto cartDto);
 
-    CartDto mapToDto(Cart Cart);
+    CartDto mapToDto(Cart cart);
 
     List<CartDto> mapToDtos(List<Cart> carts);
 
-    Set<CartDto> mapToDtos(Set<Cart> cartDtos);
+    Set<CartDto> mapToDtos(Set<Cart> carts);
 }

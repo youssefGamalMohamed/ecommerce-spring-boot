@@ -38,10 +38,4 @@ public class Order extends BaseEntity {
 	
 	@OneToOne(mappedBy = "order" , cascade = CascadeType.ALL)
 	private Cart cart;
-	
-
-	@ManyToOne
-	@JoinColumn(name = "customer_id")
-	private Customer customer;
-	
 }
