@@ -14,6 +14,8 @@ public interface OrderMapper {
 
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     Order mapToEntity(OrderDto orderDto);  
 
     OrderDto mapToDto(Order order);
@@ -23,5 +25,7 @@ public interface OrderMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     void updateFrom(Order updatedOrder, @MappingTarget Order order);
 }

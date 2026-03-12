@@ -4,17 +4,17 @@ package com.app.ecommerce.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 
 @Table(name = "Cart_Item")
 @Entity(name = "Cart_Item")
-@Builder
-@RequiredArgsConstructor
+@SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter

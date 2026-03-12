@@ -5,19 +5,19 @@ package com.app.ecommerce.dtos;
 import com.app.ecommerce.enums.PaymentType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 
-@Builder
-@RequiredArgsConstructor
+@SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OrderDto {
+public class OrderDto extends BaseDto {
 
     private Long id;
     private double totalPrice;

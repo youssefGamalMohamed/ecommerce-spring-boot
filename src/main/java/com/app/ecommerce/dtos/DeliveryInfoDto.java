@@ -5,19 +5,19 @@ package com.app.ecommerce.dtos;
 import com.app.ecommerce.enums.Status;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 
-@Builder
-@RequiredArgsConstructor
+@SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DeliveryInfoDto {
+public class DeliveryInfoDto extends BaseDto {
 	
 	private Status status;
 	private String address;

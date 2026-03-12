@@ -5,8 +5,9 @@ import com.app.ecommerce.entity.DeliveryInfo;
 import java.util.List;
 import java.util.Set;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DeliveryInfoMapper {
 
     DeliveryInfo mapToEntity(DeliveryInfoDto deliveryInfoDto);  

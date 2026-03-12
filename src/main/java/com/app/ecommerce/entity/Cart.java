@@ -4,21 +4,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Set;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 
 @Table(name = "Cart")
 @Entity(name = "Cart")
-@Builder
-@RequiredArgsConstructor
+@SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-
 public class Cart extends BaseEntity {
 	
     @Id

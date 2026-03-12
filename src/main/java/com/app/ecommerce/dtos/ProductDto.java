@@ -8,17 +8,18 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 
-@Builder
-@RequiredArgsConstructor
+@SuperBuilder
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductDto {
+public class ProductDto extends BaseDto {
 
     private Long id;
     private String name;

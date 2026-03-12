@@ -7,10 +7,11 @@ import java.util.Set;
 
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Table(name = "Category")
 @Entity(name = "Category")
-@Builder
+@SuperBuilder
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
