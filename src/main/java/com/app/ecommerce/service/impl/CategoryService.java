@@ -68,7 +68,7 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public Category updateById(Long categoryId, Category updatedCategory) {
-		log.info("updateById({}, {})");
+		log.info("updateById({}, {})", categoryId, updatedCategory);
 		if (categoryId == null || updatedCategory == null)
 			throw new IllegalArgumentException("Category Id Not Exist to Update");
 

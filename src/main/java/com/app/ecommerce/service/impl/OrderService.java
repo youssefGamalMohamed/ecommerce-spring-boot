@@ -31,11 +31,16 @@ public class OrderService implements IOrderService {
 	@Override
 	public Order findById(Long orderId) {
 		log.info("findById({})", orderId);
-		if(orderId == null)
+		if(orderId == null) {
+			log.warn("Attempted to find order with null ID.");
 			throw new IllegalArgumentException("orderId == null");
+		}
 
 		Order order = orderRepo.findById(orderId)
-				.orElseThrow(() -> new IdNotFoundException("No Such Order With This Id , Id Not Found with value = " + orderId));
+				.orElseThrow(() -> {
+					log.warn("Order with ID {} not found.", orderId);
+					return new IdNotFoundException("No Such Order With This Id , Id Not Found with value = " + orderId);
+				});
 		
 		log.info("order found with id = {}", orderId);
 		return order;
@@ -45,6 +50,7 @@ public class OrderService implements IOrderService {
 
 	@Override
 	public void updateOrder(Long orderId, Order updatedOrder) {
+		log.info("updateOrder({}, {})", orderId, updatedOrder);
 		if (orderId == null)
 			throw new IllegalArgumentException("Order Id Not Exist to Update");
 

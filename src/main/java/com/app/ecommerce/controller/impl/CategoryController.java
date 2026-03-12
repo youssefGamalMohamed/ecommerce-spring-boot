@@ -8,11 +8,13 @@ import com.app.ecommerce.mappers.CategoryMapper;
 import com.app.ecommerce.service.framework.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class CategoryController implements ICategoryController {
@@ -24,6 +26,7 @@ public class CategoryController implements ICategoryController {
     @PostMapping("/categories")
     @Override
     public ResponseEntity<?> save(@Valid @RequestBody CategoryDto categoryDto) {
+        log.info("save({})", categoryDto);
     	Category newCreatedCategory = categoryService.save(categoryMapper.mapToEntity(categoryDto));
     	
         return new ResponseEntity<>(
@@ -35,6 +38,7 @@ public class CategoryController implements ICategoryController {
     @DeleteMapping("/categories/{id}")
     @Override
     public ResponseEntity<?> deleteById(@PathVariable(name = "id") Long categoryId) throws IdNotFoundException {
+        log.info("deleteById({})", categoryId);
     	categoryService.deleteById(categoryId);
     	return new ResponseEntity<>(
     			 HttpStatus.NO_CONTENT
@@ -44,18 +48,21 @@ public class CategoryController implements ICategoryController {
     @GetMapping("/categories")
     @Override
     public ResponseEntity<?> findAll() {
+        log.info("findAll()");
         return ResponseEntity.ok(categoryMapper.mapToDtos(categoryService.findAll()));
     }
 
     @GetMapping("/categories/{id}")
     @Override
     public ResponseEntity<?> findById(@PathVariable("id") Long categoryId) {
+        log.info("findById({})", categoryId);
         return ResponseEntity.ok(categoryMapper.mapToDto(categoryService.findById(categoryId)));
     }
 
     @PutMapping("/categories/{id}")
     @Override
     public ResponseEntity<?> updateById(@PathVariable("id") Long categoryId , @Valid @RequestBody CategoryDto updatedBody) {
+        log.info("updateById({}, {})", categoryId, updatedBody);
         return ResponseEntity.ok(categoryService.updateById(categoryId, categoryMapper.mapToEntity(updatedBody)));
     }
 

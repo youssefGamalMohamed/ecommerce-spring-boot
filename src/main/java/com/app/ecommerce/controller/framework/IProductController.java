@@ -78,7 +78,7 @@ public interface IProductController {
             )
     }
     )
-    ResponseEntity<?> updateProduct(@PathVariable(value = "id") Long productId , @Valid @RequestBody ProductDto productDto);
+    ResponseEntity<?> updateById(@PathVariable(value = "id") Long productId , @Valid @RequestBody ProductDto productDto);
 
 
 
