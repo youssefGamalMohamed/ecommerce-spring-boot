@@ -12,7 +12,7 @@ public class ApplicationConfiguration {
 
 
     @Bean
-    public ObjectMapper getObjectMapper() {
+    ObjectMapper getObjectMapper() {
         return new ObjectMapper()
                             .enable(SerializationFeature.INDENT_OUTPUT) // this for making the json string values in each line
                             .registerModule(new JavaTimeModule()); // this for support java 8 date and time if u remove this it wil throw exceptions

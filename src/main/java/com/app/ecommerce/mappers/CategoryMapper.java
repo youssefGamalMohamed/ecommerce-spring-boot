@@ -13,11 +13,15 @@ public interface CategoryMapper {
 
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "products", ignore = true)
     Category mapToEntity(CategoryDto categoryDto);
+
     CategoryDto mapToDto(Category category);
+
     List<CategoryDto> mapToDtos(List<Category> categories);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "products", ignore = true)
     void updateFrom(Category updatedCategory, @MappingTarget Category category);
 }
