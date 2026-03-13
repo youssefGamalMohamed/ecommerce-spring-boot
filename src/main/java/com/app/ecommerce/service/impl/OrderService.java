@@ -1,11 +1,12 @@
 package com.app.ecommerce.service.impl;
 
 import com.app.ecommerce.entity.Order;
-import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.mappers.OrderMapper;
 import com.app.ecommerce.repository.OrderRepo;
 import com.app.ecommerce.service.framework.IOrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +30,7 @@ public class OrderService implements IOrderService {
 	}
 
 	@Override
-	public Order findById(Long orderId) {
+	public Order findById(UUID orderId) {
 		log.info("findById({})", orderId);
 		if(orderId == null) {
 			log.warn("Attempted to find order with null ID.");
@@ -39,7 +40,7 @@ public class OrderService implements IOrderService {
 		Order order = orderRepo.findById(orderId)
 				.orElseThrow(() -> {
 					log.warn("Order with ID {} not found.", orderId);
-					return new IdNotFoundException("No Such Order With This Id , Id Not Found with value = " + orderId);
+					return new NoSuchElementException("No Such Order With This Id , Id Not Found with value = " + orderId);
 				});
 		
 		log.info("order found with id = {}", orderId);
@@ -49,13 +50,13 @@ public class OrderService implements IOrderService {
 
 
 	@Override
-	public void updateOrder(Long orderId, Order updatedOrder) {
+	public void updateOrder(UUID orderId, Order updatedOrder) {
 		log.info("updateOrder({}, {})", orderId, updatedOrder);
 		if (orderId == null)
 			throw new IllegalArgumentException("Order Id Not Exist to Update");
 
 		Order existingOrder = orderRepo.findById(orderId)
-				.orElseThrow(() -> new IdNotFoundException("Order with id " + orderId + " not found"));
+				.orElseThrow(() -> new NoSuchElementException("Order with id " + orderId + " not found"));
 
 		orderMapper.updateFrom(updatedOrder, existingOrder);
 

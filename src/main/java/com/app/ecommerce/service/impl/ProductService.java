@@ -1,12 +1,13 @@
 package com.app.ecommerce.service.impl;
 
 import com.app.ecommerce.entity.Product;
-import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.mappers.ProductMapper;
 import com.app.ecommerce.repository.ProductRepo;
 import com.app.ecommerce.service.framework.IProductService;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,13 +39,13 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public Product findById(Long productId) {
+	public Product findById(UUID productId) {
 		log.info("findById({})", productId);
 		if (productId == null) {
 			throw new IllegalArgumentException("productId == null");
 		}
 		Product product = productRepo.findById(productId)
-				.orElseThrow(() -> new IdNotFoundException("Product Id = " + productId + " Not Found"));
+				.orElseThrow(() -> new NoSuchElementException("Product Id = " + productId + " Not Found"));
 		log.info("findById(): Found product with id = {}", productId);
 		return product;
 	}
@@ -56,13 +57,13 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public Product updateById(Long productId, Product newDataForProduct) {
+	public Product updateById(UUID productId, Product newDataForProduct) {
 		log.info("updateById({}, {})", productId, newDataForProduct);
 		if (productId == null)
 			throw new IllegalArgumentException("productId == null");
 
 		Product product = productRepo.findById(productId)
-				.orElseThrow(() -> new IdNotFoundException(
+				.orElseThrow(() -> new NoSuchElementException(
 						"Can Not Update Product , Id Not Found with value = " + productId));
 		log.info("updateById(): Found product with id = {}", productId);
 
@@ -75,13 +76,13 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public void deleteById(Long productId) {
+	public void deleteById(UUID productId) {
 		log.info("deleteById({})", productId);
 		if (productId == null)
 			throw new IllegalArgumentException("productId == null");
 
 		Product product = productRepo.findById(productId)
-				.orElseThrow(() -> new IdNotFoundException("Product Id = " + productId + " Not Found to Delete"));
+				.orElseThrow(() -> new NoSuchElementException("Product Id = " + productId + " Not Found to Delete"));
 
 		log.info("product exists with id = {}", product.getId());
 

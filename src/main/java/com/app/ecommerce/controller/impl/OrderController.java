@@ -1,11 +1,13 @@
 package com.app.ecommerce.controller.impl;
 
 import com.app.ecommerce.controller.framework.IOrderController;
+import com.app.ecommerce.dtos.ApiResponseDto;
 import com.app.ecommerce.dtos.OrderDto;
 import com.app.ecommerce.entity.Order;
 import com.app.ecommerce.mappers.OrderMapper;
 import com.app.ecommerce.service.impl.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,36 +29,36 @@ public class OrderController implements IOrderController {
 
 	@PostMapping("/orders")
 	@Override
-	public ResponseEntity<?> createNewOrder(@RequestBody OrderDto orderDto) throws JsonProcessingException {
+	public ResponseEntity<ApiResponseDto<OrderDto>> createNewOrder(@RequestBody OrderDto orderDto) throws JsonProcessingException {
 		log.info("createNewOrder({})", orderDto);
 		Order order = orderMapper.mapToEntity(orderDto);
 		Order createdOrder = orderService.createNewOrder(order);
 		
 		return new ResponseEntity<>(
-					orderMapper.mapToDto(createdOrder),
-					HttpStatus.CREATED
+				ApiResponseDto.created(orderMapper.mapToDto(createdOrder)),
+				HttpStatus.CREATED
 				);
 	}
 
 	@PutMapping("/orders/{id}")
 	@Override
-	public ResponseEntity<?> updateOrder(@PathVariable("id") Long orderId, @RequestBody OrderDto orderDto) {
+	public ResponseEntity<ApiResponseDto<Void>> updateOrder(@PathVariable("id") UUID orderId, @RequestBody OrderDto orderDto) {
 		log.info("updateOrder({}, {})", orderId, orderDto);
 		Order updatedOrder = orderMapper.mapToEntity(orderDto);
 		orderService.updateOrder(orderId, updatedOrder);
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(ApiResponseDto.noContent(), HttpStatus.OK);
 	}
 
 	@GetMapping("/orders/{id}")
 	@Override
-	public ResponseEntity<?> findOrderById(@PathVariable("id") Long orderId) {
+	public ResponseEntity<ApiResponseDto<OrderDto>> findOrderById(@PathVariable("id") UUID orderId) {
 		log.info("findOrderById({})", orderId);
 		Order order = orderService.findById(orderId);
 		
 		return new ResponseEntity<> (
-					orderMapper.mapToDto(order),
-					HttpStatus.OK
+				ApiResponseDto.success(orderMapper.mapToDto(order)),
+				HttpStatus.OK
 				);
 	}
 }

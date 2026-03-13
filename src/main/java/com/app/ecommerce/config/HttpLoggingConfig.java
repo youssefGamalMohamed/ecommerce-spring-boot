@@ -1,20 +1,22 @@
 package com.app.ecommerce.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
+@Slf4j
 @Configuration
 public class HttpLoggingConfig {
 
     @Bean
     CommonsRequestLoggingFilter requestLoggingFilter() {
-        CommonsRequestLoggingFilter loggingFilter = new CommonsRequestLoggingFilter();
-        loggingFilter.setIncludeQueryString(true);
-        loggingFilter.setIncludePayload(true);
-        loggingFilter.setMaxPayloadLength(10000);
-        loggingFilter.setIncludeHeaders(false);
-        // No custom prefix appended to match the spec
-        return loggingFilter;
+        CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
+        filter.setIncludeQueryString(true);
+        filter.setIncludePayload(true);
+        filter.setMaxPayloadLength(1000);
+        filter.setIncludeHeaders(true);
+        filter.setIncludeClientInfo(true);
+        return filter;
     }
 }

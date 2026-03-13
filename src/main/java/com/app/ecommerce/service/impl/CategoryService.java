@@ -2,12 +2,13 @@ package com.app.ecommerce.service.impl;
 
 import com.app.ecommerce.entity.Category;
 import com.app.ecommerce.exception.type.DuplicatedUniqueColumnValueException;
-import com.app.ecommerce.exception.type.IdNotFoundException;
 import com.app.ecommerce.mappers.CategoryMapper;
 import com.app.ecommerce.repository.CategoryRepo;
 import com.app.ecommerce.service.framework.ICategoryService;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,13 +36,13 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public void deleteById(Long categoryId) throws IdNotFoundException {
+	public void deleteById(UUID categoryId) {
 		log.info("deleteById({})", categoryId);
 		if (categoryId == null)
 			throw new IllegalArgumentException("Category Id Not Exist to Delete");
 
 		Category category = categoryRepo.findById(categoryId)
-				.orElseThrow(() -> new IdNotFoundException("Category Id Not Exist to Delete"));
+				.orElseThrow(() -> new NoSuchElementException("Category Id Not Exist to Delete"));
 
 		log.info("Category exists with id = {}", category.getId());
 		categoryRepo.deleteById(categoryId);
@@ -56,24 +57,24 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public Category findById(Long categoryId) {
+	public Category findById(UUID categoryId) {
 		log.info("findById({})", categoryId);
 		if (categoryId == null)
 			throw new IllegalArgumentException("Category Id Not Exist to Retrieve");
 
 		return categoryRepo.findById(categoryId)
-				.orElseThrow(() -> new IdNotFoundException(
+				.orElseThrow(() -> new NoSuchElementException(
 						"No Category To Retrieve, Id Not Found with value = " + categoryId));
 	}
 
 	@Override
-	public Category updateById(Long categoryId, Category updatedCategory) {
+	public Category updateById(UUID categoryId, Category updatedCategory) {
 		log.info("updateById({}, {})", categoryId, updatedCategory);
 		if (categoryId == null || updatedCategory == null)
 			throw new IllegalArgumentException("Category Id Not Exist to Update");
 
 		Category category = categoryRepo.findById(categoryId)
-				.orElseThrow(() -> new IdNotFoundException("No Category Update, Id Not Found"));
+				.orElseThrow(() -> new NoSuchElementException("No Category Update, Id Not Found"));
 
 		categoryMapper.updateFrom(updatedCategory, category);
 
@@ -85,7 +86,7 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public Set<Category> getCategories(Set<Long> categories_ids) {
+	public Set<Category> getCategories(Set<UUID> categories_ids) {
 		log.info("get cateogries with ids = {}", categories_ids);
 		return categoryRepo.findByIdIn(categories_ids);
 	}

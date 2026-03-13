@@ -1,5 +1,7 @@
 package com.app.ecommerce.controller.framework;
 
+import com.app.ecommerce.dtos.ApiResponseDto;
+import com.app.ecommerce.dtos.ErrorResponseDto;
 import com.app.ecommerce.dtos.OrderDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,68 +11,68 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-@Tag(name = "Orders", description = "contains All Order operations")
+@Tag(name = "Orders", description = "Order management operations")
 public interface IOrderController {
 
 
-    @Operation(summary = "Add New Order")
+    @Operation(summary = "Create New Order", description = "Create a new order")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "201", description = "Order Added Successfully",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = OrderDto.class)
-                            )
-                    }
+                    responseCode = "201", description = "Order created successfully",
+                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
             ),
             @ApiResponse(
-                    responseCode = "400", description = "Validation Error"
+                    responseCode = "400", description = "Validation Error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Order Not Found"
+                    responseCode = "404", description = "Resource not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             )
     }
     )
-    ResponseEntity<?> createNewOrder(@Valid @RequestBody OrderDto orderDto) throws JsonProcessingException;
+    ResponseEntity<ApiResponseDto<OrderDto>> createNewOrder(@Valid @RequestBody OrderDto orderDto) throws JsonProcessingException;
 
 
-    @Operation(summary = "Update Order")
+    @Operation(summary = "Update Order", description = "Update an existing order by its ID")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200", description = "Order Updated Successfully"
+                    responseCode = "200", description = "Order updated successfully",
+                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Order Not Found"
+                    responseCode = "400", description = "Validation Error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Order not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             )
     }
     )
     @PutMapping("/orders/{id}")
-    ResponseEntity<?> updateOrder(@PathVariable("id") Long orderId, @Valid @RequestBody OrderDto orderDto);
+    ResponseEntity<ApiResponseDto<Void>> updateOrder(@PathVariable("id") UUID orderId, @Valid @RequestBody OrderDto orderDto);
 
 
-    @Operation(summary = "Find Order By Id")
+    @Operation(summary = "Find Order By ID", description = "Retrieve an order by its ID")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200", description = "Order Retrieved Successfully",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = OrderDto.class)
-                            )
-                    }
+                    responseCode = "200", description = "Order retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
             ),
             @ApiResponse(
-                    responseCode = "404", description = "Order Not Found with this ID"
+                    responseCode = "404", description = "Order not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             )
     }
     )
-    ResponseEntity<?> findOrderById(@PathVariable("id") Long orderId);
+    ResponseEntity<ApiResponseDto<OrderDto>> findOrderById(@PathVariable("id") UUID orderId);
 
 }

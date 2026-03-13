@@ -3,6 +3,7 @@ package com.app.ecommerce.entity;
 
 import com.app.ecommerce.enums.PaymentType;
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,8 @@ import lombok.experimental.SuperBuilder;
 public class Order extends BaseEntity {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 	
 	@Enumerated(EnumType.STRING)
 	private PaymentType paymentType;

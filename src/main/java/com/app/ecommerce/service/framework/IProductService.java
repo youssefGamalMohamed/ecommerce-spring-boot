@@ -3,6 +3,7 @@ package com.app.ecommerce.service.framework;
 import com.app.ecommerce.entity.Product;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 
 public interface IProductService {
@@ -11,12 +12,12 @@ public interface IProductService {
 
     Set<Product> findAllByCategoryName(String categoryName);
     
-    Product findById(Long productId);
+    Product findById(UUID productId);
 
     List<Product> findAll();
     
-    Product updateById(Long productId , Product updatedProduct);
+    Product updateById(UUID productId , Product updatedProduct);
 
-    void deleteById(Long productId);
+    void deleteById(UUID productId);
 
 }

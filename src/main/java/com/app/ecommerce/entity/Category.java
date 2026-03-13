@@ -4,6 +4,7 @@ package com.app.ecommerce.entity;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
 import lombok.*;
@@ -19,8 +20,8 @@ import lombok.experimental.SuperBuilder;
 public class Category extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(unique = true)
     private String name;

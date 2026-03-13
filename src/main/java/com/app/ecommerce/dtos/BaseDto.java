@@ -1,7 +1,7 @@
 package com.app.ecommerce.dtos;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,17 +13,18 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Base DTO containing common audit fields")
 public abstract class BaseDto {
-
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    
+    @Schema(description = "Timestamp when the resource was created", accessMode = Schema.AccessMode.READ_ONLY, example = "2024-01-15T10:30:00Z")
     private Instant createdAt;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(description = "Timestamp when the resource was last updated", accessMode = Schema.AccessMode.READ_ONLY, example = "2024-01-15T10:30:00Z")
     private Instant updatedAt;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(description = "User who created the resource", accessMode = Schema.AccessMode.READ_ONLY, example = "admin")
     private String createdBy;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Schema(description = "User who last updated the resource", accessMode = Schema.AccessMode.READ_ONLY, example = "admin")
     private String updatedBy;
 }
