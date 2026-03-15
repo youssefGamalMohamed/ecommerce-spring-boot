@@ -22,17 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderControllerImpl implements OrderController {
 
     private final OrderService orderService;
-    private final OrderMapper orderMapper;
 
     @PostMapping
     @Override
     public ResponseEntity<ApiResponseDto<OrderDto>> createNewOrder(@RequestBody OrderDto orderDto) throws JsonProcessingException {
         log.info("createNewOrder({})", orderDto);
-        Order order = orderMapper.mapToEntity(orderDto);
-        Order createdOrder = orderService.createNewOrder(order);
+        OrderDto createdOrder = orderService.createNewOrder(orderDto);
 
         return new ResponseEntity<>(
-                ApiResponseDto.created(orderMapper.mapToDto(createdOrder)),
+                ApiResponseDto.created(createdOrder),
                 HttpStatus.CREATED
         );
     }
@@ -41,8 +39,7 @@ public class OrderControllerImpl implements OrderController {
     @Override
     public ResponseEntity<ApiResponseDto<Void>> updateOrder(@PathVariable("id") UUID orderId, @RequestBody OrderDto orderDto) {
         log.info("updateOrder({}, {})", orderId, orderDto);
-        Order updatedOrder = orderMapper.mapToEntity(orderDto);
-        orderService.updateOrder(orderId, updatedOrder);
+        orderService.updateOrder(orderId, orderDto);
 
         return new ResponseEntity<>(ApiResponseDto.noContent(), HttpStatus.OK);
     }
@@ -51,10 +48,10 @@ public class OrderControllerImpl implements OrderController {
     @Override
     public ResponseEntity<ApiResponseDto<OrderDto>> findOrderById(@PathVariable("id") UUID orderId) {
         log.info("findOrderById({})", orderId);
-        Order order = orderService.findById(orderId);
+        OrderDto order = orderService.findById(orderId);
 
         return new ResponseEntity<>(
-                ApiResponseDto.success(orderMapper.mapToDto(order)),
+                ApiResponseDto.success(order),
                 HttpStatus.OK
         );
     }

@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface CartItemService {
 
-    CartItem findById(UUID cartItemId);
+    CartItemDto findById(UUID cartItemId);
 }

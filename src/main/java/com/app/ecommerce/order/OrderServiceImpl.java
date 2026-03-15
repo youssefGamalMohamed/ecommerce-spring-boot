@@ -1,5 +1,6 @@
 package com.app.ecommerce.order;
 
+import com.app.ecommerce.shared.constants.CacheConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -18,17 +19,18 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
-    @CacheEvict(value = "orders", allEntries = true)
-    public Order createNewOrder(Order order) throws JsonProcessingException {
-        log.info("createNewOrder({})", order);
+    @CacheEvict(value = CacheConstants.ORDERS, allEntries = true)
+    public OrderDto createNewOrder(OrderDto orderDto) throws JsonProcessingException {
+        log.info("createNewOrder({})", orderDto);
+        Order order = orderMapper.mapToEntity(orderDto);
         Order createdOrder = orderRepository.save(order);
         log.info("order created with id = {}", createdOrder.getId());
-        return createdOrder;
+        return orderMapper.mapToDto(createdOrder);
     }
 
     @Override
-    @Cacheable(value = "orders", key = "#orderId")
-    public Order findById(UUID orderId) {
+    @Cacheable(value = CacheConstants.ORDERS, key = "#orderId")
+    public OrderDto findById(UUID orderId) {
         log.info("findById({})", orderId);
         if (orderId == null) {
             log.warn("Attempted to find order with null ID.");
@@ -42,13 +44,13 @@ public class OrderServiceImpl implements OrderService {
                 });
 
         log.info("order found with id = {}", orderId);
-        return order;
+        return orderMapper.mapToDto(order);
     }
 
     @Override
-    @CacheEvict(value = "orders", allEntries = true)
-    public void updateOrder(UUID orderId, Order updatedOrder) {
-        log.info("updateOrder({}, {})", orderId, updatedOrder);
+    @CacheEvict(value = CacheConstants.ORDERS, allEntries = true)
+    public void updateOrder(UUID orderId, OrderDto orderDto) {
+        log.info("updateOrder({}, {})", orderId, orderDto);
         if (orderId == null) {
             throw new IllegalArgumentException("Order Id Not Exist to Update");
         }
@@ -56,7 +58,8 @@ public class OrderServiceImpl implements OrderService {
         Order existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NoSuchElementException("Order with id " + orderId + " not found"));
 
-        orderMapper.updateFrom(updatedOrder, existingOrder);
+        Order tempOrder = orderMapper.mapToEntity(orderDto);
+        orderMapper.updateFrom(tempOrder, existingOrder);
 
         orderRepository.save(existingOrder);
     }

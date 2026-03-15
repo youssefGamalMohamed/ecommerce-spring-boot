@@ -6,15 +6,15 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    Product save(Product product);
+    ProductDto save(ProductDto productDto);
 
-    Set<Product> findAllByCategoryName(String categoryName);
+    Set<ProductDto> findAllByCategoryName(String categoryName);
 
-    Product findById(UUID productId);
+    ProductDto findById(UUID productId);
 
-    List<Product> findAll();
+    List<ProductDto> findAll();
 
-    Product updateById(UUID productId, Product updatedProduct);
+    ProductDto updateById(UUID productId, ProductDto updatedProductDto);
 
     void deleteById(UUID productId);
 

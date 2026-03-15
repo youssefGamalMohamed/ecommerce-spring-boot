@@ -1,4 +1,4 @@
-package com.app.ecommerce.config;
+package com.app.ecommerce.shared.config;
 
 import java.util.Optional;
 import org.springframework.context.annotation.Bean;

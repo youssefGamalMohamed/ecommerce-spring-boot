@@ -5,9 +5,9 @@ import java.util.UUID;
 
 public interface OrderService {
 
-    Order createNewOrder(Order order) throws JsonProcessingException;
+    OrderDto createNewOrder(OrderDto orderDto) throws JsonProcessingException;
 
-    Order findById(UUID orderId);
+    OrderDto findById(UUID orderId);
 
-    void updateOrder(UUID orderId, Order order);
+    void updateOrder(UUID orderId, OrderDto orderDto);
 }

@@ -1,4 +1,4 @@
-package com.app.ecommerce.config;
+package com.app.ecommerce.shared.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

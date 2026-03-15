@@ -2,7 +2,6 @@ package com.app.ecommerce.product;
 
 import com.app.ecommerce.shared.dto.ApiResponseDto;
 import jakarta.validation.Valid;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,15 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductControllerImpl implements ProductController {
 
     private final ProductService productService;
-    private final ProductMapper productMapper;
 
     @PostMapping
     @Override
     public ResponseEntity<ApiResponseDto<ProductDto>> save(@Valid @RequestBody ProductDto productDto) {
         log.info("save({})", productDto);
-        Product newCreatedProduct = productService.save(productMapper.mapToEntity(productDto));
+        ProductDto newCreatedProduct = productService.save(productDto);
         return new ResponseEntity<>(
-                ApiResponseDto.created(productMapper.mapToDto(newCreatedProduct)),
+                ApiResponseDto.created(newCreatedProduct),
                 HttpStatus.CREATED
         );
     }
@@ -42,26 +40,24 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public ResponseEntity<ApiResponseDto<ProductDto>> findById(@PathVariable("id") UUID productId) {
         log.info("findById({})", productId);
-        Product product = productService.findById(productId);
-        return ResponseEntity.ok(ApiResponseDto.success(productMapper.mapToDto(product)));
+        ProductDto product = productService.findById(productId);
+        return ResponseEntity.ok(ApiResponseDto.success(product));
     }
 
     @GetMapping
     @Override
     public ResponseEntity<ApiResponseDto<?>> findProductsByCategoryName(@RequestParam(value = "category") String categoryName) {
         log.info("findProductsByCategoryName({})", categoryName);
-        Set<Product> products = productService.findAllByCategoryName(categoryName);
-        return ResponseEntity.ok(ApiResponseDto.success(productMapper.mapToDtos(products)));
+        return ResponseEntity.ok(ApiResponseDto.success(productService.findAllByCategoryName(categoryName)));
     }
 
     @PutMapping("/{id}")
     @Override
     public ResponseEntity<ApiResponseDto<ProductDto>> updateById(@PathVariable("id") UUID productId, @Valid @RequestBody ProductDto updatedBody) {
         log.info("updateById({}, {})", productId, updatedBody);
-
-        Product updatedProduct = productService.updateById(productId, productMapper.mapToEntity(updatedBody));
+        ProductDto updatedProduct = productService.updateById(productId, updatedBody);
         return new ResponseEntity<>(
-                ApiResponseDto.success(productMapper.mapToDto(updatedProduct), "Product updated successfully"),
+                ApiResponseDto.success(updatedProduct, "Product updated successfully"),
                 HttpStatus.OK
         );
     }

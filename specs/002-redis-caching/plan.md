@@ -143,3 +143,61 @@ All unknowns resolved. See [research.md](research.md) for full decisions.
 22. Verify JSON values visible in RedisInsight at `localhost:8001`
 23. Verify fallback: stop Redis, confirm endpoints return 200 with DB data
 24. Verify eviction: update a product, confirm next fetch returns updated data
+
+---
+
+## Service Layer DTO Pattern (Hibernate + Redis Cache Compatibility)
+
+### Problem
+When using Redis caching with Hibernate entities, serializing JPA entities directly to Redis causes issues:
+- Hibernate proxies/lazy-loaded collections don't serialize well
+- Entity relationships cause `LazyInitializationException` when accessed outside session
+- Changes to entity graph affect cached data unpredictably
+
+### Solution
+All service layer methods return DTOs instead of Entities:
+
+| Service | Interface Return Type | Implementation |
+|---------|----------------------|----------------|
+| `ProductService` | `ProductDto` | Converts Entity→DTO before returning |
+| `CategoryService` | `CategoryDto` | Converts Entity→DTO before returning |
+| `OrderService` | `OrderDto` | Converts Entity→DTO before returning |
+| `CartService` | `CartDto` | Converts Entity→DTO before returning |
+| `CartItemService` | `CartItemDto` | Converts Entity→DTO before returning |
+
+### Mapper Methods Used
+- `mapToEntity(Dto)` - DTO → Entity (for DB operations)
+- `mapToDto(Entity)` - Entity → DTO (for return values)
+- `mapToDtos(List/Set<Entity>)` - Collection mapping
+- `updateFrom(Entity, @MappingTarget)` - Update existing entity
+
+### Code Pattern
+```java
+// Save - input is DTO, convert to Entity for DB
+public ProductDto save(ProductDto dto) {
+    Product entity = mapper.mapToEntity(dto);
+    Product saved = repository.save(entity);
+    return mapper.mapToDto(saved);  // Return DTO
+}
+
+// Find - get Entity, convert to DTO
+public ProductDto findById(UUID id) {
+    Product entity = repository.findById(id).orElseThrow(...);
+    return mapper.mapToDto(entity);  // Return DTO
+}
+
+// Update - get existing, merge, save, return DTO
+public ProductDto updateById(UUID id, ProductDto dto) {
+    Product existing = repository.findById(id).orElseThrow(...);
+    Product temp = mapper.mapToEntity(dto);
+    mapper.updateFrom(temp, existing);
+    Product saved = repository.save(existing);
+    return mapper.mapToDto(saved);  // Return DTO
+}
+```
+
+### Benefits
+1. **Cache Isolation** - Redis caches DTOs, not entities
+2. **No Lazy Loading Issues** - DTOs are fully populated before caching
+3. **API Stability** - DTOs are the contract, entities can evolve independently
+4. **Clean Layers** - Controller only sees DTOs, Repository returns entities

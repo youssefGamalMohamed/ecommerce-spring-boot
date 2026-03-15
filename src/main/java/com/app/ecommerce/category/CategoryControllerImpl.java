@@ -23,16 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryControllerImpl implements CategoryController {
 
     private final CategoryService categoryService;
-    private final CategoryMapper categoryMapper;
 
     @PostMapping
     @Override
     public ResponseEntity<ApiResponseDto<CategoryDto>> save(@Valid @RequestBody CategoryDto categoryDto) {
         log.info("save({})", categoryDto);
-        Category newCreatedCategory = categoryService.save(categoryMapper.mapToEntity(categoryDto));
+        CategoryDto newCreatedCategory = categoryService.save(categoryDto);
 
         return new ResponseEntity<>(
-                ApiResponseDto.created(categoryMapper.mapToDto(newCreatedCategory)),
+                ApiResponseDto.created(newCreatedCategory),
                 HttpStatus.CREATED
         );
     }
@@ -52,14 +51,14 @@ public class CategoryControllerImpl implements CategoryController {
     @Override
     public ResponseEntity<ApiResponseDto<?>> findAll() {
         log.info("findAll()");
-        return ResponseEntity.ok(ApiResponseDto.success(categoryMapper.mapToDtos(categoryService.findAll())));
+        return ResponseEntity.ok(ApiResponseDto.success(categoryService.findAll()));
     }
 
     @GetMapping("/{id}")
     @Override
     public ResponseEntity<ApiResponseDto<CategoryDto>> findById(@PathVariable("id") UUID categoryId) {
         log.info("findById({})", categoryId);
-        return ResponseEntity.ok(ApiResponseDto.success(categoryMapper.mapToDto(categoryService.findById(categoryId))));
+        return ResponseEntity.ok(ApiResponseDto.success(categoryService.findById(categoryId)));
     }
 
     @PutMapping("/{id}")
@@ -67,7 +66,7 @@ public class CategoryControllerImpl implements CategoryController {
     public ResponseEntity<ApiResponseDto<CategoryDto>> updateById(@PathVariable("id") UUID categoryId, @Valid @RequestBody CategoryDto updatedBody) {
         log.info("updateById({}, {})", categoryId, updatedBody);
         return ResponseEntity.ok(ApiResponseDto.success(
-                categoryMapper.mapToDto(categoryService.updateById(categoryId, categoryMapper.mapToEntity(updatedBody))),
+                categoryService.updateById(categoryId, updatedBody),
                 "Category updated successfully"));
     }
 

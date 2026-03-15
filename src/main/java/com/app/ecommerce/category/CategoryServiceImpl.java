@@ -1,5 +1,6 @@
 package com.app.ecommerce.category;
 
+import com.app.ecommerce.shared.constants.CacheConstants;
 import com.app.ecommerce.shared.exception.type.DuplicatedUniqueColumnValueException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,22 +21,23 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    @CacheEvict(value = "categories", allEntries = true)
-    public Category save(Category category) throws DuplicatedUniqueColumnValueException {
-        log.info("Saving new category with name = {}", category.getName());
+    @CacheEvict(value = CacheConstants.CATEGORIES, allEntries = true)
+    public CategoryDto save(CategoryDto categoryDto) throws DuplicatedUniqueColumnValueException {
+        log.info("Saving new category with name = {}", categoryDto.getName());
 
-        if (categoryRepository.findByName(category.getName()).isPresent()) {
+        if (categoryRepository.findByName(categoryDto.getName()).isPresent()) {
             throw new DuplicatedUniqueColumnValueException("Category Name Already Exist and Should Not Be Duplicated");
         }
 
-        Category newCreatedCategory = categoryRepository.save(category);
+        Category categoryToSave = categoryMapper.mapToEntity(categoryDto);
+        Category newCreatedCategory = categoryRepository.save(categoryToSave);
         log.info("Category added/saved successfully with id = {}", newCreatedCategory.getId());
 
-        return newCreatedCategory;
+        return categoryMapper.mapToDto(newCreatedCategory);
     }
 
     @Override
-    @CacheEvict(value = "categories", allEntries = true)
+    @CacheEvict(value = CacheConstants.CATEGORIES, allEntries = true)
     public void deleteById(UUID categoryId) {
         log.info("deleteById({})", categoryId);
         if (categoryId == null) {
@@ -52,43 +54,46 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(value = "categories", key = "'all'")
-    public List<Category> findAll() {
+    @Cacheable(value = CacheConstants.CATEGORIES, key = "'all'")
+    public List<CategoryDto> findAll() {
         log.info("findAll() - Retrieving all categories");
-        return categoryRepository.findAll();
+        return categoryMapper.mapToDtos(categoryRepository.findAll());
     }
 
     @Override
-    @Cacheable(value = "categories", key = "#categoryId")
-    public Category findById(UUID categoryId) {
+    @Cacheable(value = CacheConstants.CATEGORIES, key = "#categoryId")
+    public CategoryDto findById(UUID categoryId) {
         log.info("findById({})", categoryId);
         if (categoryId == null) {
             throw new IllegalArgumentException("Category Id Not Exist to Retrieve");
         }
 
-        return categoryRepository.findById(categoryId)
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NoSuchElementException(
                         "No Category To Retrieve, Id Not Found with value = " + categoryId));
+
+        return categoryMapper.mapToDto(category);
     }
 
     @Override
-    @CacheEvict(value = "categories", allEntries = true)
-    public Category updateById(UUID categoryId, Category updatedCategory) {
-        log.info("updateById({}, {})", categoryId, updatedCategory);
-        if (categoryId == null || updatedCategory == null) {
+    @CacheEvict(value = CacheConstants.CATEGORIES, allEntries = true)
+    public CategoryDto updateById(UUID categoryId, CategoryDto updatedCategoryDto) {
+        log.info("updateById({}, {})", categoryId, updatedCategoryDto);
+        if (categoryId == null || updatedCategoryDto == null) {
             throw new IllegalArgumentException("Category Id Not Exist to Update");
         }
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NoSuchElementException("No Category Update, Id Not Found"));
 
-        categoryMapper.updateFrom(updatedCategory, category);
+        Category tempCategory = categoryMapper.mapToEntity(updatedCategoryDto);
+        categoryMapper.updateFrom(tempCategory, category);
 
         Category updCategory = categoryRepository.save(category);
 
         log.info("updated category with id = {}", updCategory.getId());
 
-        return updCategory;
+        return categoryMapper.mapToDto(updCategory);
     }
 
     @Override
