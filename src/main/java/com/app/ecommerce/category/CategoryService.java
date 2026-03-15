@@ -1,9 +1,10 @@
 package com.app.ecommerce.category;
 
-import com.app.ecommerce.shared.exception.type.DuplicatedUniqueColumnValueException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import com.app.ecommerce.shared.exception.DuplicatedUniqueColumnValueException;
 
 public interface CategoryService {
 

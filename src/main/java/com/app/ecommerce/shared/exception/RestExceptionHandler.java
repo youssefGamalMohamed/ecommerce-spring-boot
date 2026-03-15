@@ -1,7 +1,7 @@
-package com.app.ecommerce.shared.exception.handler;
+package com.app.ecommerce.shared.exception;
 
 import com.app.ecommerce.shared.dto.ErrorResponseDto;
-import com.app.ecommerce.shared.exception.type.DuplicatedUniqueColumnValueException;
+
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;

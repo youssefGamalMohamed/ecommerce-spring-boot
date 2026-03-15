@@ -1,7 +1,8 @@
 package com.app.ecommerce.category;
 
 import com.app.ecommerce.shared.constants.CacheConstants;
-import com.app.ecommerce.shared.exception.type.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.shared.exception.DuplicatedUniqueColumnValueException;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;

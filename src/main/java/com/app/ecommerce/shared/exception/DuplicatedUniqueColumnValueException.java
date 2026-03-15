@@ -1,4 +1,4 @@
-package com.app.ecommerce.shared.exception.type;
+package com.app.ecommerce.shared.exception;
 
 public class DuplicatedUniqueColumnValueException extends RuntimeException {
 
