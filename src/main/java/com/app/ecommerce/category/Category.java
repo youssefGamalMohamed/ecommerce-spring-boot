@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
+import org.hibernate.annotations.DynamicUpdate;
+
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -16,6 +19,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Getter
 @Setter
+@DynamicUpdate
 public class Category extends BaseEntity {
 
     @Id
