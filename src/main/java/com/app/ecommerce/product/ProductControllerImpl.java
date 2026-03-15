@@ -38,6 +38,14 @@ public class ProductControllerImpl implements ProductController {
         );
     }
 
+    @GetMapping("/{id}")
+    @Override
+    public ResponseEntity<ApiResponseDto<ProductDto>> findById(@PathVariable("id") UUID productId) {
+        log.info("findById({})", productId);
+        Product product = productService.findById(productId);
+        return ResponseEntity.ok(ApiResponseDto.success(productMapper.mapToDto(product)));
+    }
+
     @GetMapping
     @Override
     public ResponseEntity<ApiResponseDto<?>> findProductsByCategoryName(@RequestParam(value = "category") String categoryName) {

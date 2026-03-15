@@ -40,6 +40,20 @@ public interface ProductController {
     )
     ResponseEntity<ApiResponseDto<ProductDto>> save(@Valid @RequestBody ProductDto productDto);
 
+    @Operation(summary = "Find Product By ID", description = "Retrieve a product by its ID. Accessible by Admin and User.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "Product retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "Product not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            )
+    }
+    )
+    ResponseEntity<ApiResponseDto<ProductDto>> findById(@PathVariable(value = "id") UUID productId);
+
     @Operation(summary = "Find Products by Category Name", description = "Retrieve all products for a specific category. Accessible by Admin and User.")
     @ApiResponses(value = {
             @ApiResponse(
