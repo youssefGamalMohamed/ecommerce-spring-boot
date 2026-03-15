@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
+    @CacheEvict(value = "orders", allEntries = true)
     public Order createNewOrder(Order order) throws JsonProcessingException {
         log.info("createNewOrder({})", order);
         Order createdOrder = orderRepository.save(order);
@@ -24,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Cacheable(value = "orders", key = "#orderId")
     public Order findById(UUID orderId) {
         log.info("findById({})", orderId);
         if (orderId == null) {
@@ -42,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @CacheEvict(value = "orders", allEntries = true)
     public void updateOrder(UUID orderId, Order updatedOrder) {
         log.info("updateOrder({}, {})", orderId, updatedOrder);
         if (orderId == null) {

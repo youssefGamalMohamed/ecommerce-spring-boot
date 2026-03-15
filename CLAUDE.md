@@ -3,6 +3,8 @@
 Auto-generated from all feature plans. Last updated: 2026-03-10
 
 ## Active Technologies
+- Java 17 + Spring Boot 3.0.0, `spring-boot-starter-data-redis` (new), `spring-boot-starter-cache` (new), Lettuce (transitive), Jackson (already on classpath via `spring-boot-starter-web`) (002-redis-caching)
+- MySQL (primary, unchanged) + Redis (cache layer, new) (002-redis-caching)
 
 - Java 17 + Spring Boot 3.0.0, Spring Security, JJWT 0.11.5, Lombok (001-spring-http-logging)
 
@@ -46,6 +48,7 @@ mvn test
 - AOP for cross-cutting concerns (no inline logging in business methods)
 
 ## Recent Changes
+- 002-redis-caching: Added Java 17 + Spring Boot 3.0.0, `spring-boot-starter-data-redis` (new), `spring-boot-starter-cache` (new), Lettuce (transitive), Jackson (already on classpath via `spring-boot-starter-web`)
 
 - 001-spring-http-logging: Replace AppLogger/HttpRequestResponseInterceptorUtils/LoggingUtils
   with CommonsRequestLoggingFilter bean only (response status logging out of scope)

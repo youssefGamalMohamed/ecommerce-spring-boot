@@ -21,6 +21,23 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 60000
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+
+cache:
+  ttl:
+    products: 600000
+
+    categories: 1800000
+    carts: 300000
+    orders: 900000
 
 
 
@@ -48,6 +65,7 @@ logging:
         web:
           filter:
             CommonsRequestLoggingFilter: DEBUG
+        cache: DEBUG
     net:
       ttddyy:
         dsproxy:

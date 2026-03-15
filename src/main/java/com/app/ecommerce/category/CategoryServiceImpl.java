@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public Category save(Category category) throws DuplicatedUniqueColumnValueException {
         log.info("Saving new category with name = {}", category.getName());
 
@@ -32,6 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public void deleteById(UUID categoryId) {
         log.info("deleteById({})", categoryId);
         if (categoryId == null) {
@@ -48,12 +52,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(value = "categories", key = "'all'")
     public List<Category> findAll() {
         log.info("findAll() - Retrieving all categories");
         return categoryRepository.findAll();
     }
 
     @Override
+    @Cacheable(value = "categories", key = "#categoryId")
     public Category findById(UUID categoryId) {
         log.info("findById({})", categoryId);
         if (categoryId == null) {
@@ -66,6 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @CacheEvict(value = "categories", allEntries = true)
     public Category updateById(UUID categoryId, Category updatedCategory) {
         log.info("updateById({}, {})", categoryId, updatedCategory);
         if (categoryId == null || updatedCategory == null) {

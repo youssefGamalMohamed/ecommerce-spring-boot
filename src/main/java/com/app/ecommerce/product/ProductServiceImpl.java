@@ -9,6 +9,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -42,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", key = "#productId")
     public Product findById(UUID productId) {
         log.info("findById({})", productId);
         if (productId == null) {
@@ -60,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "products", allEntries = true)
     public Product updateById(UUID productId, Product newDataForProduct) {
         log.info("updateById({}, {})", productId, newDataForProduct);
         if (productId == null) {
@@ -84,6 +88,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteById(UUID productId) {
         log.info("deleteById({})", productId);
         if (productId == null) {
