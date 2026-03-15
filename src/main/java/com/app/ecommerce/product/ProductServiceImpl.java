@@ -1,9 +1,12 @@
 package com.app.ecommerce.product;
 
+import com.app.ecommerce.category.Category;
+import com.app.ecommerce.category.CategoryService;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,12 +18,17 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final CategoryService categoryService;
 
     @Override
     public Product save(Product product) {
         log.info("save({})", product);
-        Product newProduct = productMapper.mapToEntity(product);
-        Product savedProduct = productRepository.save(newProduct);
+        Set<UUID> categoryIds = product.getCategories().stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet());
+        Set<Category> managedCategories = categoryService.getCategories(categoryIds);
+        Product productToSave = productMapper.mapToEntity(product, managedCategories);
+        Product savedProduct = productRepository.save(productToSave);
         log.info("save(): Done Successfully, new product created with id = {}", savedProduct.getId());
         return savedProduct;
     }
@@ -63,7 +71,11 @@ public class ProductServiceImpl implements ProductService {
                         "Can Not Update Product , Id Not Found with value = " + productId));
         log.info("updateById(): Found product with id = {}", productId);
 
-        productMapper.updateEntityFromEntity(newDataForProduct, product);
+        Set<UUID> categoryIds = newDataForProduct.getCategories().stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet());
+        Set<Category> managedCategories = categoryService.getCategories(categoryIds);
+        productMapper.updateEntityFromEntity(newDataForProduct, managedCategories, product);
 
         Product updatedProductData = productRepository.save(product);
 

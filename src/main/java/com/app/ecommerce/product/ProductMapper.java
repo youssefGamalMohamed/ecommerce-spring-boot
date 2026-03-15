@@ -1,5 +1,6 @@
 package com.app.ecommerce.product;
 
+import com.app.ecommerce.category.Category;
 import com.app.ecommerce.category.CategoryMapper;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,14 @@ public interface ProductMapper {
     @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
     Product mapToEntity(Product product);
 
+    @org.mapstruct.Mapping(target = "categories", source = "categories")
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "createdAt", ignore = true)
+    @org.mapstruct.Mapping(target = "updatedAt", ignore = true)
+    @org.mapstruct.Mapping(target = "createdBy", ignore = true)
+    @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
+    Product mapToEntity(Product product, Set<Category> categories);
+
     @org.mapstruct.Mapping(target = "id", ignore = true)
     @org.mapstruct.Mapping(target = "categories", ignore = true)
     @org.mapstruct.Mapping(target = "createdAt", ignore = true)
@@ -36,4 +45,12 @@ public interface ProductMapper {
     @org.mapstruct.Mapping(target = "createdBy", ignore = true)
     @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
     void updateEntityFromEntity(Product source, @org.mapstruct.MappingTarget Product target);
+
+    @org.mapstruct.Mapping(target = "categories", source = "categories")
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "createdAt", ignore = true)
+    @org.mapstruct.Mapping(target = "updatedAt", ignore = true)
+    @org.mapstruct.Mapping(target = "createdBy", ignore = true)
+    @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
+    void updateEntityFromEntity(Product source, Set<Category> categories, @org.mapstruct.MappingTarget Product target);
 }
