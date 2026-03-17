@@ -10,15 +10,15 @@ import java.util.UUID;
 
 public interface CategoryService {
 
-    CategoryDto save(CategoryDto categoryDto) throws DuplicatedUniqueColumnValueException;
+    CategoryResponse save(CreateCategoryRequest request) throws DuplicatedUniqueColumnValueException;
 
     void deleteById(UUID categoryId);
 
-    Page<CategoryDto> findAll(String name, Pageable pageable);
+    Page<CategoryResponse> findAll(String name, Pageable pageable);
 
-    CategoryDto findById(UUID categoryId);
+    CategoryResponse findById(UUID categoryId);
 
-    CategoryDto updateById(UUID categoryId, CategoryDto updatedCategoryDto);
+    CategoryResponse updateById(UUID categoryId, UpdateCategoryRequest request);
 
     Set<Category> getCategories(Set<UUID> categories_ids);
 }

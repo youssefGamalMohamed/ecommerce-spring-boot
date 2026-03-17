@@ -2,8 +2,7 @@ package com.app.ecommerce.product;
 
 import com.app.ecommerce.category.Category;
 import com.app.ecommerce.category.CategoryMapper;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 import java.util.List;
 import java.util.Set;
@@ -11,10 +10,10 @@ import java.util.Set;
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper {
 
-    @org.mapstruct.Mapping(target = "createdAt", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedAt", ignore = true)
-    @org.mapstruct.Mapping(target = "createdBy", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
     Product mapToEntity(ProductDto productDto);
 
     ProductDto mapToDto(Product product);
@@ -23,35 +22,66 @@ public interface ProductMapper {
 
     Set<ProductDto> mapToDtos(Set<Product> products);
 
-    @org.mapstruct.Mapping(target = "id", ignore = true)
-    @org.mapstruct.Mapping(target = "categories", ignore = true)
-    @org.mapstruct.Mapping(target = "createdAt", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedAt", ignore = true)
-    @org.mapstruct.Mapping(target = "createdBy", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
     Product mapToEntity(Product product);
 
-    @org.mapstruct.Mapping(target = "categories", source = "categories")
-    @org.mapstruct.Mapping(target = "id", ignore = true)
-    @org.mapstruct.Mapping(target = "createdAt", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedAt", ignore = true)
-    @org.mapstruct.Mapping(target = "createdBy", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "categories", source = "categories")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
     Product mapToEntity(Product product, Set<Category> categories);
 
-    @org.mapstruct.Mapping(target = "id", ignore = true)
-    @org.mapstruct.Mapping(target = "categories", ignore = true)
-    @org.mapstruct.Mapping(target = "createdAt", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedAt", ignore = true)
-    @org.mapstruct.Mapping(target = "createdBy", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
-    void updateEntityFromEntity(Product source, @org.mapstruct.MappingTarget Product target);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    void updateEntityFromEntity(Product source, @MappingTarget Product target);
 
-    @org.mapstruct.Mapping(target = "categories", source = "categories")
-    @org.mapstruct.Mapping(target = "id", ignore = true)
-    @org.mapstruct.Mapping(target = "createdAt", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedAt", ignore = true)
-    @org.mapstruct.Mapping(target = "createdBy", ignore = true)
-    @org.mapstruct.Mapping(target = "updatedBy", ignore = true)
-    void updateEntityFromEntity(Product source, Set<Category> categories, @org.mapstruct.MappingTarget Product target);
+    @Mapping(target = "categories", source = "categories")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    void updateEntityFromEntity(Product source, Set<Category> categories, @MappingTarget Product target);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "cartItem", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    Product mapToEntity(CreateProductRequest request);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "cartItem", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    void updateEntityFromRequest(UpdateProductRequest request, @MappingTarget Product target);
+
+    ProductResponse mapToResponse(Product product);
+
+    List<ProductResponse> mapToResponseList(List<Product> products);
+
+    Set<ProductResponse> mapToResponseSet(Set<Product> products);
 }

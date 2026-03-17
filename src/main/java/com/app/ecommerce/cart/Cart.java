@@ -2,7 +2,6 @@ package com.app.ecommerce.cart;
 
 import com.app.ecommerce.order.Order;
 import com.app.ecommerce.shared.entity.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -25,12 +24,14 @@ public class Cart extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Version
+    private Long version;
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private Set<CartItem> cartItems;
 
     @OneToOne
     @JoinColumn(name = "order_id")
-    @JsonIgnore
     @ToString.Exclude
     private Order order;
 }

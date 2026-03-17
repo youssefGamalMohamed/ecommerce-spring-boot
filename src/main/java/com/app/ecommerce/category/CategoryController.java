@@ -40,7 +40,7 @@ public interface CategoryController {
             )
     }
     )
-    ResponseEntity<ApiResponseDto<CategoryDto>> save(@Valid @RequestBody CategoryDto categoryDto);
+    ResponseEntity<ApiResponseDto<CategoryResponse>> save(@Valid @RequestBody CreateCategoryRequest request);
 
     @Operation(summary = "Delete Category By ID", description = "Delete a category by its ID")
     @ApiResponses(value = {
@@ -63,7 +63,7 @@ public interface CategoryController {
             )
     }
     )
-    ResponseEntity<ApiResponseDto<Page<CategoryDto>>> findAll(
+    ResponseEntity<ApiResponseDto<Page<CategoryResponse>>> findAll(
             @RequestParam(required = false) String name,
             @ParameterObject @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable);
 
@@ -79,7 +79,7 @@ public interface CategoryController {
             )
     }
     )
-    ResponseEntity<ApiResponseDto<CategoryDto>> findById(@PathVariable("id") UUID categoryId);
+    ResponseEntity<ApiResponseDto<CategoryResponse>> findById(@PathVariable("id") UUID categoryId);
 
     @Operation(summary = "Update Category By ID", description = "Update an existing category by its ID")
     @ApiResponses(value = {
@@ -94,9 +94,13 @@ public interface CategoryController {
             @ApiResponse(
                     responseCode = "404", description = "Category not found",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409", description = "Conflict - Version mismatch",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<CategoryDto>> updateById(@PathVariable("id") UUID categoryId, @Valid @RequestBody CategoryDto categoryDto);
+    ResponseEntity<ApiResponseDto<CategoryResponse>> updateById(@PathVariable("id") UUID categoryId, @Valid @RequestBody UpdateCategoryRequest request);
 
 }

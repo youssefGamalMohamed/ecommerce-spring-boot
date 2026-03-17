@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Cacheable(value = CacheConstants.CARTS, key = "#cartId")
+    @Transactional(readOnly = true)
     public CartDto findById(UUID cartId) {
         log.info("findById({})", cartId);
         Cart cart = cartRepository.findById(cartId)

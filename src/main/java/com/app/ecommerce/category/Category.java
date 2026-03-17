@@ -2,7 +2,6 @@ package com.app.ecommerce.category;
 
 import com.app.ecommerce.product.Product;
 import com.app.ecommerce.shared.entity.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -29,9 +28,11 @@ public class Category extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+    @Version
+    private Long version;
+
     @ToString.Exclude
     @Builder.Default
-    @JsonIgnore
-    @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     private Set<Product> products = new HashSet<>();
 }

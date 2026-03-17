@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -103,6 +104,32 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(value = ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponseDto> handleOptimisticLockingFailureException(
+            ObjectOptimisticLockingFailureException exception, WebRequest request) {
+        log.warn("Optimistic locking failure: {}", exception.getMessage());
+
+        ErrorResponseDto errorResponse = ErrorResponseDto.conflict(
+                "Resource was modified by another user. Please refresh and try again.",
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = InvalidStateTransitionException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidStateTransitionException(
+            InvalidStateTransitionException exception, WebRequest request) {
+        log.warn("Invalid state transition: {}", exception.getMessage());
+
+        ErrorResponseDto errorResponse = ErrorResponseDto.badRequest(
+                exception.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 }

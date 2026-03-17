@@ -19,10 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -46,7 +43,9 @@ public interface OrderController {
             )
     }
     )
-    ResponseEntity<ApiResponseDto<OrderDto>> createNewOrder(@Valid @RequestBody OrderDto orderDto) throws JsonProcessingException;
+    ResponseEntity<ApiResponseDto<OrderResponse>> createNewOrder(
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+            @Valid @RequestBody CreateOrderRequest request) throws JsonProcessingException;
 
     @Operation(summary = "List Orders", description = "Retrieve orders with optional filtering, sorting, and pagination.")
     @ApiResponses(value = {
@@ -60,7 +59,7 @@ public interface OrderController {
             )
     }
     )
-    ResponseEntity<ApiResponseDto<Page<OrderDto>>> findAll(
+    ResponseEntity<ApiResponseDto<Page<OrderResponse>>> findAll(
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) PaymentType paymentType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdAfter,
@@ -80,11 +79,15 @@ public interface OrderController {
             @ApiResponse(
                     responseCode = "404", description = "Order not found",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409", description = "Conflict - Version mismatch",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
             )
     }
     )
-    @PutMapping("/orders/{id}")
-    ResponseEntity<ApiResponseDto<Void>> updateOrder(@PathVariable("id") UUID orderId, @Valid @RequestBody OrderDto orderDto);
+    @PatchMapping("/orders/{id}")
+    ResponseEntity<ApiResponseDto<OrderResponse>> updateOrder(@PathVariable("id") UUID orderId, @Valid @RequestBody UpdateOrderRequest request);
 
     @Operation(summary = "Find Order By ID", description = "Retrieve an order by its ID")
     @ApiResponses(value = {
@@ -98,6 +101,6 @@ public interface OrderController {
             )
     }
     )
-    ResponseEntity<ApiResponseDto<OrderDto>> findOrderById(@PathVariable("id") UUID orderId);
+    ResponseEntity<ApiResponseDto<OrderResponse>> findOrderById(@PathVariable("id") UUID orderId);
 
 }

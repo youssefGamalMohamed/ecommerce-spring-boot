@@ -2,6 +2,7 @@ package com.app.ecommerce.product;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class ProductSpecifications {
@@ -15,7 +16,7 @@ public class ProductSpecifications {
         };
     }
 
-    public static Specification<Product> priceGte(Double minPrice) {
+    public static Specification<Product> priceGte(BigDecimal minPrice) {
         return (root, query, cb) -> {
             if (minPrice == null) {
                 return null;
@@ -24,7 +25,7 @@ public class ProductSpecifications {
         };
     }
 
-    public static Specification<Product> priceLte(Double maxPrice) {
+    public static Specification<Product> priceLte(BigDecimal maxPrice) {
         return (root, query, cb) -> {
             if (maxPrice == null) {
                 return null;

@@ -44,6 +44,25 @@ cache:
     carts: 300000
     orders: 900000
 
+jwt:
+  secret-key: T3Bwb3J0aW5lVGhpcyBCYXNlNjQgU2VjcmV0IEtleSBGb3IgS0VUMjU2IGtleQ==
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+
 springdoc:
   swagger-ui:
     path: /swagger-ui

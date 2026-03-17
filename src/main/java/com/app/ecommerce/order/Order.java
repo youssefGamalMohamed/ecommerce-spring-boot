@@ -11,6 +11,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Table(name = "`order`")
@@ -30,8 +31,11 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
-    @Column
-    private double totalPrice;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal totalPrice;
+
+    @Version
+    private Long version;
 
     @Embedded
     @AttributeOverrides({

@@ -3,17 +3,18 @@ package com.app.ecommerce.product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public interface ProductService {
 
-    ProductDto save(ProductDto productDto);
+    ProductResponse save(CreateProductRequest request);
 
-    ProductDto findById(UUID productId);
+    ProductResponse findById(UUID productId);
 
-    Page<ProductDto> findAll(String name, Double minPrice, Double maxPrice, UUID categoryId, Pageable pageable);
+    Page<ProductResponse> findAll(String name, BigDecimal minPrice, BigDecimal maxPrice, UUID categoryId, Pageable pageable);
 
-    ProductDto updateById(UUID productId, ProductDto updatedProductDto);
+    ProductResponse updateById(UUID productId, UpdateProductRequest request);
 
     void deleteById(UUID productId);
 

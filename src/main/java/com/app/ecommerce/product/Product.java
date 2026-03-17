@@ -3,12 +3,12 @@ package com.app.ecommerce.product;
 import com.app.ecommerce.cart.CartItem;
 import com.app.ecommerce.category.Category;
 import com.app.ecommerce.shared.entity.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,20 +34,22 @@ public class Product extends BaseEntity {
     @Column
     private String description;
 
-    @Column
-    private double price;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal price;
 
     @Column
     private Integer quantity;
 
+    @Version
+    private Long version;
+
     @Builder.Default
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH,
             CascadeType.REFRESH})
     @JoinTable(name = "product_category", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
     @ToString.Exclude
     @OneToMany(mappedBy = "product")
-    @JsonIgnore
     private List<CartItem> cartItem;
 }

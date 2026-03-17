@@ -6,6 +6,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Embeddable
 @Builder
 @RequiredArgsConstructor
@@ -20,6 +22,6 @@ public class DeliveryInfo {
 
     private String address;
 
-    private String date;
+    private LocalDate date;
 
 }

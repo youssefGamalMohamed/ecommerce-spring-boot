@@ -8,6 +8,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -29,23 +31,25 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    @CacheEvict(value = CacheConstants.CATEGORIES, allEntries = true)
-    public CategoryDto save(CategoryDto categoryDto) throws DuplicatedUniqueColumnValueException {
-        log.info("Saving new category with name = {}", categoryDto.getName());
+    @CachePut(value = CacheConstants.CATEGORIES, key = "#result.id")
+    @Transactional
+    public CategoryResponse save(CreateCategoryRequest request) throws DuplicatedUniqueColumnValueException {
+        log.info("Saving new category with name = {}", request.getName());
 
-        if (categoryRepository.findByName(categoryDto.getName()).isPresent()) {
+        if (categoryRepository.findByName(request.getName()).isPresent()) {
             throw new DuplicatedUniqueColumnValueException("Category Name Already Exist and Should Not Be Duplicated");
         }
 
-        Category categoryToSave = categoryMapper.mapToEntity(categoryDto);
+        Category categoryToSave = categoryMapper.mapToEntity(request);
         Category newCreatedCategory = categoryRepository.save(categoryToSave);
         log.info("Category added/saved successfully with id = {}", newCreatedCategory.getId());
 
-        return categoryMapper.mapToDto(newCreatedCategory);
+        return categoryMapper.mapToResponse(newCreatedCategory);
     }
 
     @Override
-    @CacheEvict(value = CacheConstants.CATEGORIES, allEntries = true)
+    @CacheEvict(value = CacheConstants.CATEGORIES, key = "#categoryId")
+    @Transactional
     public void deleteById(UUID categoryId) {
         log.info("deleteById({})", categoryId);
         if (categoryId == null) {
@@ -62,7 +66,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<CategoryDto> findAll(String name, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<CategoryResponse> findAll(String name, Pageable pageable) {
         log.info("findAll(name={}, pageable={})", name, pageable);
 
         Sort safeSort = sanitizeSort(pageable.getSort());
@@ -72,7 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .where((Root<Category> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> null)
                 .and(CategorySpecifications.nameLike(name));
 
-        Page<CategoryDto> result = categoryRepository.findAll(spec, safePage).map(categoryMapper::mapToDto);
+        Page<CategoryResponse> result = categoryRepository.findAll(spec, safePage).map(categoryMapper::mapToResponse);
         log.info("findAll(): Found {} categories", result.getTotalElements());
         return result;
     }
@@ -93,7 +98,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Cacheable(value = CacheConstants.CATEGORIES, key = "#categoryId")
-    public CategoryDto findById(UUID categoryId) {
+    @Transactional(readOnly = true)
+    public CategoryResponse findById(UUID categoryId) {
         log.info("findById({})", categoryId);
         if (categoryId == null) {
             throw new IllegalArgumentException("Category Id Not Exist to Retrieve");
@@ -103,31 +109,40 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new NoSuchElementException(
                         "No Category To Retrieve, Id Not Found with value = " + categoryId));
 
-        return categoryMapper.mapToDto(category);
+        return categoryMapper.mapToResponse(category);
     }
 
     @Override
-    @CacheEvict(value = CacheConstants.CATEGORIES, allEntries = true)
-    public CategoryDto updateById(UUID categoryId, CategoryDto updatedCategoryDto) {
-        log.info("updateById({}, {})", categoryId, updatedCategoryDto);
-        if (categoryId == null || updatedCategoryDto == null) {
+    @CachePut(value = CacheConstants.CATEGORIES, key = "#result.id")
+    @Transactional
+    public CategoryResponse updateById(UUID categoryId, UpdateCategoryRequest request) {
+        log.info("updateById({}, {})", categoryId, request);
+        if (categoryId == null || request == null) {
             throw new IllegalArgumentException("Category Id Not Exist to Update");
         }
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NoSuchElementException("No Category Update, Id Not Found"));
 
-        Category tempCategory = categoryMapper.mapToEntity(updatedCategoryDto);
-        categoryMapper.updateFrom(tempCategory, category);
+        category.setVersion(request.getVersion());
+
+        if (request.getName() != null && !request.getName().equals(category.getName())) {
+            if (categoryRepository.findByName(request.getName()).isPresent()) {
+                throw new DuplicatedUniqueColumnValueException("Category Name Already Exist and Should Not Be Duplicated");
+            }
+        }
+
+        categoryMapper.updateEntityFromRequest(request, category);
 
         Category updCategory = categoryRepository.save(category);
 
         log.info("updated category with id = {}", updCategory.getId());
 
-        return categoryMapper.mapToDto(updCategory);
+        return categoryMapper.mapToResponse(updCategory);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Set<Category> getCategories(Set<UUID> categories_ids) {
         log.info("get categories with ids = {}", categories_ids);
         return categoryRepository.findByIdIn(categories_ids);

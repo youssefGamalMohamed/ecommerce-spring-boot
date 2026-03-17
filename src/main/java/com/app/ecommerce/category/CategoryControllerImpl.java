@@ -25,9 +25,9 @@ public class CategoryControllerImpl implements CategoryController {
 
     @PostMapping
     @Override
-    public ResponseEntity<ApiResponseDto<CategoryDto>> save(@Valid @RequestBody CategoryDto categoryDto) {
-        log.info("save({})", categoryDto);
-        CategoryDto newCreatedCategory = categoryService.save(categoryDto);
+    public ResponseEntity<ApiResponseDto<CategoryResponse>> save(@Valid @RequestBody CreateCategoryRequest request) {
+        log.info("save({})", request);
+        CategoryResponse newCreatedCategory = categoryService.save(request);
 
         return new ResponseEntity<>(
                 ApiResponseDto.created(newCreatedCategory),
@@ -48,27 +48,27 @@ public class CategoryControllerImpl implements CategoryController {
 
     @GetMapping
     @Override
-    public ResponseEntity<ApiResponseDto<Page<CategoryDto>>> findAll(
+    public ResponseEntity<ApiResponseDto<Page<CategoryResponse>>> findAll(
             @RequestParam(required = false) String name,
             @ParameterObject @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
         log.info("findAll(name={}, pageable={})", name, pageable);
-        Page<CategoryDto> page = categoryService.findAll(name, pageable);
+        Page<CategoryResponse> page = categoryService.findAll(name, pageable);
         return ResponseEntity.ok(ApiResponseDto.success(page));
     }
 
     @GetMapping("/{id}")
     @Override
-    public ResponseEntity<ApiResponseDto<CategoryDto>> findById(@PathVariable("id") UUID categoryId) {
+    public ResponseEntity<ApiResponseDto<CategoryResponse>> findById(@PathVariable("id") UUID categoryId) {
         log.info("findById({})", categoryId);
         return ResponseEntity.ok(ApiResponseDto.success(categoryService.findById(categoryId)));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @Override
-    public ResponseEntity<ApiResponseDto<CategoryDto>> updateById(@PathVariable("id") UUID categoryId, @Valid @RequestBody CategoryDto updatedBody) {
-        log.info("updateById({}, {})", categoryId, updatedBody);
+    public ResponseEntity<ApiResponseDto<CategoryResponse>> updateById(@PathVariable("id") UUID categoryId, @Valid @RequestBody UpdateCategoryRequest request) {
+        log.info("updateById({}, {})", categoryId, request);
         return ResponseEntity.ok(ApiResponseDto.success(
-                categoryService.updateById(categoryId, updatedBody),
+                categoryService.updateById(categoryId, request),
                 "Category updated successfully"));
     }
 

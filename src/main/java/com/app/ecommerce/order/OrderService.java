@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public interface OrderService {
 
-    OrderDto createNewOrder(OrderDto orderDto) throws JsonProcessingException;
+    OrderResponse createNewOrder(CreateOrderRequest request) throws JsonProcessingException;
 
-    OrderDto findById(UUID orderId);
+    OrderResponse findById(UUID orderId);
 
-    void updateOrder(UUID orderId, OrderDto orderDto);
+    OrderResponse updateOrder(UUID orderId, UpdateOrderRequest request);
 
-    Page<OrderDto> findAll(Status status, PaymentType paymentType, Instant createdAfter, Instant createdBefore, Pageable pageable);
+    Page<OrderResponse> findAll(Status status, PaymentType paymentType, Instant createdAfter, Instant createdBefore, Pageable pageable);
 }

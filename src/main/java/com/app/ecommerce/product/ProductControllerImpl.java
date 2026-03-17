@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Slf4j
@@ -25,9 +26,9 @@ public class ProductControllerImpl implements ProductController {
 
     @PostMapping
     @Override
-    public ResponseEntity<ApiResponseDto<ProductDto>> save(@Valid @RequestBody ProductDto productDto) {
-        log.info("save({})", productDto);
-        ProductDto newCreatedProduct = productService.save(productDto);
+    public ResponseEntity<ApiResponseDto<ProductResponse>> save(@Valid @RequestBody CreateProductRequest request) {
+        log.info("save({})", request);
+        ProductResponse newCreatedProduct = productService.save(request);
         return new ResponseEntity<>(
                 ApiResponseDto.created(newCreatedProduct),
                 HttpStatus.CREATED);
@@ -35,32 +36,32 @@ public class ProductControllerImpl implements ProductController {
 
     @GetMapping("/{id}")
     @Override
-    public ResponseEntity<ApiResponseDto<ProductDto>> findById(@PathVariable("id") UUID productId) {
+    public ResponseEntity<ApiResponseDto<ProductResponse>> findById(@PathVariable("id") UUID productId) {
         log.info("findById({})", productId);
-        ProductDto product = productService.findById(productId);
+        ProductResponse product = productService.findById(productId);
         return ResponseEntity.ok(ApiResponseDto.success(product));
     }
 
     @GetMapping
     @Override
-    public ResponseEntity<ApiResponseDto<Page<ProductDto>>> findAll(
+    public ResponseEntity<ApiResponseDto<Page<ProductResponse>>> findAll(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) UUID categoryId,
             @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("findAll(name={}, minPrice={}, maxPrice={}, categoryId={}, pageable={})", name, minPrice, maxPrice,
                 categoryId, pageable);
-        Page<ProductDto> page = productService.findAll(name, minPrice, maxPrice, categoryId, pageable);
+        Page<ProductResponse> page = productService.findAll(name, minPrice, maxPrice, categoryId, pageable);
         return ResponseEntity.ok(ApiResponseDto.success(page));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @Override
-    public ResponseEntity<ApiResponseDto<ProductDto>> updateById(@PathVariable("id") UUID productId,
-                                                                 @Valid @RequestBody ProductDto updatedBody) {
-        log.info("updateById({}, {})", productId, updatedBody);
-        ProductDto updatedProduct = productService.updateById(productId, updatedBody);
+    public ResponseEntity<ApiResponseDto<ProductResponse>> updateById(@PathVariable("id") UUID productId,
+                                                                 @Valid @RequestBody UpdateProductRequest request) {
+        log.info("updateById({}, {})", productId, request);
+        ProductResponse updatedProduct = productService.updateById(productId, request);
         return new ResponseEntity<>(
                 ApiResponseDto.success(updatedProduct, "Product updated successfully"),
                 HttpStatus.OK);

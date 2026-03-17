@@ -1,7 +1,6 @@
 package com.app.ecommerce.product;
 
 import com.app.ecommerce.category.Category;
-import com.app.ecommerce.category.CategoryDto;
 import com.app.ecommerce.category.CategoryService;
 import com.app.ecommerce.shared.constants.CacheConstants;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -10,6 +9,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +17,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,23 +34,22 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
 
     @Override
-    @CacheEvict(value = CacheConstants.PRODUCTS, allEntries = true)
-    public ProductDto save(ProductDto productDto) {
-        log.info("save({})", productDto);
-        Set<UUID> categoryIds = productDto.getCategories().stream()
-                .map(CategoryDto::getId)
-                .collect(Collectors.toSet());
-        Set<Category> managedCategories = categoryService.getCategories(categoryIds);
-        Product productToSave = productMapper.mapToEntity(productDto);
+    @CachePut(value = CacheConstants.PRODUCTS, key = "#result.id")
+    @Transactional
+    public ProductResponse save(CreateProductRequest request) {
+        log.info("save({})", request);
+        Set<Category> managedCategories = categoryService.getCategories(request.getCategoryIds());
+        Product productToSave = productMapper.mapToEntity(request);
         Product mappedProduct = productMapper.mapToEntity(productToSave, managedCategories);
         Product savedProduct = productRepository.save(mappedProduct);
         log.info("save(): Done Successfully, new product created with id = {}", savedProduct.getId());
-        return productMapper.mapToDto(savedProduct);
+        return productMapper.mapToResponse(savedProduct);
     }
 
     @Override
     @Cacheable(value = CacheConstants.PRODUCTS, key = "#productId")
-    public ProductDto findById(UUID productId) {
+    @Transactional(readOnly = true)
+    public ProductResponse findById(UUID productId) {
         log.info("findById({})", productId);
         if (productId == null) {
             throw new IllegalArgumentException("productId == null");
@@ -57,15 +57,16 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchElementException("Product Id = " + productId + " Not Found"));
         log.info("findById(): Found product with id = {}", productId);
-        return productMapper.mapToDto(product);
+        return productMapper.mapToResponse(product);
     }
 
     @Override
-    public Page<ProductDto> findAll(String name, Double minPrice, Double maxPrice, UUID categoryId, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<ProductResponse> findAll(String name, BigDecimal minPrice, BigDecimal maxPrice, UUID categoryId, Pageable pageable) {
         log.info("findAll(name={}, minPrice={}, maxPrice={}, categoryId={}, pageable={})", name, minPrice, maxPrice,
                 categoryId, pageable);
 
-        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+        if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
             throw new IllegalArgumentException("minPrice must be less than or equal to maxPrice");
         }
 
@@ -79,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
                 .and(ProductSpecifications.priceLte(maxPrice))
                 .and(ProductSpecifications.hasCategory(categoryId));
 
-        Page<ProductDto> result = productRepository.findAll(spec, safePage).map(productMapper::mapToDto);
+        Page<ProductResponse> result = productRepository.findAll(spec, safePage).map(productMapper::mapToResponse);
         log.info("findAll(): Found {} products", result.getTotalElements());
         return result;
     }
@@ -99,9 +100,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @CacheEvict(value = CacheConstants.PRODUCTS, allEntries = true)
-    public ProductDto updateById(UUID productId, ProductDto updatedProductDto) {
-        log.info("updateById({}, {})", productId, updatedProductDto);
+    @CachePut(value = CacheConstants.PRODUCTS, key = "#result.id")
+    @Transactional
+    public ProductResponse updateById(UUID productId, UpdateProductRequest request) {
+        log.info("updateById({}, {})", productId, request);
         if (productId == null) {
             throw new IllegalArgumentException("productId == null");
         }
@@ -111,21 +113,25 @@ public class ProductServiceImpl implements ProductService {
                         "Can Not Update Product , Id Not Found with value = " + productId));
         log.info("updateById(): Found product with id = {}", productId);
 
-        Set<UUID> categoryIds = updatedProductDto.getCategories().stream()
-                .map(CategoryDto::getId)
-                .collect(Collectors.toSet());
-        Set<Category> managedCategories = categoryService.getCategories(categoryIds);
-        Product tempProduct = productMapper.mapToEntity(updatedProductDto);
-        productMapper.updateEntityFromEntity(tempProduct, managedCategories, product);
+        product.setVersion(request.getVersion());
+
+        if (request.getCategoryIds() != null) {
+            Set<Category> managedCategories = categoryService.getCategories(request.getCategoryIds());
+            productMapper.updateEntityFromRequest(request, product);
+            productMapper.updateEntityFromEntity(product, managedCategories, product);
+        } else {
+            productMapper.updateEntityFromRequest(request, product);
+        }
 
         Product updatedProductData = productRepository.save(product);
 
         log.info("updated product with id = {}", updatedProductData.getId());
-        return productMapper.mapToDto(updatedProductData);
+        return productMapper.mapToResponse(updatedProductData);
     }
 
     @Override
-    @CacheEvict(value = CacheConstants.PRODUCTS, allEntries = true)
+    @CacheEvict(value = CacheConstants.PRODUCTS, key = "#productId")
+    @Transactional
     public void deleteById(UUID productId) {
         log.info("deleteById({})", productId);
         if (productId == null) {

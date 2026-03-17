@@ -16,4 +16,6 @@ public interface DeliveryInfoMapper {
     List<DeliveryInfoDto> mapToDtos(List<DeliveryInfo> deliveryInfos);
 
     Set<DeliveryInfoDto> mapToDtos(Set<DeliveryInfo> deliveryInfosDtos);
+
+    DeliveryInfoResponse mapToResponse(DeliveryInfo deliveryInfo);
 }

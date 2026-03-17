@@ -2,7 +2,6 @@ package com.app.ecommerce.cart;
 
 import com.app.ecommerce.product.Product;
 import com.app.ecommerce.shared.entity.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -30,7 +29,6 @@ public class CartItem extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
-    @JsonIgnore
     @ToString.Exclude
     private Cart cart;
 }
