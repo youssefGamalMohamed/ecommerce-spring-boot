@@ -187,6 +187,27 @@ All 13 tasks follow `- [ ] T### [P?] [Story?] Description with file path`:
 
 ---
 
+## Phase 7: Bug Fixes (Code Review 2026-03-17)
+
+**Purpose**: Fix bugs identified by code review of the initial AI-generated implementation. These must be resolved before the feature is considered complete.
+
+- [ ] T014 [P] Fix `ProductSpecifications.hasCategory` — add `query.distinct(true)` inside the lambda **before** returning the predicate, so that `JpaSpecificationExecutor.findAll(Specification, Pageable)` does not count duplicate rows when a product belongs to multiple categories; without this, `totalElements` and `totalPages` in the `Page` response are incorrect whenever `categoryId` is provided and any product has more than one category. File: `src/main/java/com/app/ecommerce/product/ProductSpecifications.java`
+
+  ```java
+  // Before (buggy)
+  return cb.equal(root.join("categories").get("id"), categoryId);
+
+  // After (correct)
+  query.distinct(true);
+  return cb.equal(root.join("categories").get("id"), categoryId);
+  ```
+
+- [ ] T015 [P] Remove the dead no-arg `findAll()` overload — delete `List<ProductDto> findAll()` from the `ProductService` interface and its implementation in `ProductServiceImpl` (the implementation calls `productRepository.findAll()` with no pagination, loading the entire table into memory). No controller endpoint calls this method; it is unreachable dead code and an unbounded-query hazard. Files: `src/main/java/com/app/ecommerce/product/ProductService.java`, `src/main/java/com/app/ecommerce/product/ProductServiceImpl.java`
+
+**Checkpoint**: `GET /products?categoryId=<uuid>` returns correct `totalElements` / `totalPages`. No `List<ProductDto> findAll()` method exists in the service layer.
+
+---
+
 ## Notes
 
 - `findProductsByCategoryName` (controller/interface) and `findAllByCategoryName` (service/interface + impl) are **removed** in T004–T007 — not deprecated, deleted
@@ -194,3 +215,4 @@ All 13 tasks follow `- [ ] T### [P?] [Story?] Description with file path`:
 - `@PageableDefault` (T007) sets the default sort when no `sort` query param is supplied; `sanitizeSort()` handles the case where an invalid field is explicitly passed
 - T008 (SecurityConfiguration) must not be deferred — it is required for manual US1 testing
 - No new DTO or response wrapper class anywhere in this feature
+- T014 fix is required for correctness of FR-006 (category filter) and FR-001 (accurate pagination metadata)

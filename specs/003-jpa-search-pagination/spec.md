@@ -77,7 +77,7 @@ A client requests products sorted by a specific field (e.g., price ascending, na
 - **FR-003**: The system MUST enforce a maximum page size of 100 items per page.
 - **FR-004**: The system MUST allow filtering products by `name` (case-insensitive partial match).
 - **FR-005**: The system MUST allow filtering products by `minPrice` and/or `maxPrice` (inclusive range).
-- **FR-006**: The system MUST allow filtering products by `categoryId` (exact match on category UUID).
+- **FR-006**: The system MUST allow filtering products by `categoryId` (exact match on category UUID). The JOIN used to apply this filter MUST NOT cause duplicate rows in either the data query or the COUNT query — `DISTINCT` must be enforced so that `totalElements` and `totalPages` remain accurate when a product belongs to multiple categories.
 - **FR-007**: When multiple filter parameters are provided, the system MUST apply all filters with AND logic.
 - **FR-008**: The system MUST allow sorting results by any of the following fields: `name`, `price`, `createdAt`. The sort field and direction are expressed together as a single `sort` parameter using the format `sort=field,direction` (e.g., `sort=price,asc`). Multiple `sort` parameters may be supplied.
 - **FR-009**: Default sort direction is descending when not specified. The default sort field is `createdAt`.
@@ -118,3 +118,10 @@ A client requests products sorted by a specific field (e.g., price ascending, na
 ### Session 2026-03-17
 
 - Q: Should the search feature introduce custom response wrapper classes (e.g., a dedicated paginated response DTO) or reuse the framework's native pagination structures and existing DTOs? → A: Reuse the existing `ProductDto` and the framework's native `Page<T>` type directly. No custom `ProductPageResponse` or `ProductSearchRequest` classes are created. Pagination, sorting, and page metadata are handled entirely through the framework's built-in `Pageable` and `Page` support.
+
+### Code Review 2026-03-17
+
+Bugs identified during code review of the initial implementation. Tasks T014–T015 were added to Phase 7 to address these.
+
+- **Bug (HIGH — T014)**: `ProductSpecifications.hasCategory` uses `root.join("categories")` (INNER JOIN) without calling `query.distinct(true)`. When `JpaSpecificationExecutor.findAll(Specification, Pageable)` executes a COUNT query, duplicate rows produced by the join corrupt `totalElements` and `totalPages`. Fix: add `query.distinct(true)` inside the `hasCategory` lambda. This is a correctness requirement for FR-006 and FR-001.
+- **Dead code (MEDIUM — T015)**: The no-arg `List<ProductDto> findAll()` method remained in `ProductService` and `ProductServiceImpl` after the paginated overload was added. No controller endpoint calls it. It performs an unbounded full-table scan. Fix: remove it from both the interface and implementation.

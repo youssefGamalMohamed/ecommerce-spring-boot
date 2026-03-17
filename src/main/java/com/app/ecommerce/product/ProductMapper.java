@@ -2,10 +2,11 @@ package com.app.ecommerce.product;
 
 import com.app.ecommerce.category.Category;
 import com.app.ecommerce.category.CategoryMapper;
-import java.util.List;
-import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
+
+import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper {

@@ -1,17 +1,16 @@
 package com.app.ecommerce.category;
 
-import com.app.ecommerce.shared.entity.BaseEntity;
 import com.app.ecommerce.product.Product;
+import com.app.ecommerce.shared.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import org.hibernate.annotations.DynamicUpdate;
-
-import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Table(name = "Category")
 @Entity(name = "Category")
