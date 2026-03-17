@@ -2,13 +2,20 @@ package com.app.ecommerce.category;
 
 import com.app.ecommerce.shared.constants.CacheConstants;
 import com.app.ecommerce.shared.exception.DuplicatedUniqueColumnValueException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
@@ -55,10 +62,33 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(value = CacheConstants.CATEGORIES, key = "'all'")
-    public List<CategoryDto> findAll() {
-        log.info("findAll() - Retrieving all categories");
-        return categoryMapper.mapToDtos(categoryRepository.findAll());
+    public Page<CategoryDto> findAll(String name, Pageable pageable) {
+        log.info("findAll(name={}, pageable={})", name, pageable);
+
+        Sort safeSort = sanitizeSort(pageable.getSort());
+        PageRequest safePage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
+
+        Specification<Category> spec = Specification
+                .where((Root<Category> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> null)
+                .and(CategorySpecifications.nameLike(name));
+
+        Page<CategoryDto> result = categoryRepository.findAll(spec, safePage).map(categoryMapper::mapToDto);
+        log.info("findAll(): Found {} categories", result.getTotalElements());
+        return result;
+    }
+
+    private Sort sanitizeSort(Sort sort) {
+        Set<String> allowedFields = Set.of("name", "createdAt");
+        if (sort == null || sort.isUnsorted()) {
+            return Sort.by(Sort.Direction.ASC, "name");
+        }
+        Sort.Order[] orders = sort.get().map(order -> {
+            if (allowedFields.contains(order.getProperty())) {
+                return order;
+            }
+            return Sort.Order.asc("name");
+        }).toArray(Sort.Order[]::new);
+        return Sort.by(orders);
     }
 
     @Override

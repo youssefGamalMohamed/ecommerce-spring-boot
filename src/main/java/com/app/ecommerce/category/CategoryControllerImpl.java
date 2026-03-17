@@ -4,6 +4,11 @@ import com.app.ecommerce.shared.dto.ApiResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,9 +48,12 @@ public class CategoryControllerImpl implements CategoryController {
 
     @GetMapping
     @Override
-    public ResponseEntity<ApiResponseDto<?>> findAll() {
-        log.info("findAll()");
-        return ResponseEntity.ok(ApiResponseDto.success(categoryService.findAll()));
+    public ResponseEntity<ApiResponseDto<Page<CategoryDto>>> findAll(
+            @RequestParam(required = false) String name,
+            @ParameterObject @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+        log.info("findAll(name={}, pageable={})", name, pageable);
+        Page<CategoryDto> page = categoryService.findAll(name, pageable);
+        return ResponseEntity.ok(ApiResponseDto.success(page));
     }
 
     @GetMapping("/{id}")

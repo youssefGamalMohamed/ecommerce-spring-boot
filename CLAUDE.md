@@ -7,6 +7,7 @@ Auto-generated from all feature plans. Last updated: 2026-03-10
 - MySQL (primary, unchanged) + Redis (cache layer, new) (002-redis-caching)
 - Java 17 + Spring Boot 3.0.0, Spring Data JPA (Hibernate), MapStruct 1.6.0, Lombok, SpringDoc OpenAPI 2.0.2 (003-jpa-search-pagination)
 - MySQL (primary), Redis (cache layer — existing; no cache changes needed for search) (003-jpa-search-pagination)
+- MySQL (primary), Redis (cache layer — existing; no cache changes for search endpoints) (004-extend-search-pagination)
 
 - Java 17 + Spring Boot 3.0.0, Spring Security, JJWT 0.11.5, Lombok (001-spring-http-logging)
 
@@ -50,9 +51,9 @@ mvn test
 - AOP for cross-cutting concerns (no inline logging in business methods)
 
 ## Recent Changes
+- 004-extend-search-pagination: Added Java 17 + Spring Boot 3.0.0, Spring Data JPA (Hibernate), MapStruct 1.6.0, Lombok, SpringDoc OpenAPI 2.0.2
 - 003-jpa-search-pagination: Added Java 17 + Spring Boot 3.0.0, Spring Data JPA (Hibernate), MapStruct 1.6.0, Lombok, SpringDoc OpenAPI 2.0.2
 - 003-jpa-search-pagination: Added Java 17 + Spring Boot 3.0.0, Spring Data JPA (Hibernate), MapStruct 1.6.0, Lombok, SpringDoc OpenAPI 2.0.2
-- 002-redis-caching: Added Java 17 + Spring Boot 3.0.0, `spring-boot-starter-data-redis` (new), `spring-boot-starter-cache` (new), Lettuce (transitive), Jackson (already on classpath via `spring-boot-starter-web`)
 
   with CommonsRequestLoggingFilter bean only (response status logging out of scope)
 

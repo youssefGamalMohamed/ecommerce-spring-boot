@@ -1,13 +1,22 @@
 package com.app.ecommerce.order;
 
 import com.app.ecommerce.shared.dto.ApiResponseDto;
+import com.app.ecommerce.shared.enums.PaymentType;
+import com.app.ecommerce.shared.enums.Status;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -28,6 +37,20 @@ public class OrderControllerImpl implements OrderController {
                 ApiResponseDto.created(createdOrder),
                 HttpStatus.CREATED
         );
+    }
+
+    @GetMapping
+    @Override
+    public ResponseEntity<ApiResponseDto<Page<OrderDto>>> findAll(
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) PaymentType paymentType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdAfter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdBefore,
+            @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        log.info("findAll(status={}, paymentType={}, createdAfter={}, createdBefore={}, pageable={})",
+                status, paymentType, createdAfter, createdBefore, pageable);
+        Page<OrderDto> page = orderService.findAll(status, paymentType, createdAfter, createdBefore, pageable);
+        return ResponseEntity.ok(ApiResponseDto.success(page));
     }
 
     @PutMapping("/{id}")
