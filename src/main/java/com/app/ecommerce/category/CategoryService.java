@@ -1,6 +1,8 @@
 package com.app.ecommerce.category;
 
 import com.app.ecommerce.shared.exception.DuplicatedUniqueColumnValueException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Set;
@@ -12,7 +14,7 @@ public interface CategoryService {
 
     void deleteById(UUID categoryId);
 
-    List<CategoryDto> findAll();
+    Page<CategoryDto> findAll(String name, Pageable pageable);
 
     CategoryDto findById(UUID categoryId);
 
