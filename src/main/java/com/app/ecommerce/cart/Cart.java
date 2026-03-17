@@ -4,17 +4,12 @@ import com.app.ecommerce.order.Order;
 import com.app.ecommerce.shared.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.util.Set;
-import java.util.UUID;
-
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
+import java.util.Set;
+import java.util.UUID;
 
 @Table(name = "Cart")
 @Entity(name = "Cart")

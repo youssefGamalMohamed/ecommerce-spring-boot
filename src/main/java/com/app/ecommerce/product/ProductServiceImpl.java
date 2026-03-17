@@ -4,17 +4,24 @@ import com.app.ecommerce.category.Category;
 import com.app.ecommerce.category.CategoryDto;
 import com.app.ecommerce.category.CategoryService;
 import com.app.ecommerce.shared.constants.CacheConstants;
-
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,14 +48,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Set<ProductDto> findAllByCategoryName(String categoryName) {
-        log.info("findAllByCategoryName({})", categoryName);
-        Set<Product> products = productRepository.findByCategories_Name(categoryName);
-        log.info("findAllByCategoryName(): Found {} products for category '{}'", products.size(), categoryName);
-        return productMapper.mapToDtos(products);
-    }
-
-    @Override
     @Cacheable(value = CacheConstants.PRODUCTS, key = "#productId")
     public ProductDto findById(UUID productId) {
         log.info("findById({})", productId);
@@ -62,9 +61,41 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> findAll() {
-        log.info("findAll()");
-        return productMapper.mapToDtos(productRepository.findAll());
+    public Page<ProductDto> findAll(String name, Double minPrice, Double maxPrice, UUID categoryId, Pageable pageable) {
+        log.info("findAll(name={}, minPrice={}, maxPrice={}, categoryId={}, pageable={})", name, minPrice, maxPrice,
+                categoryId, pageable);
+
+        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+            throw new IllegalArgumentException("minPrice must be less than or equal to maxPrice");
+        }
+
+        Sort safeSort = sanitizeSort(pageable.getSort());
+        PageRequest safePage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
+
+        Specification<Product> spec = Specification
+                .where((Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> null)
+                .and(ProductSpecifications.nameLike(name))
+                .and(ProductSpecifications.priceGte(minPrice))
+                .and(ProductSpecifications.priceLte(maxPrice))
+                .and(ProductSpecifications.hasCategory(categoryId));
+
+        Page<ProductDto> result = productRepository.findAll(spec, safePage).map(productMapper::mapToDto);
+        log.info("findAll(): Found {} products", result.getTotalElements());
+        return result;
+    }
+
+    private Sort sanitizeSort(Sort sort) {
+        Set<String> allowedFields = Set.of("name", "price", "createdAt");
+        if (sort == null || sort.isUnsorted()) {
+            return Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+        Sort.Order[] orders = sort.get().map(order -> {
+            if (allowedFields.contains(order.getProperty())) {
+                return order;
+            }
+            return Sort.Order.desc("createdAt");
+        }).toArray(Sort.Order[]::new);
+        return Sort.by(orders);
     }
 
     @Override

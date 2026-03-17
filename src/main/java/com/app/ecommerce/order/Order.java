@@ -4,15 +4,14 @@ import com.app.ecommerce.cart.Cart;
 import com.app.ecommerce.shared.entity.BaseEntity;
 import com.app.ecommerce.shared.enums.PaymentType;
 import jakarta.persistence.*;
-import java.util.UUID;
-
-import org.hibernate.annotations.DynamicUpdate;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
+
+import java.util.UUID;
 
 @Table(name = "`order`")
 @Entity(name = "`order`")

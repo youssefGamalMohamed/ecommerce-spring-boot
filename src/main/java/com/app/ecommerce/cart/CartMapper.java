@@ -1,9 +1,10 @@
 package com.app.ecommerce.cart;
 
-import java.util.List;
-import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring", uses = {CartItemMapper.class})
 public interface CartMapper {

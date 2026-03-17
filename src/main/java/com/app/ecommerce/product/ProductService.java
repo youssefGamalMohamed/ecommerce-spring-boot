@@ -1,18 +1,17 @@
 package com.app.ecommerce.product;
 
-import java.util.List;
-import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.UUID;
 
 public interface ProductService {
 
     ProductDto save(ProductDto productDto);
 
-    Set<ProductDto> findAllByCategoryName(String categoryName);
-
     ProductDto findById(UUID productId);
 
-    List<ProductDto> findAll();
+    Page<ProductDto> findAll(String name, Double minPrice, Double maxPrice, UUID categoryId, Pageable pageable);
 
     ProductDto updateById(UUID productId, ProductDto updatedProductDto);
 
