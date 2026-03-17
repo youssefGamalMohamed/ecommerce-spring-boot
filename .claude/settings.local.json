@@ -3,7 +3,12 @@
     "allow": [
       "Bash(.specify/scripts/bash/update-agent-context.sh claude:*)",
       "Bash(cd:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(bash .specify/scripts/bash/create-new-feature.sh \"Comprehensive enhancement and refactor plan covering API design best practices, SOLID principles, design patterns, transactional integrity, security, caching, entity layer fixes, input validation, and cross-cutting concerns for the ecommerce Spring Boot application\" --json --short-name \"architecture-refactor\")",
+      "Bash(bash .specify/scripts/bash/setup-plan.sh --json)",
+      "Bash(xargs grep:*)",
+      "Bash(bash .specify/scripts/bash/update-agent-context.sh claude 2>&1)",
+      "Bash(bash .specify/scripts/bash/check-prerequisites.sh --json 2>&1)"
     ]
   }
 }
