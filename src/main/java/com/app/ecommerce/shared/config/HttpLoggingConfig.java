@@ -17,6 +17,11 @@ public class HttpLoggingConfig {
         filter.setMaxPayloadLength(1000);
         filter.setIncludeHeaders(true);
         filter.setIncludeClientInfo(true);
+        filter.setHeaderPredicate(headerName -> {
+            return !headerName.equalsIgnoreCase("Authorization") &&
+                   !headerName.equalsIgnoreCase("Cookie") &&
+                   !headerName.equalsIgnoreCase("Set-Cookie");
+        });
         return filter;
     }
 }

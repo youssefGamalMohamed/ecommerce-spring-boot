@@ -79,4 +79,12 @@ public class ErrorResponseDto {
     public static ErrorResponseDto serviceUnavailable(String message, String path) {
         return build(503, "SERVICE_UNAVAILABLE", message, path);
     }
+
+    public static ErrorResponseDto forbidden(String message, String path) {
+        return build(403, "FORBIDDEN", message, path);
+    }
+
+    public static ErrorResponseDto unauthorized(String message, String path) {
+        return build(401, "UNAUTHORIZED", message, path);
+    }
 }

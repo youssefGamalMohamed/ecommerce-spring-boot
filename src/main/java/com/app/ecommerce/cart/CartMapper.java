@@ -10,6 +10,7 @@ import java.util.Set;
 public interface CartMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "cartItems", ignore = true)
     @Mapping(target = "order", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

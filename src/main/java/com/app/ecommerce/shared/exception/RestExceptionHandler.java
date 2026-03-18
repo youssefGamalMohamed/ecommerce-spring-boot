@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -130,6 +133,45 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(
+            AccessDeniedException exception, WebRequest request) {
+        log.warn("Access denied: {}", exception.getMessage());
+
+        ErrorResponseDto errorResponse = ErrorResponseDto.forbidden(
+                "Access denied. You do not have permission to perform this action.",
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(value = BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDto> handleBadCredentialsException(
+            BadCredentialsException exception, WebRequest request) {
+        log.warn("Bad credentials: {}", exception.getMessage());
+
+        ErrorResponseDto errorResponse = ErrorResponseDto.unauthorized(
+                "Invalid username or password.",
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = AuthenticationException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthenticationException(
+            AuthenticationException exception, WebRequest request) {
+        log.warn("Authentication error: {}", exception.getMessage());
+
+        ErrorResponseDto errorResponse = ErrorResponseDto.unauthorized(
+                "Authentication failed.",
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
 }

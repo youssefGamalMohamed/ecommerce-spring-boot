@@ -3,6 +3,7 @@ package com.app.ecommerce.auth;
 import com.app.ecommerce.shared.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,9 +31,11 @@ public class Token extends BaseEntity {
     private String refreshToken;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean revoked = false;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean expired = false;
 
     @ManyToOne
