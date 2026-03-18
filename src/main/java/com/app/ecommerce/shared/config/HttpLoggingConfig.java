@@ -19,8 +19,8 @@ public class HttpLoggingConfig {
         filter.setIncludeClientInfo(true);
         filter.setHeaderPredicate(headerName -> {
             return !headerName.equalsIgnoreCase("Authorization") &&
-                   !headerName.equalsIgnoreCase("Cookie") &&
-                   !headerName.equalsIgnoreCase("Set-Cookie");
+                    !headerName.equalsIgnoreCase("Cookie") &&
+                    !headerName.equalsIgnoreCase("Set-Cookie");
         });
         return filter;
     }

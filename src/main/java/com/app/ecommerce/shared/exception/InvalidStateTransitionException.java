@@ -8,10 +8,10 @@ public class InvalidStateTransitionException extends RuntimeException {
     private final Status requestedStatus;
 
     public InvalidStateTransitionException(Status currentStatus, Status requestedStatus) {
-        super("Cannot transition from " + currentStatus + " to " + requestedStatus + 
-              ". Allowed transitions from " + currentStatus + ": " + 
-              (currentStatus.getAllowedTransitions().isEmpty() ? 
-               "(none — terminal state)" : currentStatus.getAllowedTransitions()));
+        super("Cannot transition from " + currentStatus + " to " + requestedStatus +
+                ". Allowed transitions from " + currentStatus + ": " +
+                (currentStatus.getAllowedTransitions().isEmpty() ?
+                        "(none — terminal state)" : currentStatus.getAllowedTransitions()));
         this.currentStatus = currentStatus;
         this.requestedStatus = requestedStatus;
     }

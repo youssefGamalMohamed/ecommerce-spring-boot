@@ -60,7 +60,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductResponse>> updateById(@PathVariable("id") UUID productId,
-                                                                  @Valid @RequestBody UpdateProductRequest request) {
+                                                                   @Valid @RequestBody UpdateProductRequest request) {
         log.info("updateById({}, {})", productId, request);
         ProductResponse updatedProduct = productService.updateById(productId, request);
         return ResponseEntity.ok(ApiResponse.success(updatedProduct, "Product updated successfully"));

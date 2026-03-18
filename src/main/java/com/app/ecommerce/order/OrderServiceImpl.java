@@ -14,7 +14,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -102,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
         if (request.getDeliveryStatus() != null) {
             Status currentStatus = existingOrder.getDeliveryInfo().getStatus();
             Status requestedStatus = request.getDeliveryStatus();
-            
+
             if (!currentStatus.canTransitionTo(requestedStatus)) {
                 throw new InvalidStateTransitionException(currentStatus, requestedStatus);
             }
