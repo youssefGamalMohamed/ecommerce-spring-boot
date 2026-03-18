@@ -145,6 +145,8 @@ This refactor has strict dependency ordering. Follow the phases below — each p
 
 6. **Remove unused `throws JsonProcessingException`** — From `OrderService.createNewOrder()` and `OrderServiceImpl.createNewOrder()`.
 
+6. **HttpStatus enum consistency** — Update `ErrorResponse.java` factory methods to use `HttpStatus.XXX.value()` and `HttpStatus.XXX.getReasonPhrase()` instead of hardcoded status codes and strings.
+
 **Verify**: `mvn clean compile` succeeds. No references to deleted DTOs remain. All ResponseEntity usages use builder pattern. Swagger UI loads correctly.
 
 ---

@@ -615,6 +615,14 @@ public static ErrorResponseDto unauthorized(String message, String path) {
 
 ---
 
+### Sub-Phase 11F: HttpStatus Enum Consistency (R-024)
+
+- [ ] T120 Update `src/main/java/com/app/ecommerce/shared/dto/ErrorResponse.java`: Replace hardcoded status codes and error strings in all factory methods with `HttpStatus` enum values. Change import from `import static org.springframework.http.HttpStatus.BAD_REQUEST;` to `import static org.springframework.http.HttpStatus.*;`. Update `@Schema(example = "NOT_FOUND")` to `@Schema(example = "Not Found")` to match `getReasonPhrase()` output. Methods affected: `notFound()`, `badRequest(String, String, String)`, `conflict()`, `internalError()`, `serviceUnavailable()`, `forbidden()`, `unauthorized()`.
+
+**Checkpoint**: All factory methods use `HttpStatus.XXX.value()` and `HttpStatus.XXX.getReasonPhrase()`. Only `badRequest(String, String)` (line 67) already follows this pattern.
+
+---
+
 ## Phase 11 Dependencies
 
 - T107 (cascade fix): No dependencies, **DO FIRST — CRITICAL**
@@ -626,50 +634,16 @@ public static ErrorResponseDto unauthorized(String message, String path) {
 - T104-T105 (validation fixes): Parallel, no dependencies
 - T108-T109 (authorization): Parallel, no dependencies
 - T110 (token batch): No dependencies
+- T120 (HttpStatus consistency): No dependencies, can run anytime
 - T106 (verify compile): Depends on all above
 
 ```
 T107 (CRITICAL) ─────────────────────────────────┐
 T090-T094 (dead code) → T111-T119 (renames) ─────┤
-                         → T095-T099 (builders) ──┤
+                          → T095-T099 (builders) ──┤
 T100 → T101-T103 (SortUtils) ────────────────────┤──→ T106
 T104-T105 (validation) ──────────────────────────┤
 T108-T109 (authorization) ───────────────────────┤
-T110 (token batch) ──────────────────────────────┘
-
----
-
-## Implementation Notes
-
-### Note 11.1: @PreAuthorize Placement (2026-03-18)
-**Issue**: Originally planned to add `@PreAuthorize` to both interface and implementation.
-**Solution**: Placed `@PreAuthorize` only on controller implementations (`ProductControllerImpl`, `CategoryControllerImpl`) instead of the interface. This keeps the interface clean (defining only the API contract) and makes security annotations more visible and maintainable in the implementation.
-**Files modified**:
-- `ProductControllerImpl.java`: Added `@PreAuthorize("hasRole('ADMIN')")` to `save()`, `updateById()`, `deleteById()`
-- `CategoryControllerImpl.java`: Added `@PreAuthorize("hasRole('ADMIN')")` to `save()`, `updateById()`, `deleteById()`
-
-### Note 11.2: ApiResponse Naming Conflict (2026-03-18)
-**Issue**: After renaming `ApiResponseDto` to `ApiResponse`, there was a naming conflict with Swagger's `io.swagger.v3.oas.annotations.responses.ApiResponse` annotation in controller interfaces.
-**Solution**: Used fully qualified names for Swagger annotations in controller interfaces: `@io.swagger.v3.oas.annotations.responses.ApiResponse` instead of importing both and causing ambiguity.
-**Files modified**: `ProductController.java`, `CategoryController.java`, `OrderController.java`, `AuthController.java`
-
-### Note 11.3: MapStruct Missing Imports (2026-03-18)
-**Issue**: `ProductMapper.java` was missing `import com.app.ecommerce.category.CategoryMapper;` and `import java.util.Set;` causing compilation errors.
-**Solution**: Added the missing imports to enable MapStruct to properly generate the mapper implementation.
-**Files modified**: `ProductMapper.java`
-
-### Note 11.4: CartMapper/CartItemMapper unmappedSourcePolicy (2026-03-18)
-**Issue**: MapStruct complained about unknown properties "version" and "order" in CartMapper, "cart" in CartItemMapper - these exist on entity but not on response DTOs.
-**Solution**: Added `unmappedSourcePolicy = ReportingPolicy.IGNORE` to the `@Mapper` annotation to ignore unmapped source properties instead of trying to map them.
-**Files modified**: `CartMapper.java`, `CartItemMapper.java`
-
-### Note 11.5: JsonProcessingException Handling (2026-03-18)
-**Issue**: After removing `throws JsonProcessingException` from service, the controller still needed to handle the exception when reading cached idempotency responses.
-**Solution**: Wrapped the `objectMapper.readValue()` call in a try-catch block in `OrderControllerImpl.createNewOrder()` method.
-**Files modified**: `OrderControllerImpl.java`
-
-### Note 11.6: Pre-Authorization on Interfaces Removed (2026-03-18)
-**Issue**: Originally specified adding `@PreAuthorize` to both interface and implementation.
-**Solution**: Removed `@PreAuthorize` annotations from interfaces (`ProductController.java`, `CategoryController.java`) and kept them only in implementations for better separation of concerns and readability.
-
+T110 (token batch) ──────────────────────────────┤
+T120 (HttpStatus) ───────────────────────────────┘
 ```

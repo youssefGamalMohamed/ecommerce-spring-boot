@@ -3,6 +3,8 @@ package com.app.ecommerce.shared.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Schema(description = "Standard error response")
 @Getter
 @Setter
@@ -18,7 +20,7 @@ public class ErrorResponse {
     @Schema(description = "HTTP status code", example = "404")
     private int status;
 
-    @Schema(description = "Error type", example = "NOT_FOUND")
+    @Schema(description = "Error type", example = "Not Found")
     private String error;
 
     @Schema(description = "Error message", example = "Resource not found")
@@ -57,34 +59,34 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse notFound(String message, String path) {
-        return build(404, "NOT_FOUND", message, path);
+        return build(NOT_FOUND.value(), NOT_FOUND.getReasonPhrase(), message, path);
     }
 
     public static ErrorResponse badRequest(String message, String path) {
-        return build(400, "BAD_REQUEST", message, path);
+        return build(BAD_REQUEST.value(), BAD_REQUEST.getReasonPhrase(), message, path);
     }
 
     public static ErrorResponse badRequest(String message, String details, String path) {
-        return build(400, "BAD_REQUEST", message, details, path);
+        return build(BAD_REQUEST.value(), BAD_REQUEST.getReasonPhrase(), message, details, path);
     }
 
     public static ErrorResponse conflict(String message, String path) {
-        return build(409, "CONFLICT", message, path);
+        return build(CONFLICT.value(), CONFLICT.getReasonPhrase(), message, path);
     }
 
     public static ErrorResponse internalError(String message, String path) {
-        return build(500, "INTERNAL_SERVER_ERROR", message, path);
+        return build(INTERNAL_SERVER_ERROR.value(), INTERNAL_SERVER_ERROR.getReasonPhrase(), message, path);
     }
 
     public static ErrorResponse serviceUnavailable(String message, String path) {
-        return build(503, "SERVICE_UNAVAILABLE", message, path);
+        return build(SERVICE_UNAVAILABLE.value(), SERVICE_UNAVAILABLE.getReasonPhrase(), message, path);
     }
 
     public static ErrorResponse forbidden(String message, String path) {
-        return build(403, "FORBIDDEN", message, path);
+        return build(FORBIDDEN.value(), FORBIDDEN.getReasonPhrase(), message, path);
     }
 
     public static ErrorResponse unauthorized(String message, String path) {
-        return build(401, "UNAUTHORIZED", message, path);
+        return build(UNAUTHORIZED.value(), UNAUTHORIZED.getReasonPhrase(), message, path);
     }
 }

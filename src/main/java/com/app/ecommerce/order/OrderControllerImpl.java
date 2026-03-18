@@ -36,7 +36,7 @@ public class OrderControllerImpl implements OrderController {
     @Override
     public ResponseEntity<ApiResponse<OrderResponse>> createNewOrder(
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
-            @Valid @RequestBody CreateOrderRequest request) {
+            @Valid @RequestBody CreateOrderRequest request) throws JsonProcessingException {
         log.info("createNewOrder({})", request);
 
         if (idempotencyKey != null) {
@@ -52,6 +52,7 @@ public class OrderControllerImpl implements OrderController {
                     return ResponseEntity.status(record.getHttpStatus()).body(cachedResponse);
                 } catch (JsonProcessingException e) {
                     log.error("Failed to parse cached response", e);
+                    throw e;
                 }
             }
         }

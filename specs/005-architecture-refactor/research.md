@@ -513,6 +513,36 @@ URL-based rules only distinguish between authenticated vs. unauthenticated — t
 
 ---
 
+### R-024: HttpStatus Enum Consistency in ErrorResponse Factory Methods
+
+**Decision**: Replace all hardcoded status codes and error strings in `ErrorResponse` factory methods with `HttpStatus` enum values.
+
+**Rationale**: Currently `ErrorResponse` has inconsistent patterns — some methods use `HttpStatus.BAD_REQUEST.value()` and `BAD_REQUEST.getReasonPhrase()` while others use hardcoded values like `404, "NOT_FOUND"`, `409, "CONFLICT"`, etc. This creates maintenance risk: if `HttpStatus` enum values ever change (unlikely but possible), the hardcoded methods would diverge.
+
+**Current state (ErrorResponse.java)**:
+
+| Method | Current | Should Be |
+|--------|---------|-----------|
+| `notFound()` | `build(404, "NOT_FOUND", ...)` | `build(NOT_FOUND.value(), NOT_FOUND.getReasonPhrase(), ...)` |
+| `badRequest(String, String, String)` | `build(400, "BAD_REQUEST", ...)` | `build(BAD_REQUEST.value(), BAD_REQUEST.getReasonPhrase(), ...)` |
+| `conflict()` | `build(409, "CONFLICT", ...)` | `build(CONFLICT.value(), CONFLICT.getReasonPhrase(), ...)` |
+| `internalError()` | `build(500, "INTERNAL_SERVER_ERROR", ...)` | `build(INTERNAL_SERVER_ERROR.value(), INTERNAL_SERVER_ERROR.getReasonPhrase(), ...)` |
+| `serviceUnavailable()` | `build(503, "SERVICE_UNAVAILABLE", ...)` | `build(SERVICE_UNAVAILABLE.value(), SERVICE_UNAVAILABLE.getReasonPhrase(), ...)` |
+| `forbidden()` | `build(403, "FORBIDDEN", ...)` | `build(FORBIDDEN.value(), FORBIDDEN.getReasonPhrase(), ...)` |
+| `unauthorized()` | `build(401, "UNAUTHORIZED", ...)` | `build(UNAUTHORIZED.value(), UNAUTHORIZED.getReasonPhrase(), ...)` |
+
+**Import change**: Replace `import static org.springframework.http.HttpStatus.BAD_REQUEST;` with `import static org.springframework.http.HttpStatus.*;`
+
+**Swagger example update**: The `error` field `@Schema` annotation example must match `getReasonPhrase()` output. Change:
+- `@Schema(description = "Error type", example = "NOT_FOUND")` → `@Schema(description = "Error type", example = "Not Found")`
+
+Note: `HttpStatus.getReasonPhrase()` returns title case (e.g., "Not Found", "Bad Request", "Internal Server Error"), not snake_case.
+
+**Alternatives considered**:
+- Keep hardcoded values: Simpler to read but duplicates enum values. Rejected — consistency is more important than brevity.
+
+---
+
 ### R-021: Token Revocation Batch Update
 
 **Decision**: Replace the loop-based token revocation with a single batch update query.
