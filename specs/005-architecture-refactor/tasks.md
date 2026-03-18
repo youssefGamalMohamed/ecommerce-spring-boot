@@ -461,8 +461,7 @@ public static ErrorResponseDto unauthorized(String message, String path) {
 ```
 
 ### Implementation Status
-- All tasks T001-T110 completed
-- T111-T119: Completed in this session
+- All tasks T001-T121 completed
 - T088: Run application - requires user to execute
 - T089: Verification steps - requires user to execute
 
@@ -617,7 +616,9 @@ public static ErrorResponseDto unauthorized(String message, String path) {
 
 ### Sub-Phase 11F: HttpStatus Enum Consistency (R-024)
 
-- [ ] T120 Update `src/main/java/com/app/ecommerce/shared/dto/ErrorResponse.java`: Replace hardcoded status codes and error strings in all factory methods with `HttpStatus` enum values. Change import from `import static org.springframework.http.HttpStatus.BAD_REQUEST;` to `import static org.springframework.http.HttpStatus.*;`. Update `@Schema(example = "NOT_FOUND")` to `@Schema(example = "Not Found")` to match `getReasonPhrase()` output. Methods affected: `notFound()`, `badRequest(String, String, String)`, `conflict()`, `internalError()`, `serviceUnavailable()`, `forbidden()`, `unauthorized()`.
+- [x] T120 Update `src/main/java/com/app/ecommerce/shared/dto/ErrorResponse.java`: Replace hardcoded status codes and error strings in all factory methods with `HttpStatus` enum values. Change import from `import static org.springframework.http.HttpStatus.BAD_REQUEST;` to `import static org.springframework.http.HttpStatus.*;`. Update `@Schema(example = "NOT_FOUND")` to `@Schema(example = "Not Found")` to match `getReasonPhrase()` output. Methods affected: `notFound()`, `badRequest(String, String, String)`, `conflict()`, `internalError()`, `serviceUnavailable()`, `forbidden()`, `unauthorized()`.
+
+- [x] T121 Update `src/main/java/com/app/ecommerce/shared/dto/ApiResponse.java`: Replace hardcoded status codes in factory methods with `HttpStatus` enum values. Update `success(T data, String message)` to use `HttpStatus.OK.value()` instead of `200`. Update `created(T data)` to use `HttpStatus.CREATED.value()` instead of `201`. Update `noContent()` to use `HttpStatus.NO_CONTENT.value()` instead of `204`.
 
 **Checkpoint**: All factory methods use `HttpStatus.XXX.value()` and `HttpStatus.XXX.getReasonPhrase()`. Only `badRequest(String, String)` (line 67) already follows this pattern.
 
@@ -634,7 +635,7 @@ public static ErrorResponseDto unauthorized(String message, String path) {
 - T104-T105 (validation fixes): Parallel, no dependencies
 - T108-T109 (authorization): Parallel, no dependencies
 - T110 (token batch): No dependencies
-- T120 (HttpStatus consistency): No dependencies, can run anytime
+- T120-T121 (HttpStatus consistency): No dependencies, can run anytime
 - T106 (verify compile): Depends on all above
 
 ```
@@ -645,5 +646,5 @@ T100 → T101-T103 (SortUtils) ────────────────�
 T104-T105 (validation) ──────────────────────────┤
 T108-T109 (authorization) ───────────────────────┤
 T110 (token batch) ──────────────────────────────┤
-T120 (HttpStatus) ───────────────────────────────┘
+T120-T121 (HttpStatus) ──────────────────────────┘
 ```

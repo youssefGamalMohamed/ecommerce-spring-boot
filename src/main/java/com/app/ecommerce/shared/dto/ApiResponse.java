@@ -2,6 +2,7 @@ package com.app.ecommerce.shared.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 @Schema(description = "Standard API response wrapper")
 @Getter
@@ -30,7 +31,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> success(T data) {
         return ApiResponse.<T>builder()
                 .success(true)
-                .status(200)
+                .status(HttpStatus.OK.value())
                 .message("Operation completed successfully")
                 .data(data)
                 .timestamp(System.currentTimeMillis())
@@ -40,7 +41,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> success(T data, String message) {
         return ApiResponse.<T>builder()
                 .success(true)
-                .status(200)
+                .status(HttpStatus.OK.value())
                 .message(message)
                 .data(data)
                 .timestamp(System.currentTimeMillis())
@@ -50,7 +51,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> created(T data) {
         return ApiResponse.<T>builder()
                 .success(true)
-                .status(201)
+                .status(HttpStatus.CREATED.value())
                 .message("Resource created successfully")
                 .data(data)
                 .timestamp(System.currentTimeMillis())
@@ -60,7 +61,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> noContent() {
         return ApiResponse.<T>builder()
                 .success(true)
-                .status(204)
+                .status(HttpStatus.NO_CONTENT.value())
                 .message("Operation completed successfully")
                 .timestamp(System.currentTimeMillis())
                 .build();
