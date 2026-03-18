@@ -1,6 +1,6 @@
 package com.app.ecommerce.order;
 
-import com.app.ecommerce.cart.CartDto;
+import com.app.ecommerce.cart.CartResponse;
 import com.app.ecommerce.shared.dto.BaseResponse;
 import com.app.ecommerce.shared.enums.PaymentType;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,5 +39,5 @@ public class OrderResponse extends BaseResponse {
     private DeliveryInfoResponse deliveryInfo;
 
     @Schema(description = "Cart associated with the order")
-    private CartDto cart;
+    private CartResponse cart;
 }

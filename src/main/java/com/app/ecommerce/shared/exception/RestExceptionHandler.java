@@ -1,6 +1,6 @@
 package com.app.ecommerce.shared.exception;
 
-import com.app.ecommerce.shared.dto.ErrorResponseDto;
+import com.app.ecommerce.shared.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpHeaders;
@@ -36,142 +36,142 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         log.warn("Validation failed: {}", message);
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.badRequest(
+        ErrorResponse errorResponse = ErrorResponse.badRequest(
                 "Validation failed",
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ErrorResponseDto> handleInternalServerErrorException(Exception exception, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleInternalServerErrorException(Exception exception, WebRequest request) {
         log.error("Internal Server Error: ", exception);
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.internalError(
+        ErrorResponse errorResponse = ErrorResponse.internalError(
                 "An unexpected error occurred. Please contact support.",
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler(value = DuplicatedUniqueColumnValueException.class)
-    public ResponseEntity<ErrorResponseDto> handleDuplicatedUniqueValueException(
+    public ResponseEntity<ErrorResponse> handleDuplicatedUniqueValueException(
             DuplicatedUniqueColumnValueException exception, WebRequest request) {
         log.warn("Conflict error: {}", exception.getMessage());
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.conflict(
+        ErrorResponse errorResponse = ErrorResponse.conflict(
                 exception.getMessage(),
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
             IllegalArgumentException exception, WebRequest request) {
         log.warn("Bad request: {}", exception.getMessage());
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.badRequest(
+        ErrorResponse errorResponse = ErrorResponse.badRequest(
                 exception.getMessage(),
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(value = NoSuchElementException.class)
-    public ResponseEntity<ErrorResponseDto> handleNoSuchElementException(
+    public ResponseEntity<ErrorResponse> handleNoSuchElementException(
             NoSuchElementException exception, WebRequest request) {
         log.warn("Resource not found: {}", exception.getMessage());
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.notFound(
+        ErrorResponse errorResponse = ErrorResponse.notFound(
                 exception.getMessage(),
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
 
     @ExceptionHandler(value = {InvalidDataAccessResourceUsageException.class})
-    public ResponseEntity<ErrorResponseDto> handleFailedDatabaseConnectionException(
+    public ResponseEntity<ErrorResponse> handleFailedDatabaseConnectionException(
             InvalidDataAccessResourceUsageException exception, WebRequest request) {
         log.error("The Database Deleted or Table of Database Deleted , Check DB and Tables");
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.serviceUnavailable(
+        ErrorResponse errorResponse = ErrorResponse.serviceUnavailable(
                 "Database is unavailable. Please try again later.",
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse);
     }
 
     @ExceptionHandler(value = ObjectOptimisticLockingFailureException.class)
-    public ResponseEntity<ErrorResponseDto> handleOptimisticLockingFailureException(
+    public ResponseEntity<ErrorResponse> handleOptimisticLockingFailureException(
             ObjectOptimisticLockingFailureException exception, WebRequest request) {
         log.warn("Optimistic locking failure: {}", exception.getMessage());
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.conflict(
+        ErrorResponse errorResponse = ErrorResponse.conflict(
                 "Resource was modified by another user. Please refresh and try again.",
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(value = InvalidStateTransitionException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidStateTransitionException(
+    public ResponseEntity<ErrorResponse> handleInvalidStateTransitionException(
             InvalidStateTransitionException exception, WebRequest request) {
         log.warn("Invalid state transition: {}", exception.getMessage());
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.badRequest(
+        ErrorResponse errorResponse = ErrorResponse.badRequest(
                 exception.getMessage(),
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
-    public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
             AccessDeniedException exception, WebRequest request) {
         log.warn("Access denied: {}", exception.getMessage());
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.forbidden(
+        ErrorResponse errorResponse = ErrorResponse.forbidden(
                 "Access denied. You do not have permission to perform this action.",
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
     @ExceptionHandler(value = BadCredentialsException.class)
-    public ResponseEntity<ErrorResponseDto> handleBadCredentialsException(
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(
             BadCredentialsException exception, WebRequest request) {
         log.warn("Bad credentials: {}", exception.getMessage());
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.unauthorized(
+        ErrorResponse errorResponse = ErrorResponse.unauthorized(
                 "Invalid username or password.",
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(value = AuthenticationException.class)
-    public ResponseEntity<ErrorResponseDto> handleAuthenticationException(
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(
             AuthenticationException exception, WebRequest request) {
         log.warn("Authentication error: {}", exception.getMessage());
 
-        ErrorResponseDto errorResponse = ErrorResponseDto.unauthorized(
+        ErrorResponse errorResponse = ErrorResponse.unauthorized(
                 "Authentication failed.",
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
 }

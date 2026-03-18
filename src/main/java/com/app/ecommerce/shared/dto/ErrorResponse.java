@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorResponseDto {
+public class ErrorResponse {
 
     @Schema(description = "Indicates if the request was successful", example = "false")
     private boolean success;
@@ -33,8 +33,8 @@ public class ErrorResponseDto {
     @Schema(description = "Timestamp of the error")
     private long timestamp;
 
-    public static ErrorResponseDto build(int status, String error, String message, String path) {
-        return ErrorResponseDto.builder()
+    public static ErrorResponse build(int status, String error, String message, String path) {
+        return ErrorResponse.builder()
                 .success(false)
                 .status(status)
                 .error(error)
@@ -44,8 +44,8 @@ public class ErrorResponseDto {
                 .build();
     }
 
-    public static ErrorResponseDto build(int status, String error, String message, String details, String path) {
-        return ErrorResponseDto.builder()
+    public static ErrorResponse build(int status, String error, String message, String details, String path) {
+        return ErrorResponse.builder()
                 .success(false)
                 .status(status)
                 .error(error)
@@ -56,35 +56,35 @@ public class ErrorResponseDto {
                 .build();
     }
 
-    public static ErrorResponseDto notFound(String message, String path) {
+    public static ErrorResponse notFound(String message, String path) {
         return build(404, "NOT_FOUND", message, path);
     }
 
-    public static ErrorResponseDto badRequest(String message, String path) {
+    public static ErrorResponse badRequest(String message, String path) {
         return build(400, "BAD_REQUEST", message, path);
     }
 
-    public static ErrorResponseDto badRequest(String message, String details, String path) {
+    public static ErrorResponse badRequest(String message, String details, String path) {
         return build(400, "BAD_REQUEST", message, details, path);
     }
 
-    public static ErrorResponseDto conflict(String message, String path) {
+    public static ErrorResponse conflict(String message, String path) {
         return build(409, "CONFLICT", message, path);
     }
 
-    public static ErrorResponseDto internalError(String message, String path) {
+    public static ErrorResponse internalError(String message, String path) {
         return build(500, "INTERNAL_SERVER_ERROR", message, path);
     }
 
-    public static ErrorResponseDto serviceUnavailable(String message, String path) {
+    public static ErrorResponse serviceUnavailable(String message, String path) {
         return build(503, "SERVICE_UNAVAILABLE", message, path);
     }
 
-    public static ErrorResponseDto forbidden(String message, String path) {
+    public static ErrorResponse forbidden(String message, String path) {
         return build(403, "FORBIDDEN", message, path);
     }
 
-    public static ErrorResponseDto unauthorized(String message, String path) {
+    public static ErrorResponse unauthorized(String message, String path) {
         return build(401, "UNAUTHORIZED", message, path);
     }
 }

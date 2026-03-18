@@ -8,7 +8,7 @@ import com.app.ecommerce.shared.constants.CacheConstants;
 import com.app.ecommerce.shared.enums.PaymentType;
 import com.app.ecommerce.shared.enums.Status;
 import com.app.ecommerce.shared.exception.InvalidStateTransitionException;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.app.ecommerce.shared.util.SortUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @CachePut(value = CacheConstants.ORDERS, key = "#result.id")
     @Transactional
-    public OrderResponse createNewOrder(CreateOrderRequest request) throws JsonProcessingException {
+    public OrderResponse createNewOrder(CreateOrderRequest request) {
         log.info("createNewOrder({})", request);
 
         Cart cart = cartRepository.findById(request.getCartId())
@@ -125,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalArgumentException("createdAfter must be less than or equal to createdBefore");
         }
 
-        Sort safeSort = sanitizeSort(pageable.getSort());
+        Sort safeSort = SortUtils.sanitize(pageable.getSort(), Set.of("totalPrice", "createdAt"), Sort.Order.desc("createdAt"));
         PageRequest safePage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
 
         Specification<Order> spec = Specification
@@ -138,20 +138,6 @@ public class OrderServiceImpl implements OrderService {
         Page<OrderResponse> result = orderRepository.findAll(spec, safePage).map(orderMapper::mapToResponse);
         log.info("findAll(): Found {} orders", result.getTotalElements());
         return result;
-    }
-
-    private Sort sanitizeSort(Sort sort) {
-        Set<String> allowedFields = Set.of("totalPrice", "createdAt");
-        if (sort == null || sort.isUnsorted()) {
-            return Sort.by(Sort.Direction.DESC, "createdAt");
-        }
-        Sort.Order[] orders = sort.get().map(order -> {
-            if (allowedFields.contains(order.getProperty())) {
-                return order;
-            }
-            return Sort.Order.desc("createdAt");
-        }).toArray(Sort.Order[]::new);
-        return Sort.by(orders);
     }
 
 }

@@ -18,8 +18,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Schema(description = "Cart item data transfer object")
-public class CartItemDto extends BaseResponse {
+@Schema(description = "Cart item response")
+public class CartItemResponse extends BaseResponse {
 
     @Schema(description = "Unique identifier of the cart item", accessMode = Schema.AccessMode.READ_ONLY, example = "550e8400-e29b-41d4-a716-446655440000")
     private UUID id;

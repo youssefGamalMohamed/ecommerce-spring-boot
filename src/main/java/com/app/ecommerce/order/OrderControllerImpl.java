@@ -1,11 +1,12 @@
 package com.app.ecommerce.order;
 
-import com.app.ecommerce.shared.dto.ApiResponseDto;
+import com.app.ecommerce.shared.dto.ApiResponse;
 import com.app.ecommerce.shared.enums.PaymentType;
 import com.app.ecommerce.shared.enums.Status;
 import com.app.ecommerce.shared.idempotency.IdempotencyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -33,9 +34,9 @@ public class OrderControllerImpl implements OrderController {
 
     @PostMapping
     @Override
-    public ResponseEntity<ApiResponseDto<OrderResponse>> createNewOrder(
+    public ResponseEntity<ApiResponse<OrderResponse>> createNewOrder(
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
-            @RequestBody CreateOrderRequest request) throws JsonProcessingException {
+            @Valid @RequestBody CreateOrderRequest request) {
         log.info("createNewOrder({})", request);
 
         if (idempotencyKey != null) {
@@ -43,30 +44,31 @@ public class OrderControllerImpl implements OrderController {
             if (existingRecord.isPresent()) {
                 log.info("Returning cached response for idempotency key: {}", idempotencyKey);
                 var record = existingRecord.get();
-                ApiResponseDto<OrderResponse> cachedResponse = objectMapper.readValue(
-                        record.getResponseBody(),
-                        objectMapper.getTypeFactory().constructParametricType(ApiResponseDto.class, OrderResponse.class)
-                );
-                return ResponseEntity.status(record.getHttpStatus()).body(cachedResponse);
+                try {
+                    ApiResponse<OrderResponse> cachedResponse = objectMapper.readValue(
+                            record.getResponseBody(),
+                            objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, OrderResponse.class)
+                    );
+                    return ResponseEntity.status(record.getHttpStatus()).body(cachedResponse);
+                } catch (JsonProcessingException e) {
+                    log.error("Failed to parse cached response", e);
+                }
             }
         }
 
         OrderResponse createdOrder = orderService.createNewOrder(request);
-        ApiResponseDto<OrderResponse> response = ApiResponseDto.created(createdOrder);
+        ApiResponse<OrderResponse> response = ApiResponse.created(createdOrder);
 
         if (idempotencyKey != null) {
             idempotencyService.store(idempotencyKey, HttpStatus.CREATED.value(), response);
         }
 
-        return new ResponseEntity<>(
-                response,
-                HttpStatus.CREATED
-        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     @Override
-    public ResponseEntity<ApiResponseDto<Page<OrderResponse>>> findAll(
+    public ResponseEntity<ApiResponse<Page<OrderResponse>>> findAll(
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) PaymentType paymentType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdAfter,
@@ -75,29 +77,22 @@ public class OrderControllerImpl implements OrderController {
         log.info("findAll(status={}, paymentType={}, createdAfter={}, createdBefore={}, pageable={})",
                 status, paymentType, createdAfter, createdBefore, pageable);
         Page<OrderResponse> page = orderService.findAll(status, paymentType, createdAfter, createdBefore, pageable);
-        return ResponseEntity.ok(ApiResponseDto.success(page));
+        return ResponseEntity.ok(ApiResponse.success(page));
     }
 
     @PatchMapping("/{id}")
     @Override
-    public ResponseEntity<ApiResponseDto<OrderResponse>> updateOrder(@PathVariable("id") UUID orderId, @RequestBody UpdateOrderRequest request) {
+    public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(@PathVariable("id") UUID orderId, @Valid @RequestBody UpdateOrderRequest request) {
         log.info("updateOrder({}, {})", orderId, request);
         OrderResponse updatedOrder = orderService.updateOrder(orderId, request);
-
-        return new ResponseEntity<>(
-                ApiResponseDto.success(updatedOrder, "Order updated successfully"),
-                HttpStatus.OK);
+        return ResponseEntity.ok(ApiResponse.success(updatedOrder, "Order updated successfully"));
     }
 
     @GetMapping("/{id}")
     @Override
-    public ResponseEntity<ApiResponseDto<OrderResponse>> findOrderById(@PathVariable("id") UUID orderId) {
+    public ResponseEntity<ApiResponse<OrderResponse>> findOrderById(@PathVariable("id") UUID orderId) {
         log.info("findOrderById({})", orderId);
         OrderResponse order = orderService.findById(orderId);
-
-        return new ResponseEntity<>(
-                ApiResponseDto.success(order),
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok(ApiResponse.success(order));
     }
 }

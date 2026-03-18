@@ -464,3 +464,175 @@ public static ErrorResponseDto unauthorized(String message, String path) {
 - All tasks T001-T087 completed
 - T088: Run application - requires user to execute
 - T089: Verification steps - requires user to execute
+
+---
+
+## Phase 11: Dead Code Removal, ResponseEntity Builders, DRY Cleanup
+
+**Purpose**: Post-implementation audit found dead DTOs, inconsistent ResponseEntity construction, duplicated sort logic, missing @Valid, unused exception declarations, Dto→Response naming harmony, critical cascade bug, missing authorization, and token revocation N+1. This phase cleans all of them.
+
+**Research references**: R-014, R-015, R-016, R-017, R-018, R-019, R-020, R-021, R-022, R-023
+
+---
+
+### Sub-Phase 11A: Dead DTO & Mapper Cleanup (R-014)
+
+- [ ] T090 [P] Delete dead DTO files: `src/main/java/com/app/ecommerce/product/ProductDto.java`, `src/main/java/com/app/ecommerce/category/CategoryDto.java`, `src/main/java/com/app/ecommerce/order/OrderDto.java`, `src/main/java/com/app/ecommerce/order/DeliveryInfoDto.java`, `src/main/java/com/app/ecommerce/shared/dto/BaseDto.java`
+
+- [ ] T091 [P] Clean `src/main/java/com/app/ecommerce/product/ProductMapper.java`: Remove ALL dead methods: `mapToEntity(ProductDto)`, `mapToDto(Product)`, `mapToDtos(List)`, `mapToDtos(Set)`, `mapToEntity(Product)` (self-copy), `updateEntityFromEntity(Product, Product)` (without categories). Also remove dead collection methods: `mapToResponseList(List)`, `mapToResponseSet(Set)` (zero callers — services use `Page.map(mapper::mapToResponse)` instead). **Keep only**: `mapToEntity(CreateProductRequest)`, `mapToEntity(Product, Set<Category>)`, `updateEntityFromRequest(UpdateProductRequest, Product)`, `updateEntityFromEntity(Product, Set<Category>, Product)`, `mapToResponse(Product)`.
+
+- [ ] T092 [P] Clean `src/main/java/com/app/ecommerce/category/CategoryMapper.java`: Remove `INSTANCE` field + `import Mappers`, dead methods: `mapToEntity(CategoryDto)`, `mapToDto(Category)`, `mapToDtos(List)`, `updateFrom(Category, Category)`. Also remove dead collection method: `mapToResponseList(List)` (zero callers). **Keep only**: `mapToEntity(CreateCategoryRequest)`, `updateEntityFromRequest(UpdateCategoryRequest, Category)`, `mapToResponse(Category)`.
+
+- [ ] T093 [P] Clean `src/main/java/com/app/ecommerce/order/OrderMapper.java`: Remove dead methods: `mapToEntity(OrderDto)`, `mapToDto(Order)`, `mapToDtos(List)`, `mapToDtos(Set)`, `updateFrom(Order, Order)`. Also remove dead collection method: `mapToResponseList(List)` (zero callers). **Keep only**: `mapToEntity(CreateOrderRequest)`, `updateEntityFromRequest(UpdateOrderRequest, Order)`, `mapToResponse(Order)`.
+
+- [ ] T094 [P] Clean `src/main/java/com/app/ecommerce/order/DeliveryInfoMapper.java`: Remove ALL dead methods: `mapToEntity(DeliveryInfoDto)`, `mapToDto(DeliveryInfo)`, `mapToDtos(List)`, `mapToDtos(Set)`. **Keep only**: `mapToResponse(DeliveryInfo)`.
+
+**Checkpoint**: `mvn clean compile` succeeds. Zero references to old DTOs remain. All mappers contain only actively-used methods — no dead collection methods.
+
+---
+
+### Sub-Phase 11B: Rename Dto-Suffixed Classes for Naming Harmony (R-022)
+
+**Purpose**: Rename `ApiResponseDto` → `ApiResponse`, `ErrorResponseDto` → `ErrorResponse`, `CartDto` → `CartResponse`, `CartItemDto` → `CartItemResponse` to achieve consistent naming across all request/response classes.
+
+- [ ] T111 Rename `src/main/java/com/app/ecommerce/shared/dto/ApiResponseDto.java` → `ApiResponse.java`: Rename file, rename class to `ApiResponse`, update all static factory method references (`ApiResponse.success()`, `ApiResponse.created()`, `ApiResponse.noContent()`). Update `@Schema(description = ...)` annotation.
+
+- [ ] T112 Update all files that import/reference `ApiResponseDto` to use `ApiResponse` instead. Files: `ProductController.java`, `ProductControllerImpl.java`, `CategoryController.java`, `CategoryControllerImpl.java`, `OrderController.java`, `OrderControllerImpl.java`, `AuthController.java`, `AuthControllerImpl.java`. In each file: update import statement and all usages (return types, method calls).
+
+- [ ] T113 Rename `src/main/java/com/app/ecommerce/shared/dto/ErrorResponseDto.java` → `ErrorResponse.java`: Rename file, rename class to `ErrorResponse`, update all static factory methods (`ErrorResponse.notFound()`, `ErrorResponse.badRequest()`, `ErrorResponse.conflict()`, `ErrorResponse.internalError()`, `ErrorResponse.serviceUnavailable()`, `ErrorResponse.forbidden()`, `ErrorResponse.unauthorized()`, `ErrorResponse.build()`).
+
+- [ ] T114 Update all files that import/reference `ErrorResponseDto` to use `ErrorResponse` instead. Files: `RestExceptionHandler.java`, `ProductController.java`, `CategoryController.java`, `OrderController.java`, `AuthController.java`. In each file: update import statement and all usages (return types, variable types).
+
+- [ ] T115 Rename `src/main/java/com/app/ecommerce/cart/CartDto.java` → `CartResponse.java`: Rename file, rename class to `CartResponse`. Update `@Schema(description = "Cart response")`.
+
+- [ ] T116 Update all files that reference `CartDto` to use `CartResponse`: `CartMapper.java` (rename `mapToDto(Cart)` → `mapToResponse(Cart)`, remove dead methods: `mapToEntity(CartDto)` → delete entirely, `mapToDtos(List)` → delete, `mapToDtos(Set)` → delete — none are called). Update `CartService.java`, `CartServiceImpl.java` (return type + method call). Update `OrderResponse.java` (field type `CartDto cart` → `CartResponse cart`). **CartMapper final state**: keep only `mapToResponse(Cart)`.
+
+- [ ] T117 Rename `src/main/java/com/app/ecommerce/cart/CartItemDto.java` → `CartItemResponse.java`: Rename file, rename class to `CartItemResponse`. Update `@Schema(description = "Cart item response")`.
+
+- [ ] T118 Update all files that reference `CartItemDto` to use `CartItemResponse`: `CartItemMapper.java` (rename `mapToDto(CartItem)` → `mapToResponse(CartItem)`, remove dead methods: `mapToEntity(CartItemDto)` → delete, `mapToDtos(List)` → delete, `mapToDtos(Set)` → delete — none are called). Update `CartItemService.java`, `CartItemServiceImpl.java` (return type + method call). Update `CartResponse.java` (field type `Set<CartItemDto>` → `Set<CartItemResponse>`). **CartItemMapper final state**: keep only `mapToResponse(CartItem)`.
+
+- [ ] T119 Verify no references to `ApiResponseDto`, `ErrorResponseDto`, `CartDto`, or `CartItemDto` remain in the codebase. Run: `grep -r "ApiResponseDto\|ErrorResponseDto\|CartDto\|CartItemDto" src/main/java/` should return zero results (except possibly comments which should also be updated).
+
+**Checkpoint**: All response/wrapper classes use consistent naming — no `Dto` suffix remains on any response class. `ApiResponse`, `ErrorResponse`, `CartResponse`, `CartItemResponse` harmonize with `ProductResponse`, `CategoryResponse`, `OrderResponse`.
+
+---
+
+### Sub-Phase 11C: ResponseEntity Builder Pattern (R-015)
+**Note**: These tasks must run AFTER Sub-Phase 11B (class renames) since the file names and class names will have changed.
+
+- [ ] T095 [P] Migrate `src/main/java/com/app/ecommerce/product/ProductControllerImpl.java`: Replace 3 `new ResponseEntity<>` usages with builder pattern.
+  - `save()`: `new ResponseEntity<>(ApiResponse.created(...), HttpStatus.CREATED)` → `ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(...))`
+  - `updateById()`: `new ResponseEntity<>(..., HttpStatus.OK)` → `ResponseEntity.ok(...)`
+  - `deleteById()`: `new ResponseEntity<>(..., HttpStatus.NO_CONTENT)` → `ResponseEntity.status(HttpStatus.NO_CONTENT).body(...)`
+
+- [ ] T096 [P] Migrate `src/main/java/com/app/ecommerce/category/CategoryControllerImpl.java`: Replace 2 `new ResponseEntity<>` usages with builder pattern.
+  - `save()`: → `ResponseEntity.status(HttpStatus.CREATED).body(...)`
+  - `deleteById()`: → `ResponseEntity.status(HttpStatus.NO_CONTENT).body(...)`
+
+- [ ] T097 [P] Migrate `src/main/java/com/app/ecommerce/order/OrderControllerImpl.java`: Replace 3 `new ResponseEntity<>` usages with builder pattern.
+  - `createNewOrder()`: → `ResponseEntity.status(HttpStatus.CREATED).body(...)`
+  - `updateOrder()`: → `ResponseEntity.ok(...)`
+  - `findOrderById()`: → `ResponseEntity.ok(...)`
+
+- [ ] T098 [P] Migrate `src/main/java/com/app/ecommerce/auth/AuthControllerImpl.java`: Replace 1 `new ResponseEntity<>` usage with builder pattern.
+  - `register()`: → `ResponseEntity.status(HttpStatus.CREATED).body(...)`
+
+- [ ] T099 Migrate `src/main/java/com/app/ecommerce/shared/exception/RestExceptionHandler.java`: Replace all 10 `new ResponseEntity<>` usages with builder pattern.
+  - `handleMethodArgumentNotValid()`: → `ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)`
+  - `handleInternalServerErrorException()`: → `ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)`
+  - `handleDuplicatedUniqueValueException()`: → `ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse)`
+  - `handleIllegalArgumentException()`: → `ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)`
+  - `handleNoSuchElementException()`: → `ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)`
+  - `handleFailedDatabaseConnectionException()`: → `ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse)`
+  - `handleOptimisticLockingFailureException()`: → `ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse)`
+  - `handleInvalidStateTransitionException()`: → `ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)`
+  - `handleAccessDeniedException()`: → `ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse)`
+  - `handleBadCredentialsException()`: → `ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse)`
+  - `handleAuthenticationException()`: → `ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse)`
+
+**Checkpoint**: Zero `new ResponseEntity<>` usages remain in the codebase. All ResponseEntity construction uses the fluent builder API.
+
+---
+
+### Sub-Phase 11D: DRY & Validation Fixes (R-016, R-017, R-018)
+
+- [ ] T100 Create `src/main/java/com/app/ecommerce/shared/util/SortUtils.java`:
+  ```java
+  package com.app.ecommerce.shared.util;
+
+  import org.springframework.data.domain.Sort;
+  import java.util.Set;
+
+  public final class SortUtils {
+      private SortUtils() {}
+
+      public static Sort sanitize(Sort sort, Set<String> allowedFields, Sort.Order defaultOrder) {
+          if (sort == null || sort.isUnsorted()) {
+              return Sort.by(defaultOrder);
+          }
+          Sort.Order[] orders = sort.get()
+              .map(order -> allowedFields.contains(order.getProperty()) ? order : defaultOrder)
+              .toArray(Sort.Order[]::new);
+          return Sort.by(orders);
+      }
+  }
+  ```
+
+- [ ] T101 [P] Update `src/main/java/com/app/ecommerce/product/ProductServiceImpl.java`: Replace private `sanitizeSort` method with `SortUtils.sanitize(pageable.getSort(), Set.of("name", "price", "createdAt"), Sort.Order.desc("createdAt"))`. Delete the private method.
+
+- [ ] T102 [P] Update `src/main/java/com/app/ecommerce/category/CategoryServiceImpl.java`: Replace private `sanitizeSort` method with `SortUtils.sanitize(pageable.getSort(), Set.of("name", "createdAt"), Sort.Order.asc("name"))`. Delete the private method.
+
+- [ ] T103 [P] Update `src/main/java/com/app/ecommerce/order/OrderServiceImpl.java`: Replace private `sanitizeSort` method with `SortUtils.sanitize(pageable.getSort(), Set.of("totalPrice", "createdAt"), Sort.Order.desc("createdAt"))`. Delete the private method. Also remove `throws JsonProcessingException` from `createNewOrder()` signature and remove unused `import com.fasterxml.jackson.core.JsonProcessingException;`.
+
+- [ ] T104 Update `src/main/java/com/app/ecommerce/order/OrderService.java`: Remove `throws JsonProcessingException` from `createNewOrder()` method signature. Remove unused `import com.fasterxml.jackson.core.JsonProcessingException;` if present.
+
+- [ ] T105 Update `src/main/java/com/app/ecommerce/order/OrderController.java` and `src/main/java/com/app/ecommerce/order/OrderControllerImpl.java`: Add `@Valid` annotation to `CreateOrderRequest` and `UpdateOrderRequest` parameters. Ensure `import jakarta.validation.Valid;` is present in both files.
+
+- [ ] T106 Run `mvn clean compile` to verify the entire project compiles without errors after all Phase 11 changes.
+
+**Checkpoint**: `sanitizeSort` exists in only one place (SortUtils). `@Valid` is on all request parameters. No unused throws declarations. Build succeeds.
+
+---
+
+### Sub-Phase 11E: Critical Architecture Fixes (R-019, R-020, R-021)
+
+- [ ] T107 **CRITICAL** Fix `src/main/java/com/app/ecommerce/category/Category.java`: Remove `CascadeType.REMOVE` from the `@ManyToMany` annotation on `products` field. Change from `cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}` to `cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}`. This prevents catastrophic cascade deletion of products when a category is removed.
+
+- [ ] T108 [P] Add method-level authorization to product controllers. In `src/main/java/com/app/ecommerce/product/ProductController.java` (interface) and `src/main/java/com/app/ecommerce/product/ProductControllerImpl.java`: Add `@PreAuthorize("hasRole('ADMIN')")` to `save()`, `updateById()`, and `deleteById()` methods. Add `import org.springframework.security.access.prepost.PreAuthorize;`.
+
+- [ ] T109 [P] Add method-level authorization to category controllers. In `src/main/java/com/app/ecommerce/category/CategoryController.java` (interface) and `src/main/java/com/app/ecommerce/category/CategoryControllerImpl.java`: Add `@PreAuthorize("hasRole('ADMIN')")` to `save()`, `updateById()`, and `deleteById()` methods. Add `import org.springframework.security.access.prepost.PreAuthorize;`.
+
+- [ ] T110 Optimize token revocation in `src/main/java/com/app/ecommerce/auth/TokenRepository.java`: Add batch update method:
+  ```java
+  @Modifying
+  @Query("UPDATE Token t SET t.revoked = true WHERE t.user = :user AND t.revoked = false AND t.expired = false")
+  void revokeAllValidTokensByUser(@Param("user") User user);
+  ```
+  Then update `src/main/java/com/app/ecommerce/auth/AuthServiceImpl.java` login() method: Replace the loop (lines 84-88) with single call `tokenRepository.revokeAllValidTokensByUser(user);`. Remove the `List<Token> validTokens` variable.
+
+**Checkpoint**: Category deletion no longer cascades to product deletion. Only ADMIN users can create/update/delete products and categories. Token revocation uses a single batch query.
+
+---
+
+## Phase 11 Dependencies
+
+- T107 (cascade fix): No dependencies, **DO FIRST — CRITICAL**
+- T090-T094 (dead DTO cleanup): All parallel, no dependencies
+- T111-T119 (Dto→Response renames): Depends on T090 (dead DTOs deleted first to avoid renaming dead code). **MUST complete before T095-T099** (ResponseEntity tasks reference renamed classes)
+- T095-T099 (ResponseEntity builders): Depends on T111-T119 (renamed classes)
+- T100 (SortUtils): Must complete before T101-T103
+- T101-T103 (service updates): Parallel, depend on T100
+- T104-T105 (validation fixes): Parallel, no dependencies
+- T108-T109 (authorization): Parallel, no dependencies
+- T110 (token batch): No dependencies
+- T106 (verify compile): Depends on all above
+
+```
+T107 (CRITICAL) ─────────────────────────────────┐
+T090-T094 (dead code) → T111-T119 (renames) ─────┤
+                         → T095-T099 (builders) ──┤
+T100 → T101-T103 (SortUtils) ────────────────────┤──→ T106
+T104-T105 (validation) ──────────────────────────┤
+T108-T109 (authorization) ───────────────────────┤
+T110 (token batch) ──────────────────────────────┘
+```

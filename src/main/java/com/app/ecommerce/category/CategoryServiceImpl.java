@@ -2,6 +2,7 @@ package com.app.ecommerce.category;
 
 import com.app.ecommerce.shared.constants.CacheConstants;
 import com.app.ecommerce.shared.exception.DuplicatedUniqueColumnValueException;
+import com.app.ecommerce.shared.util.SortUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -70,7 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Page<CategoryResponse> findAll(String name, Pageable pageable) {
         log.info("findAll(name={}, pageable={})", name, pageable);
 
-        Sort safeSort = sanitizeSort(pageable.getSort());
+        Sort safeSort = SortUtils.sanitize(pageable.getSort(), Set.of("name", "createdAt"), Sort.Order.asc("name"));
         PageRequest safePage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
 
         Specification<Category> spec = Specification
@@ -80,20 +81,6 @@ public class CategoryServiceImpl implements CategoryService {
         Page<CategoryResponse> result = categoryRepository.findAll(spec, safePage).map(categoryMapper::mapToResponse);
         log.info("findAll(): Found {} categories", result.getTotalElements());
         return result;
-    }
-
-    private Sort sanitizeSort(Sort sort) {
-        Set<String> allowedFields = Set.of("name", "createdAt");
-        if (sort == null || sort.isUnsorted()) {
-            return Sort.by(Sort.Direction.ASC, "name");
-        }
-        Sort.Order[] orders = sort.get().map(order -> {
-            if (allowedFields.contains(order.getProperty())) {
-                return order;
-            }
-            return Sort.Order.asc("name");
-        }).toArray(Sort.Order[]::new);
-        return Sort.by(orders);
     }
 
     @Override

@@ -12,8 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -81,11 +79,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = (User) authentication.getPrincipal();
 
-        List<Token> validTokens = tokenRepository.findAllByUserAndRevokedFalseAndExpiredFalse(user);
-        for (Token token : validTokens) {
-            token.setRevoked(true);
-            tokenRepository.save(token);
-        }
+        tokenRepository.revokeAllValidTokensByUser(user);
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);

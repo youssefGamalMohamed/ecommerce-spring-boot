@@ -124,6 +124,31 @@ This refactor has strict dependency ordering. Follow the phases below — each p
 
 ---
 
+### Phase 11: Dead Code Removal, ResponseEntity Builders, DRY Cleanup
+
+**Goal**: Remove dead DTOs, migrate to ResponseEntity builder pattern, extract duplicated sort utility, fix missing @Valid.
+
+**Steps**:
+0. **CRITICAL: Fix CascadeType.REMOVE on Category.products** — In `Category.java`, remove `CascadeType.REMOVE` from the `@ManyToMany` cascade list. Currently, deleting a category cascades to delete all associated products — catastrophic in ecommerce.
+
+1. **Delete dead DTO files (ProductDto, CategoryDto, OrderDto, DeliveryInfoDto, BaseDto)** — `ProductDto.java`, `CategoryDto.java`, `OrderDto.java`, `DeliveryInfoDto.java`, `BaseDto.java`. These were replaced by `*Response.java` and `BaseResponse.java` but never deleted.
+
+1b. **Rename remaining Dto-suffixed classes for naming harmony** — `ApiResponseDto` → `ApiResponse`, `ErrorResponseDto` → `ErrorResponse`, `CartDto` → `CartResponse`, `CartItemDto` → `CartItemResponse`. Update all imports, references, and mapper method names across the codebase (~151 occurrences in 11 files).
+
+2. **Remove dead mapper methods** — Delete all `mapToDto()`, `mapToDtos()`, `mapToEntity(*Dto)`, `updateFrom()` methods from `ProductMapper`, `CategoryMapper`, `OrderMapper`, `DeliveryInfoMapper` that reference the deleted DTOs. Also remove `CategoryMapper.INSTANCE` field.
+
+3. **Migrate `new ResponseEntity<>` to builder pattern** — In all controllers (`ProductControllerImpl`, `CategoryControllerImpl`, `OrderControllerImpl`, `AuthControllerImpl`) and `RestExceptionHandler`, replace `new ResponseEntity<>(body, HttpStatus.XXX)` with `ResponseEntity.status(HttpStatus.XXX).body(body)` or `ResponseEntity.ok(body)`.
+
+4. **Extract `SortUtils`** — Create `src/main/java/com/app/ecommerce/shared/util/SortUtils.java` with a static `sanitize(Sort, Set<String>, Sort.Order)` method. Update `ProductServiceImpl`, `CategoryServiceImpl`, `OrderServiceImpl` to use it. Delete the private `sanitizeSort` methods.
+
+5. **Add missing `@Valid`** — Add `@Valid` to `CreateOrderRequest` and `UpdateOrderRequest` parameters in both `OrderController.java` (interface) and `OrderControllerImpl.java`.
+
+6. **Remove unused `throws JsonProcessingException`** — From `OrderService.createNewOrder()` and `OrderServiceImpl.createNewOrder()`.
+
+**Verify**: `mvn clean compile` succeeds. No references to deleted DTOs remain. All ResponseEntity usages use builder pattern. Swagger UI loads correctly.
+
+---
+
 ## Key Files to Modify (Summary)
 
 | File | Changes |

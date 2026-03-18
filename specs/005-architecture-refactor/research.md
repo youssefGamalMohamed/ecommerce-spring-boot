@@ -255,3 +255,278 @@ CANCELED → (terminal, no transitions)
 These annotations exist to prevent circular serialization — but entities should NEVER be serialized directly. They go through MapStruct → DTO. The presence of `@JsonIgnore` is a code smell indicating possible entity leakage to the API layer. MapStruct ignores unmapped fields by default, so removing `@JsonIgnore` has no functional impact.
 
 **Risk**: If any code path serializes entities directly (e.g., returning entity from controller without mapping), this will cause infinite recursion. Mitigation: search for all controller return types and verify they use DTOs.
+
+---
+
+### R-014: Dead DTO Classes & Mapper Methods (Post-Implementation Cleanup)
+
+**Decision**: Delete 5 old DTO files and remove ~20 dead mapper methods that were superseded by the new Request/Response DTOs but never cleaned up.
+
+**Rationale**: Task T039/T084 was supposed to delete old DTOs, but they still exist in the codebase alongside their replacements. No service or controller code references them — only the old mapper methods do, creating a circular dead-code dependency.
+
+**Files to delete**:
+- `src/main/java/com/app/ecommerce/product/ProductDto.java`
+- `src/main/java/com/app/ecommerce/category/CategoryDto.java`
+- `src/main/java/com/app/ecommerce/order/OrderDto.java`
+- `src/main/java/com/app/ecommerce/order/DeliveryInfoDto.java`
+- `src/main/java/com/app/ecommerce/shared/dto/BaseDto.java`
+
+**Dead mapper methods to remove**:
+
+| Mapper | Dead Methods |
+|--------|-------------|
+| `ProductMapper` | `mapToEntity(ProductDto)`, `mapToDto(Product)`, `mapToDtos(List)`, `mapToDtos(Set)`, `mapToEntity(Product)` (self-copy), `updateEntityFromEntity(Product, Product)` |
+| `CategoryMapper` | `mapToEntity(CategoryDto)`, `mapToDto(Category)`, `mapToDtos(List)`, `updateFrom(Category, Category)`, `INSTANCE` field |
+| `OrderMapper` | `mapToEntity(OrderDto)`, `mapToDto(Order)`, `mapToDtos(List)`, `mapToDtos(Set)`, `updateFrom(Order, Order)` |
+| `DeliveryInfoMapper` | `mapToEntity(DeliveryInfoDto)`, `mapToDto(DeliveryInfo)`, `mapToDtos(List)`, `mapToDtos(Set)` |
+
+**Note**: `CartDto`, `CartItemDto`, `CartMapper`, `CartItemMapper` are still actively used (cart domain was kept as-is per spec R-003). Do NOT delete these.
+
+---
+
+### R-015: ResponseEntity Builder Pattern
+
+**Decision**: Replace all `new ResponseEntity<>(body, HttpStatus.XXX)` with `ResponseEntity.status(HttpStatus.XXX).body(body)` builder pattern across controllers and exception handler.
+
+**Rationale**: The builder pattern is more readable, fluent, and aligns with Spring best practices. Currently 20+ usages of `new ResponseEntity<>()` exist across 4 controllers and 1 exception handler. Some methods already use `ResponseEntity.ok()` inconsistently — this creates an inconsistent code style.
+
+**Pattern mapping**:
+
+| Current Pattern | Builder Replacement |
+|----------------|---------------------|
+| `new ResponseEntity<>(body, HttpStatus.CREATED)` | `ResponseEntity.status(HttpStatus.CREATED).body(body)` |
+| `new ResponseEntity<>(body, HttpStatus.OK)` | `ResponseEntity.ok(body)` |
+| `new ResponseEntity<>(body, HttpStatus.NO_CONTENT)` | `ResponseEntity.status(HttpStatus.NO_CONTENT).body(body)` |
+| `new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST)` | `ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)` |
+| `new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND)` | `ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)` |
+| `new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT)` | `ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse)` |
+| etc. | etc. |
+
+**Affected files**:
+- `ProductControllerImpl.java` (3 usages: save, updateById, deleteById)
+- `CategoryControllerImpl.java` (2 usages: save, deleteById)
+- `OrderControllerImpl.java` (3 usages: createNewOrder, updateOrder, findOrderById)
+- `AuthControllerImpl.java` (1 usage: register)
+- `RestExceptionHandler.java` (10 usages: all exception handler methods)
+
+**Alternatives considered**:
+- Keep `new ResponseEntity<>`: Functional but verbose and inconsistent with the `ResponseEntity.ok()` calls already present. Rejected.
+
+---
+
+### R-016: Duplicated `sanitizeSort` Utility Method
+
+**Decision**: Extract the duplicated `sanitizeSort` method into a shared utility class `SortUtils` in `com.app.ecommerce.shared.util`.
+
+**Rationale**: Three service implementations contain near-identical `sanitizeSort` methods:
+- `ProductServiceImpl.sanitizeSort()` — allowed: `name, price, createdAt`
+- `CategoryServiceImpl.sanitizeSort()` — allowed: `name, createdAt`
+- `OrderServiceImpl.sanitizeSort()` — allowed: `totalPrice, createdAt`
+
+The logic is identical: validate sort fields against an allow-list, fallback to a default. Only the allowed fields and default differ. This violates DRY and makes maintenance error-prone.
+
+**Implementation**:
+```java
+public final class SortUtils {
+    public static Sort sanitize(Sort sort, Set<String> allowedFields, Sort.Order defaultOrder) {
+        if (sort == null || sort.isUnsorted()) {
+            return Sort.by(defaultOrder);
+        }
+        Sort.Order[] orders = sort.get()
+            .map(order -> allowedFields.contains(order.getProperty()) ? order : defaultOrder)
+            .toArray(Sort.Order[]::new);
+        return Sort.by(orders);
+    }
+}
+```
+
+**Alternatives considered**:
+- Leave duplicated: Simple but violates DRY. Rejected — 3 copies is over the threshold.
+- Abstract base service class: Over-engineered. Rejected — a static utility is simpler.
+
+---
+
+### R-017: Missing `@Valid` on Order Controller Methods
+
+**Decision**: Add `@Valid` annotation to `CreateOrderRequest` and `UpdateOrderRequest` parameters in `OrderControllerImpl`.
+
+**Rationale**: Both `createNewOrder` and `updateOrder` accept request bodies without `@Valid`, meaning bean validation annotations on `CreateOrderRequest` (e.g., `@NotNull` on `paymentType`, `cartId`) and `UpdateOrderRequest` (`@NotNull` on `version`) are never triggered. This is a validation gap — invalid requests reach the service layer unchecked.
+
+**Affected methods**:
+- `OrderControllerImpl.createNewOrder()`: `@RequestBody CreateOrderRequest` → `@Valid @RequestBody CreateOrderRequest`
+- `OrderControllerImpl.updateOrder()`: `@RequestBody UpdateOrderRequest` → `@Valid @RequestBody UpdateOrderRequest`
+- `OrderController.java` (interface): Same changes to match implementation
+
+---
+
+### R-018: Unused `JsonProcessingException` in OrderServiceImpl
+
+**Decision**: Remove `throws JsonProcessingException` from `OrderServiceImpl.createNewOrder()` and `OrderService.createNewOrder()`.
+
+**Rationale**: `JsonProcessingException` was needed when the service handled idempotency internally. After the refactor, idempotency handling moved to the controller layer (`OrderControllerImpl`). The service method no longer performs any JSON processing, but the throws declaration persists — it forces all callers to handle it unnecessarily.
+
+**Affected files**:
+- `OrderService.java` (interface): Remove `throws JsonProcessingException` from `createNewOrder`
+- `OrderServiceImpl.java`: Remove `throws JsonProcessingException` from `createNewOrder` + remove unused import
+
+---
+
+### R-022: Rename Remaining Dto-Suffixed Classes for Naming Harmony
+
+**Decision**: Rename `ApiResponseDto` → `ApiResponse`, `ErrorResponseDto` → `ErrorResponse`, `CartDto` → `CartResponse`, `CartItemDto` → `CartItemResponse`. This aligns all response/wrapper classes with the naming convention established during the DTO split (R-003) where `ProductDto` → `ProductResponse`, `CategoryDto` → `CategoryResponse`, etc.
+
+**Rationale**: After the DTO split in Phase 3, response classes use the `*Response` suffix (e.g., `ProductResponse`, `OrderResponse`), but 4 classes retained the legacy `Dto` suffix:
+- `ApiResponseDto` — generic API wrapper used in every controller return type
+- `ErrorResponseDto` — error response wrapper used in every exception handler
+- `CartDto` — cart response (already extends `BaseResponse`, not `BaseDto`)
+- `CartItemDto` — cart item response (already extends `BaseResponse`)
+
+This creates inconsistent naming: `ResponseEntity<ApiResponseDto<ProductResponse>>` mixes `Dto` and `Response` in the same generic signature.
+
+**Rename mapping**:
+
+| Current Name | New Name | File Location | References |
+|-------------|----------|---------------|------------|
+| `ApiResponseDto` | `ApiResponse` | `shared/dto/ApiResponseDto.java` → `shared/dto/ApiResponse.java` | 9 files, ~85 occurrences |
+| `ErrorResponseDto` | `ErrorResponse` | `shared/dto/ErrorResponseDto.java` → `shared/dto/ErrorResponse.java` | 6 files, ~66 occurrences |
+| `CartDto` | `CartResponse` | `cart/CartDto.java` → `cart/CartResponse.java` | 10 files |
+| `CartItemDto` | `CartItemResponse` | `cart/CartItemDto.java` → `cart/CartItemResponse.java` | 10 files |
+
+**Full list of files requiring import/reference updates**:
+
+For `ApiResponseDto` → `ApiResponse`:
+- `shared/dto/ApiResponseDto.java` → rename file + class + all static methods
+- `product/ProductController.java`, `product/ProductControllerImpl.java`
+- `category/CategoryController.java`, `category/CategoryControllerImpl.java`
+- `order/OrderController.java`, `order/OrderControllerImpl.java`
+- `auth/AuthController.java`, `auth/AuthControllerImpl.java`
+
+For `ErrorResponseDto` → `ErrorResponse`:
+- `shared/dto/ErrorResponseDto.java` → rename file + class + all factory methods
+- `shared/exception/RestExceptionHandler.java`
+- `product/ProductController.java`
+- `category/CategoryController.java`
+- `order/OrderController.java`
+- `auth/AuthController.java`
+
+For `CartDto` → `CartResponse`:
+- `cart/CartDto.java` → rename file + class
+- `cart/CartMapper.java` (mapToDto → mapToResponse, mapToDtos → mapToResponseList/Set)
+- `cart/CartService.java`, `cart/CartServiceImpl.java`
+- `order/OrderResponse.java` (field type)
+- `order/OrderDto.java` (dead — being deleted in T090)
+
+For `CartItemDto` → `CartItemResponse`:
+- `cart/CartItemDto.java` → rename file + class
+- `cart/CartItemMapper.java` (mapToDto → mapToResponse, mapToDtos → mapToResponseList/Set)
+- `cart/CartItemService.java`, `cart/CartItemServiceImpl.java`
+- `cart/CartResponse.java` (field type — after CartDto rename)
+
+**Alternatives considered**:
+- Keep the Dto suffix on shared wrapper classes only: Creates a distinction between "domain response" and "infrastructure wrapper". Rejected — the `Dto` suffix is legacy and the user explicitly wants naming harmony.
+- Rename to `ApiResponseWrapper` / `ErrorResponseWrapper`: More descriptive but longer. Rejected — `ApiResponse` / `ErrorResponse` is clean and consistent.
+
+---
+
+### R-023: Mapper Method Naming Convention — Architect's Analysis
+
+**Question**: Should collection mapper methods like `mapToResponseList(List<Product>)` and `mapToResponseSet(Set<Product>)` use overloaded names like `mapToResponse(List<Product>)` or `mapToResponses(List<Product>)` for OOP consistency?
+
+**Architect's Decision**: **Remove all explicit collection mapper methods entirely.** They are dead code — zero callers exist in the codebase. The codebase correctly uses `Page.map(mapper::mapToResponse)` with method references, which doesn't need declared collection methods.
+
+**Rationale (Architect's perspective)**:
+
+1. **Dead code analysis**: Grep confirmed zero calls to `mapToResponseList`, `mapToResponseSet`, or `mapToDtos` from any `*ServiceImpl.java`. The services use `repository.findAll(spec, pageable).map(mapper::mapToResponse)` — Spring Data's `Page.map()` applies the single-item mapper to each element via method reference.
+
+2. **MapStruct behavior**: When MapStruct sees a single-item mapping method like `ProductResponse mapToResponse(Product product)`, it **automatically generates collection mapping implementations** when referenced by other mappers (e.g., `CategoryMapper` using `ProductMapper`). You don't need to declare them explicitly.
+
+3. **OOP overloading evaluation**:
+   - `mapToResponse(Product)` + `mapToResponse(List<Product>)` + `mapToResponse(Set<Product>)` = valid Java overloading (parameter types differ). MapStruct supports this.
+   - `mapToResponse(Product)` + `mapToResponses(List<Product>)` = plural naming convention. Less "pure OOP" but avoids confusion.
+   - **Neither is needed** because no code calls collection methods directly.
+
+4. **When you WOULD need collection methods**: If a service method accepted `List<Entity>` and needed to return `List<Response>` in one call (not via Page.map()). Currently this never happens in the codebase — all list operations go through pagination.
+
+**Decision matrix**:
+
+| Approach | OOP Purity | Readability | Practical Need |
+|----------|-----------|-------------|---------------|
+| Overloaded `mapToResponse` for all | High | Medium (can confuse at call site) | None — dead code |
+| Plural `mapToResponses` for collections | Medium | High (clear intent) | None — dead code |
+| **Remove collection methods entirely** | N/A | Cleanest (less noise) | **Correct — no callers** |
+
+**Recommendation**: Remove `mapToResponseList`, `mapToResponseSet`, `mapToResponseList` from all mappers. If a future use case needs explicit collection mapping, add it then with overloaded `mapToResponse` (OOP-correct approach). Don't pre-declare unused methods.
+
+**Also apply to**: The old `mapToDtos` collection methods are being deleted in T091-T094 (already planned). The `mapToEntity` collection methods in `CartMapper` and `CartItemMapper` (`mapToEntity(CartDto)`, `mapToDtos`) should also follow this pattern after rename — keep only the actively-used single-item methods.
+
+**Summary of mapper methods to KEEP per mapper** (after all cleanup):
+
+| Mapper | Keep | Purpose |
+|--------|------|---------|
+| `ProductMapper` | `mapToEntity(CreateProductRequest)` | Create |
+| | `mapToEntity(Product, Set<Category>)` | Set categories on entity |
+| | `updateEntityFromRequest(UpdateProductRequest, Product)` | Partial update |
+| | `updateEntityFromEntity(Product, Set<Category>, Product)` | Update categories |
+| | `mapToResponse(Product)` | Entity → Response |
+| `CategoryMapper` | `mapToEntity(CreateCategoryRequest)` | Create |
+| | `updateEntityFromRequest(UpdateCategoryRequest, Category)` | Partial update |
+| | `mapToResponse(Category)` | Entity → Response |
+| `OrderMapper` | `mapToEntity(CreateOrderRequest)` | Create |
+| | `updateEntityFromRequest(UpdateOrderRequest, Order)` | Partial update |
+| | `mapToResponse(Order)` | Entity → Response |
+| `DeliveryInfoMapper` | `mapToResponse(DeliveryInfo)` | Entity → Response |
+| `CartMapper` | `mapToResponse(Cart)` | Entity → Response (renamed from mapToDto) |
+| `CartItemMapper` | `mapToResponse(CartItem)` | Entity → Response (renamed from mapToDto) |
+
+---
+
+### R-019: CascadeType.REMOVE on Inverse Side of ManyToMany (CRITICAL)
+
+**Decision**: Remove `CascadeType.REMOVE` from `Category.products` relationship.
+
+**Rationale**: `Category.java` line 36 has:
+```java
+@ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY,
+            cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+```
+`CascadeType.REMOVE` on the **inverse (mappedBy) side** of a `@ManyToMany` is dangerous: deleting a category will cascade-delete all associated products. In an ecommerce system, this means removing the "Electronics" category would delete every product tagged as "Electronics" — catastrophic data loss.
+
+The `mappedBy` side should never have `CascadeType.REMOVE`. Only `MERGE`, `DETACH`, and `REFRESH` are safe here.
+
+**Fix**: Change to `cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}`.
+
+---
+
+### R-020: Missing Method-Level Authorization (@PreAuthorize)
+
+**Decision**: Add `@PreAuthorize("hasRole('ADMIN')")` to all write endpoints (POST, PATCH, DELETE) on products and categories.
+
+**Rationale**: `SecurityConfig.java` has `@EnableMethodSecurity` and URL-based rules that require authentication for all non-whitelisted endpoints. However, any authenticated user (CUSTOMER or ADMIN) can currently POST/PATCH/DELETE products and categories, because there is no **method-level role check**. The spec (FR-015) requires: "ADMIN (full CRUD on all resources) and CUSTOMER (read products/categories, manage own cart, place and view own orders)".
+
+URL-based rules only distinguish between authenticated vs. unauthenticated — they don't check roles on specific HTTP methods. Adding `@PreAuthorize` on controller methods enforces the role distinction.
+
+**Affected files**:
+- `ProductController.java` / `ProductControllerImpl.java`: `save()`, `updateById()`, `deleteById()` → `@PreAuthorize("hasRole('ADMIN')")`
+- `CategoryController.java` / `CategoryControllerImpl.java`: `save()`, `updateById()`, `deleteById()` → `@PreAuthorize("hasRole('ADMIN')")`
+
+**Note**: Order endpoints are intentionally NOT restricted to ADMIN — customers can create and view their own orders (further ownership checks can be added later).
+
+---
+
+### R-021: Token Revocation Batch Update
+
+**Decision**: Replace the loop-based token revocation with a single batch update query.
+
+**Rationale**: `AuthServiceImpl.login()` (lines 84-88) revokes existing tokens in a loop:
+```java
+List<Token> validTokens = tokenRepository.findAllByUserAndRevokedFalseAndExpiredFalse(user);
+for (Token token : validTokens) {
+    token.setRevoked(true);
+    tokenRepository.save(token);  // N individual saves
+}
+```
+With N valid tokens, this executes N separate UPDATE queries. A single `@Modifying @Query("UPDATE Token t SET t.revoked = true WHERE t.user = :user AND t.revoked = false AND t.expired = false")` in `TokenRepository` reduces this to 1 query.
+
+**Affected files**:
+- `TokenRepository.java`: Add `revokeAllValidTokensByUser(User user)` method with `@Modifying @Query`
+- `AuthServiceImpl.java`: Replace the loop with a single `tokenRepository.revokeAllValidTokensByUser(user)` call

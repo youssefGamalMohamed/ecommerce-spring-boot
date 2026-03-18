@@ -21,11 +21,11 @@ public class CartServiceImpl implements CartService {
     @Override
     @Cacheable(value = CacheConstants.CARTS, key = "#cartId")
     @Transactional(readOnly = true)
-    public CartDto findById(UUID cartId) {
+    public CartResponse findById(UUID cartId) {
         log.info("findById({})", cartId);
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new NoSuchElementException("Cart with id " + cartId + " not found"));
-        return cartMapper.mapToDto(cart);
+        return cartMapper.mapToResponse(cart);
     }
 
 }

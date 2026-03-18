@@ -3,6 +3,7 @@ package com.app.ecommerce.product;
 import com.app.ecommerce.category.Category;
 import com.app.ecommerce.category.CategoryService;
 import com.app.ecommerce.shared.constants.CacheConstants;
+import com.app.ecommerce.shared.util.SortUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -70,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("minPrice must be less than or equal to maxPrice");
         }
 
-        Sort safeSort = sanitizeSort(pageable.getSort());
+        Sort safeSort = SortUtils.sanitize(pageable.getSort(), Set.of("name", "price", "createdAt"), Sort.Order.desc("createdAt"));
         PageRequest safePage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
 
         Specification<Product> spec = Specification
@@ -83,20 +84,6 @@ public class ProductServiceImpl implements ProductService {
         Page<ProductResponse> result = productRepository.findAll(spec, safePage).map(productMapper::mapToResponse);
         log.info("findAll(): Found {} products", result.getTotalElements());
         return result;
-    }
-
-    private Sort sanitizeSort(Sort sort) {
-        Set<String> allowedFields = Set.of("name", "price", "createdAt");
-        if (sort == null || sort.isUnsorted()) {
-            return Sort.by(Sort.Direction.DESC, "createdAt");
-        }
-        Sort.Order[] orders = sort.get().map(order -> {
-            if (allowedFields.contains(order.getProperty())) {
-                return order;
-            }
-            return Sort.Order.desc("createdAt");
-        }).toArray(Sort.Order[]::new);
-        return Sort.by(orders);
     }
 
     @Override

@@ -16,13 +16,13 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Schema(description = "Cart data transfer object")
-public class CartDto extends BaseResponse {
+@Schema(description = "Cart response")
+public class CartResponse extends BaseResponse {
 
     @Schema(description = "Unique identifier of the cart", accessMode = Schema.AccessMode.READ_ONLY, example = "550e8400-e29b-41d4-a716-446655440000")
     private UUID id;
 
     @Schema(description = "Set of items in the cart")
     @Builder.Default
-    private Set<CartItemDto> cartItems = new HashSet<>();
+    private Set<CartItemResponse> cartItems = new HashSet<>();
 }

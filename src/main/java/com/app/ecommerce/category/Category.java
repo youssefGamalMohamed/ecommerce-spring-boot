@@ -33,6 +33,6 @@ public class Category extends BaseEntity {
 
     @ToString.Exclude
     @Builder.Default
-    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     private Set<Product> products = new HashSet<>();
 }

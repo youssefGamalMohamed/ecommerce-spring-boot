@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponseDto<T> {
+public class ApiResponse<T> {
 
     @Schema(description = "Indicates if the request was successful", example = "true")
     private boolean success;
@@ -27,8 +27,8 @@ public class ApiResponseDto<T> {
     @Schema(description = "Timestamp of the response")
     private long timestamp;
 
-    public static <T> ApiResponseDto<T> success(T data) {
-        return ApiResponseDto.<T>builder()
+    public static <T> ApiResponse<T> success(T data) {
+        return ApiResponse.<T>builder()
                 .success(true)
                 .status(200)
                 .message("Operation completed successfully")
@@ -37,8 +37,8 @@ public class ApiResponseDto<T> {
                 .build();
     }
 
-    public static <T> ApiResponseDto<T> success(T data, String message) {
-        return ApiResponseDto.<T>builder()
+    public static <T> ApiResponse<T> success(T data, String message) {
+        return ApiResponse.<T>builder()
                 .success(true)
                 .status(200)
                 .message(message)
@@ -47,8 +47,8 @@ public class ApiResponseDto<T> {
                 .build();
     }
 
-    public static <T> ApiResponseDto<T> created(T data) {
-        return ApiResponseDto.<T>builder()
+    public static <T> ApiResponse<T> created(T data) {
+        return ApiResponse.<T>builder()
                 .success(true)
                 .status(201)
                 .message("Resource created successfully")
@@ -57,8 +57,8 @@ public class ApiResponseDto<T> {
                 .build();
     }
 
-    public static <T> ApiResponseDto<T> noContent() {
-        return ApiResponseDto.<T>builder()
+    public static <T> ApiResponse<T> noContent() {
+        return ApiResponse.<T>builder()
                 .success(true)
                 .status(204)
                 .message("Operation completed successfully")

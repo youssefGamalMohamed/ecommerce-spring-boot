@@ -18,11 +18,11 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public CartItemDto findById(UUID cartItemId) {
+    public CartItemResponse findById(UUID cartItemId) {
         log.info("findById({})", cartItemId);
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new NoSuchElementException("CartItem with id " + cartItemId + " not found"));
-        return cartItemMapper.mapToDto(cartItem);
+        return cartItemMapper.mapToResponse(cartItem);
     }
 
 }

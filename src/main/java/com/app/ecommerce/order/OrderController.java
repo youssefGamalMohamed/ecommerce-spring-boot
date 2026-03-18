@@ -1,14 +1,13 @@
 package com.app.ecommerce.order;
 
-import com.app.ecommerce.shared.dto.ApiResponseDto;
-import com.app.ecommerce.shared.dto.ErrorResponseDto;
+import com.app.ecommerce.shared.dto.ApiResponse;
+import com.app.ecommerce.shared.dto.ErrorResponse;
 import com.app.ecommerce.shared.enums.PaymentType;
 import com.app.ecommerce.shared.enums.Status;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,38 +27,38 @@ import java.util.UUID;
 public interface OrderController {
 
     @Operation(summary = "Create New Order", description = "Create a new order")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "201", description = "Order created successfully",
-                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400", description = "Validation Error",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404", description = "Resource not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<OrderResponse>> createNewOrder(
+    ResponseEntity<ApiResponse<OrderResponse>> createNewOrder(
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             @Valid @RequestBody CreateOrderRequest request) throws JsonProcessingException;
 
     @Operation(summary = "List Orders", description = "Retrieve orders with optional filtering, sorting, and pagination.")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200", description = "Orders retrieved successfully",
-                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400", description = "Validation Error - invalid date range",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<Page<OrderResponse>>> findAll(
+    ResponseEntity<ApiResponse<Page<OrderResponse>>> findAll(
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) PaymentType paymentType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdAfter,
@@ -67,40 +66,40 @@ public interface OrderController {
             @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable);
 
     @Operation(summary = "Update Order", description = "Update an existing order by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200", description = "Order updated successfully",
-                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400", description = "Validation Error",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404", description = "Order not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "409", description = "Conflict - Version mismatch",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     }
     )
     @PatchMapping("/orders/{id}")
-    ResponseEntity<ApiResponseDto<OrderResponse>> updateOrder(@PathVariable("id") UUID orderId, @Valid @RequestBody UpdateOrderRequest request);
+    ResponseEntity<ApiResponse<OrderResponse>> updateOrder(@PathVariable("id") UUID orderId, @Valid @RequestBody UpdateOrderRequest request);
 
     @Operation(summary = "Find Order By ID", description = "Retrieve an order by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200", description = "Order retrieved successfully",
-                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404", description = "Order not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<OrderResponse>> findOrderById(@PathVariable("id") UUID orderId);
+    ResponseEntity<ApiResponse<OrderResponse>> findOrderById(@PathVariable("id") UUID orderId);
 
 }

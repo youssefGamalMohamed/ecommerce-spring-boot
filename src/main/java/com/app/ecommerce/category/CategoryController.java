@@ -1,11 +1,10 @@
 package com.app.ecommerce.category;
 
-import com.app.ecommerce.shared.dto.ApiResponseDto;
-import com.app.ecommerce.shared.dto.ErrorResponseDto;
+import com.app.ecommerce.shared.dto.ApiResponse;
+import com.app.ecommerce.shared.dto.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,82 +24,82 @@ import java.util.UUID;
 public interface CategoryController {
 
     @Operation(summary = "Add New Category", description = "Create a new category")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "201", description = "Category created successfully",
-                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400", description = "Validation Error",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "409", description = "Category already exists",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<CategoryResponse>> save(@Valid @RequestBody CreateCategoryRequest request);
+    ResponseEntity<ApiResponse<CategoryResponse>> save(@Valid @RequestBody CreateCategoryRequest request);
 
     @Operation(summary = "Delete Category By ID", description = "Delete a category by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "204", description = "Category deleted successfully"
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404", description = "Category not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<Void>> deleteById(@PathVariable(name = "id") UUID categoryId);
+    ResponseEntity<ApiResponse<Void>> deleteById(@PathVariable(name = "id") UUID categoryId);
 
     @Operation(summary = "List Categories", description = "Retrieve categories with optional filtering, sorting, and pagination.")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200", description = "Categories retrieved successfully",
-                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<Page<CategoryResponse>>> findAll(
+    ResponseEntity<ApiResponse<Page<CategoryResponse>>> findAll(
             @RequestParam(required = false) String name,
             @ParameterObject @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC) Pageable pageable);
 
     @Operation(summary = "Find Category By ID", description = "Retrieve a category by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200", description = "Category retrieved successfully",
-                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404", description = "Category not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<CategoryResponse>> findById(@PathVariable("id") UUID categoryId);
+    ResponseEntity<ApiResponse<CategoryResponse>> findById(@PathVariable("id") UUID categoryId);
 
     @Operation(summary = "Update Category By ID", description = "Update an existing category by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200", description = "Category updated successfully",
-                    content = @Content(schema = @Schema(implementation = ApiResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400", description = "Validation Error",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404", description = "Category not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "409", description = "Conflict - Version mismatch",
-                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     }
     )
-    ResponseEntity<ApiResponseDto<CategoryResponse>> updateById(@PathVariable("id") UUID categoryId, @Valid @RequestBody UpdateCategoryRequest request);
+    ResponseEntity<ApiResponse<CategoryResponse>> updateById(@PathVariable("id") UUID categoryId, @Valid @RequestBody UpdateCategoryRequest request);
 
 }

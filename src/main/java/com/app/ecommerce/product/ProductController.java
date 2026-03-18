@@ -1,11 +1,10 @@
 package com.app.ecommerce.product;
 
-import com.app.ecommerce.shared.dto.ApiResponseDto;
-import com.app.ecommerce.shared.dto.ErrorResponseDto;
+import com.app.ecommerce.shared.dto.ApiResponse;
+import com.app.ecommerce.shared.dto.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,27 +23,27 @@ import java.util.UUID;
 public interface ProductController {
 
     @Operation(summary = "Add New Product", description = "Create a new product. This endpoint is accessible only by Admin.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Product created successfully", content = @Content(schema = @Schema(implementation = ApiResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Validation Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Category Not Found", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
-            @ApiResponse(responseCode = "409", description = "Conflict - Duplicate data", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Product created successfully", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation Error", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Category Not Found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Conflict - Duplicate data", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<ApiResponseDto<ProductResponse>> save(@Valid @RequestBody CreateProductRequest request);
+    ResponseEntity<ApiResponse<ProductResponse>> save(@Valid @RequestBody CreateProductRequest request);
 
     @Operation(summary = "Find Product By ID", description = "Retrieve a product by its ID. Accessible by Admin and User.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product retrieved successfully", content = @Content(schema = @Schema(implementation = ApiResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Product retrieved successfully", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<ApiResponseDto<ProductResponse>> findById(@PathVariable(value = "id") UUID productId);
+    ResponseEntity<ApiResponse<ProductResponse>> findById(@PathVariable(value = "id") UUID productId);
 
     @Operation(summary = "List Products", description = "Retrieve products with optional filtering, sorting, and pagination. Accessible by all users.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Products retrieved successfully", content = @Content(schema = @Schema(implementation = ApiResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Validation Error - minPrice > maxPrice", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Products retrieved successfully", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation Error - minPrice > maxPrice", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<ApiResponseDto<Page<ProductResponse>>> findAll(
+    ResponseEntity<ApiResponse<Page<ProductResponse>>> findAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
@@ -52,20 +51,20 @@ public interface ProductController {
             @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable);
 
     @Operation(summary = "Update Product By ID", description = "Update an existing product by its ID. This endpoint is accessible only by Admin.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product updated successfully", content = @Content(schema = @Schema(implementation = ApiResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Validation Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
-            @ApiResponse(responseCode = "409", description = "Conflict - Version mismatch", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Product updated successfully", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation Error", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Conflict - Version mismatch", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<ApiResponseDto<ProductResponse>> updateById(@PathVariable(value = "id") UUID productId,
+    ResponseEntity<ApiResponse<ProductResponse>> updateById(@PathVariable(value = "id") UUID productId,
                                                           @Valid @RequestBody UpdateProductRequest request);
 
     @Operation(summary = "Delete Product By ID", description = "Delete a product by its ID. This endpoint is accessible only by Admin.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "Product deleted successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Product not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<ApiResponseDto<Void>> deleteById(@PathVariable(name = "id") UUID productId);
+    ResponseEntity<ApiResponse<Void>> deleteById(@PathVariable(name = "id") UUID productId);
 
 }
