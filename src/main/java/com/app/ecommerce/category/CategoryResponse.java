@@ -1,6 +1,6 @@
 package com.app.ecommerce.category;
 
-import com.app.ecommerce.shared.dto.BaseResponse;
+import com.app.ecommerce.shared.models.BaseResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

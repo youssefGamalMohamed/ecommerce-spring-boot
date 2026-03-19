@@ -1,7 +1,7 @@
 package com.app.ecommerce.order;
 
 import com.app.ecommerce.cart.CartResponse;
-import com.app.ecommerce.shared.dto.BaseResponse;
+import com.app.ecommerce.shared.models.BaseResponse;
 import com.app.ecommerce.shared.enums.PaymentType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;

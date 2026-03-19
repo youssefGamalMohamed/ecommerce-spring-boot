@@ -1,6 +1,6 @@
 package com.app.ecommerce.product;
 
-import com.app.ecommerce.shared.dto.ApiResponse;
+import com.app.ecommerce.shared.models.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

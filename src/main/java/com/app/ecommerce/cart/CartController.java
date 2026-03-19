@@ -1,8 +1,8 @@
 package com.app.ecommerce.cart;
 
 import com.app.ecommerce.auth.User;
-import com.app.ecommerce.shared.dto.ApiResponse;
-import com.app.ecommerce.shared.dto.ErrorResponse;
+import com.app.ecommerce.shared.models.ApiResponse;
+import com.app.ecommerce.shared.models.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

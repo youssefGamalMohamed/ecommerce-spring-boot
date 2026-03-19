@@ -1,7 +1,7 @@
 package com.app.ecommerce.order;
 
 import com.app.ecommerce.auth.User;
-import com.app.ecommerce.shared.dto.ApiResponse;
+import com.app.ecommerce.shared.models.ApiResponse;
 import com.app.ecommerce.shared.enums.PaymentType;
 import com.app.ecommerce.shared.enums.Status;
 import com.app.ecommerce.shared.idempotency.IdempotencyService;

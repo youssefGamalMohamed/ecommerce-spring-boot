@@ -1,7 +1,7 @@
 package com.app.ecommerce.cart;
 
 import com.app.ecommerce.auth.User;
-import com.app.ecommerce.shared.dto.ApiResponse;
+import com.app.ecommerce.shared.models.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

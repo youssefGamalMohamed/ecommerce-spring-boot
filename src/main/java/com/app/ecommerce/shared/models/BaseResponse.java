@@ -1,4 +1,4 @@
-package com.app.ecommerce.shared.dto;
+package com.app.ecommerce.shared.models;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

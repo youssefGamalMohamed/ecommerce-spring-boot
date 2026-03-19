@@ -1,6 +1,6 @@
 package com.app.ecommerce.shared.exception;
 
-import com.app.ecommerce.shared.dto.ErrorResponse;
+import com.app.ecommerce.shared.models.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpHeaders;
