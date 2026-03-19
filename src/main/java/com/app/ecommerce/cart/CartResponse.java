@@ -22,6 +22,9 @@ public class CartResponse extends BaseResponse {
     @Schema(description = "Unique identifier of the cart", accessMode = Schema.AccessMode.READ_ONLY, example = "550e8400-e29b-41d4-a716-446655440000")
     private UUID id;
 
+    @Schema(description = "Current status of the cart", example = "OPEN")
+    private CartStatus status;
+
     @Schema(description = "Set of items in the cart")
     @Builder.Default
     private Set<CartItemResponse> cartItems = new HashSet<>();

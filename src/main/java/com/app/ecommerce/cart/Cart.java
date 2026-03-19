@@ -1,5 +1,6 @@
 package com.app.ecommerce.cart;
 
+import com.app.ecommerce.auth.User;
 import com.app.ecommerce.order.Order;
 import com.app.ecommerce.shared.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,8 +29,18 @@ public class Cart extends BaseEntity {
     @Version
     private Long version;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private CartStatus status = CartStatus.OPEN;
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-    private Set<CartItem> cartItems;
+    @Builder.Default
+    private Set<CartItem> cartItems = new HashSet<>();
 
     @OneToOne
     @JoinColumn(name = "order_id")

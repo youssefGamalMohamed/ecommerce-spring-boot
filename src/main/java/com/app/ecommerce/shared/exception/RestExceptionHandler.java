@@ -174,4 +174,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    @ExceptionHandler(value = CartNotOpenException.class)
+    public ResponseEntity<ErrorResponse> handleCartNotOpenException(
+            CartNotOpenException exception, WebRequest request) {
+        log.warn("Cart not open: {}", exception.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.conflict(
+                exception.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.app.ecommerce.order;
 
+import com.app.ecommerce.auth.User;
 import com.app.ecommerce.shared.dto.ApiResponse;
 import com.app.ecommerce.shared.dto.ErrorResponse;
 import com.app.ecommerce.shared.enums.PaymentType;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -43,7 +45,8 @@ public interface OrderController {
     )
     ResponseEntity<ApiResponse<OrderResponse>> createNewOrder(
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
-            @Valid @RequestBody CreateOrderRequest request) throws JsonProcessingException;
+            @Valid @RequestBody CreateOrderRequest request,
+            @AuthenticationPrincipal User currentUser) throws JsonProcessingException;
 
     @Operation(summary = "List Orders", description = "Retrieve orders with optional filtering, sorting, and pagination.")
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
@@ -62,7 +65,8 @@ public interface OrderController {
             @RequestParam(required = false) PaymentType paymentType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdAfter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdBefore,
-            @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable);
+            @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal User currentUser);
 
     @Operation(summary = "Update Order", description = "Update an existing order by its ID")
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
@@ -85,7 +89,10 @@ public interface OrderController {
     }
     )
     @PatchMapping("/orders/{id}")
-    ResponseEntity<ApiResponse<OrderResponse>> updateOrder(@PathVariable("id") UUID orderId, @Valid @RequestBody UpdateOrderRequest request);
+    ResponseEntity<ApiResponse<OrderResponse>> updateOrder(
+            @PathVariable("id") UUID orderId,
+            @Valid @RequestBody UpdateOrderRequest request,
+            @AuthenticationPrincipal User currentUser);
 
     @Operation(summary = "Find Order By ID", description = "Retrieve an order by its ID")
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
@@ -99,6 +106,8 @@ public interface OrderController {
             )
     }
     )
-    ResponseEntity<ApiResponse<OrderResponse>> findOrderById(@PathVariable("id") UUID orderId);
+    ResponseEntity<ApiResponse<OrderResponse>> findOrderById(
+            @PathVariable("id") UUID orderId,
+            @AuthenticationPrincipal User currentUser);
 
 }

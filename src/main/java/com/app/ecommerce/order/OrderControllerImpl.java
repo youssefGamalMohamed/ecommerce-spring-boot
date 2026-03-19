@@ -1,5 +1,6 @@
 package com.app.ecommerce.order;
 
+import com.app.ecommerce.auth.User;
 import com.app.ecommerce.shared.dto.ApiResponse;
 import com.app.ecommerce.shared.enums.PaymentType;
 import com.app.ecommerce.shared.enums.Status;
@@ -17,6 +18,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -36,8 +39,9 @@ public class OrderControllerImpl implements OrderController {
     @Override
     public ResponseEntity<ApiResponse<OrderResponse>> createNewOrder(
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
-            @Valid @RequestBody CreateOrderRequest request) throws JsonProcessingException {
-        log.info("createNewOrder({})", request);
+            @Valid @RequestBody CreateOrderRequest request,
+            @AuthenticationPrincipal User currentUser) throws JsonProcessingException {
+        log.info("createNewOrder(user={}, request={})", currentUser.getUsername(), request);
 
         if (idempotencyKey != null) {
             var existingRecord = idempotencyService.findByKey(idempotencyKey);
@@ -57,7 +61,7 @@ public class OrderControllerImpl implements OrderController {
             }
         }
 
-        OrderResponse createdOrder = orderService.createNewOrder(request);
+        OrderResponse createdOrder = orderService.createNewOrder(request, currentUser);
         ApiResponse<OrderResponse> response = ApiResponse.created(createdOrder);
 
         if (idempotencyKey != null) {
@@ -69,31 +73,39 @@ public class OrderControllerImpl implements OrderController {
 
     @GetMapping
     @Override
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
     public ResponseEntity<ApiResponse<Page<OrderResponse>>> findAll(
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) PaymentType paymentType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdAfter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant createdBefore,
-            @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        log.info("findAll(status={}, paymentType={}, createdAfter={}, createdBefore={}, pageable={})",
-                status, paymentType, createdAfter, createdBefore, pageable);
-        Page<OrderResponse> page = orderService.findAll(status, paymentType, createdAfter, createdBefore, pageable);
+            @ParameterObject @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal User currentUser) {
+        log.info("findAll(user={}, status={}, paymentType={})", currentUser.getUsername(), status, paymentType);
+        Page<OrderResponse> page = orderService.findAll(status, paymentType, createdAfter, createdBefore, pageable, currentUser);
         return ResponseEntity.ok(ApiResponse.success(page));
     }
 
     @PatchMapping("/{id}")
     @Override
-    public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(@PathVariable("id") UUID orderId, @Valid @RequestBody UpdateOrderRequest request) {
-        log.info("updateOrder({}, {})", orderId, request);
-        OrderResponse updatedOrder = orderService.updateOrder(orderId, request);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(
+            @PathVariable("id") UUID orderId,
+            @Valid @RequestBody UpdateOrderRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        log.info("updateOrder({}, user={})", orderId, currentUser.getUsername());
+        OrderResponse updatedOrder = orderService.updateOrder(orderId, request, currentUser);
         return ResponseEntity.ok(ApiResponse.success(updatedOrder, "Order updated successfully"));
     }
 
     @GetMapping("/{id}")
     @Override
-    public ResponseEntity<ApiResponse<OrderResponse>> findOrderById(@PathVariable("id") UUID orderId) {
-        log.info("findOrderById({})", orderId);
-        OrderResponse order = orderService.findById(orderId);
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    public ResponseEntity<ApiResponse<OrderResponse>> findOrderById(
+            @PathVariable("id") UUID orderId,
+            @AuthenticationPrincipal User currentUser) {
+        log.info("findOrderById({}, user={})", orderId, currentUser.getUsername());
+        OrderResponse order = orderService.findById(orderId, currentUser);
         return ResponseEntity.ok(ApiResponse.success(order));
     }
 }
