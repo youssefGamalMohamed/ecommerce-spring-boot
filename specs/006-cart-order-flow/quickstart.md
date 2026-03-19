@@ -143,7 +143,7 @@ Expected for second request: HTTP 409 — cart is empty (new cart has no items) 
 curl -X PATCH http://localhost:8080/orders/ORDER_ID \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"deliveryStatus": "ON_THE_WAY_TO_CUSTOMER", "version": 0}'
+  -d '{"deliveryStatus": "ON_THE_WAY_TO_CUSTOMER"}'
 ```
 
 Expected: Order updated with new delivery status.

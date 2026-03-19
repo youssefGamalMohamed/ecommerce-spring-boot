@@ -1137,7 +1137,7 @@ Code review completed on implementation with 27 files changed (2,746 insertions)
 |----|-------|------|-------------|
 | C1 | Missing `@PreAuthorize` on `createNewOrder()` — unauthenticated users would cause NPE | `OrderControllerImpl.java` | Added `@PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")` |
 | C2 | `order.setCart()` never called — `OrderResponse.cart` would be null | `OrderServiceImpl.java` | Added `order.setCart(cart)` before `orderRepository.save()` |
-| C3 | `existingOrder.setVersion(request.getVersion())` bypasses optimistic locking | `OrderServiceImpl.java` | Removed manual version setting — Hibernate handles it |
+| C3 | `version` in `UpdateOrderRequest` was accepted but never applied (mapper ignores it) — misleading and undocumented no-op | `UpdateOrderRequest.java`, `contracts/api.md` | Removed `version` field from request DTO and API contract — Hibernate `@Version` handles optimistic locking transparently |
 | C4 | `@CacheEvict` missing on `removeItem()` — stale cache after deletion | `CartServiceImpl.java` | Added `@CacheEvict(value = CacheConstants.CARTS, key = "#owner.id")` |
 
 ### 🟡 WARNING — Fixed

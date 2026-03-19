@@ -216,14 +216,12 @@ Update delivery information for an order. Admin-only for status transitions; cus
 {
   "deliveryStatus": "ON_THE_WAY_TO_CUSTOMER",
   "deliveryAddress": "123 Main St",
-  "deliveryDate": "2026-04-01",
-  "version": 0
+  "deliveryDate": "2026-04-01"
 }
 ```
 
 | Field | Required | Notes |
 |---|---|---|
-| `version` | Yes | For optimistic locking |
 | `deliveryStatus` | No | Must be a valid state transition |
 | `deliveryAddress` | No | |
 | `deliveryDate` | No | |

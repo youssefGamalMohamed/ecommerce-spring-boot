@@ -3,7 +3,6 @@ package com.app.ecommerce.order;
 import com.app.ecommerce.shared.enums.Status;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -25,8 +24,4 @@ public class UpdateOrderRequest {
 
     @Schema(description = "Expected delivery date", example = "2024-01-20")
     private LocalDate deliveryDate;
-
-    @NotNull(message = "Version is required for optimistic locking")
-    @Schema(description = "Version for optimistic locking", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Long version;
 }
