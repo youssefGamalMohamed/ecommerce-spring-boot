@@ -5,7 +5,6 @@ import com.app.ecommerce.auth.User;
 import java.util.UUID;
 
 public interface CartService {
-    CartResponse findById(UUID cartId);
 
     /**
      * Returns the authenticated user's current OPEN cart.

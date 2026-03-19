@@ -8,7 +8,6 @@ import com.app.ecommerce.shared.exception.CartNotOpenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,16 +24,6 @@ public class CartServiceImpl implements CartService {
     private final CartMapper cartMapper;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
-
-    @Override
-    @Cacheable(value = CacheConstants.CARTS, key = "#cartId")
-    @Transactional(readOnly = true)
-    public CartResponse findById(UUID cartId) {
-        log.info("findById({})", cartId);
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new NoSuchElementException("Cart with id " + cartId + " not found"));
-        return cartMapper.mapToResponse(cart);
-    }
 
     @Override
     @Transactional
@@ -145,7 +134,6 @@ public class CartServiceImpl implements CartService {
         }
 
         Cart cart = item.getCart();
-        UUID cartId = cart.getId();
         cart.getCartItems().remove(item);
         cartItemRepository.delete(item);
         cartRepository.save(cart);
