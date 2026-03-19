@@ -269,7 +269,7 @@ These annotations exist to prevent circular serialization — but entities shoul
 - `src/main/java/com/app/ecommerce/category/CategoryDto.java`
 - `src/main/java/com/app/ecommerce/order/OrderDto.java`
 - `src/main/java/com/app/ecommerce/order/DeliveryInfoDto.java`
-- `src/main/java/com/app/ecommerce/shared/dto/BaseDto.java`
+- `src/main/java/com/app/ecommerce/shared/models/BaseDto.java`
 
 **Dead mapper methods to remove**:
 
@@ -387,22 +387,22 @@ This creates inconsistent naming: `ResponseEntity<ApiResponseDto<ProductResponse
 
 | Current Name | New Name | File Location | References |
 |-------------|----------|---------------|------------|
-| `ApiResponseDto` | `ApiResponse` | `shared/dto/ApiResponseDto.java` → `shared/dto/ApiResponse.java` | 9 files, ~85 occurrences |
-| `ErrorResponseDto` | `ErrorResponse` | `shared/dto/ErrorResponseDto.java` → `shared/dto/ErrorResponse.java` | 6 files, ~66 occurrences |
+| `ApiResponseDto` | `ApiResponse` | `shared/models/ApiResponseDto.java` → `shared/models/ApiResponse.java` | 9 files, ~85 occurrences |
+| `ErrorResponseDto` | `ErrorResponse` | `shared/models/ErrorResponseDto.java` → `shared/models/ErrorResponse.java` | 6 files, ~66 occurrences |
 | `CartDto` | `CartResponse` | `cart/CartDto.java` → `cart/CartResponse.java` | 10 files |
 | `CartItemDto` | `CartItemResponse` | `cart/CartItemDto.java` → `cart/CartItemResponse.java` | 10 files |
 
 **Full list of files requiring import/reference updates**:
 
 For `ApiResponseDto` → `ApiResponse`:
-- `shared/dto/ApiResponseDto.java` → rename file + class + all static methods
+- `shared/models/ApiResponseDto.java` → rename file + class + all static methods
 - `product/ProductController.java`, `product/ProductControllerImpl.java`
 - `category/CategoryController.java`, `category/CategoryControllerImpl.java`
 - `order/OrderController.java`, `order/OrderControllerImpl.java`
 - `auth/AuthController.java`, `auth/AuthControllerImpl.java`
 
 For `ErrorResponseDto` → `ErrorResponse`:
-- `shared/dto/ErrorResponseDto.java` → rename file + class + all factory methods
+- `shared/models/ErrorResponseDto.java` → rename file + class + all factory methods
 - `shared/exception/RestExceptionHandler.java`
 - `product/ProductController.java`
 - `category/CategoryController.java`
