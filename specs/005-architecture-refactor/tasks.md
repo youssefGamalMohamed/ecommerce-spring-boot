@@ -483,6 +483,35 @@ public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(RefreshTokenReque
 
 **Root rule**: HTTP method annotations (`@GetMapping`, `@PostMapping`, `@PatchMapping`, `@DeleteMapping`) MUST always be present on the controller **implementation** method. Their absence does not cause a compile error or startup warning — it silently prevents the endpoint from being reachable, and in Spring Security 6 it additionally breaks `MvcRequestMatcher`-based `permitAll()` rules, producing 403 instead of the expected response.
 
+### 13. Auth Endpoints Invisible in Swagger / No Self-Contained Token Flow (AuthController.java)
+**Issue**: Two separate problems prevented a self-contained login-then-authorize flow in Swagger UI:
+
+1. **Endpoints invisible** — Missing `@PostMapping` on `AuthControllerImpl` (see Issue #12) meant SpringDoc had no registered handlers to discover. The Authentication section simply did not appear in Swagger UI.
+
+2. **Global JWT padlock on auth endpoints** — `OpenApiDocumentationConfig` calls `.addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))` which applies the JWT Bearer scheme globally to every endpoint. Even after the handlers became visible (Issue #12 fix), the register/login/refresh-token endpoints showed a padlock in Swagger, implying a token was required to call them. This forced developers to use an external tool (Postman) to obtain a token before they could use Swagger at all.
+
+**Fix**: Added `@SecurityRequirements` (empty — overrides the global security requirement for that endpoint) to each method in `AuthController.java` (the interface, where OpenAPI annotations belong):
+
+```java
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+
+@Operation(summary = "Login", description = "Authenticate a user")
+@SecurityRequirements   // ← overrides global JWT requirement; endpoint shows as open
+@io.swagger.v3.oas.annotations.responses.ApiResponses(...)
+ResponseEntity<ApiResponse<LoginResponse>> login(...);
+```
+
+Applied to `register`, `login`, and `refreshToken`.
+
+**Correct Swagger testing flow after fix**:
+1. Open Swagger UI (`GET /swagger-ui`)
+2. Expand **Authentication → POST /auth/login** (no padlock)
+3. Execute with valid credentials → copy `accessToken` from the response body
+4. Click **Authorize** (top-right) → paste the token → **Authorize**
+5. All protected endpoints are now unlocked for the session — no Postman needed
+
+**Root rule**: When `OpenApiDocumentationConfig` uses `.addSecurityItem(...)` globally, every public endpoint MUST override it with `@SecurityRequirements` (empty) on the controller interface method. Failing to do so misleads developers into thinking the endpoint requires a token.
+
 ### Implementation Status
 - All tasks T001-T121 completed
 - T088: Run application - requires user to execute

@@ -1,19 +1,25 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 2.0.0 → 2.1.0 (MINOR — Principle IV expanded with mandatory HTTP method
-annotation rule on controller implementations; discovered via production bug where missing
-@PostMapping on AuthControllerImpl caused Spring Security 6 MvcRequestMatcher to not match
-the permitAll() rules, returning 403 on public auth endpoints)
+Version change: 2.1.0 → 2.2.0 (MINOR — Added Principle VIII: API Documentation & Swagger Security;
+discovered via bug where global addSecurityItem in OpenApiDocumentationConfig locked auth endpoints
+in Swagger UI, preventing self-contained login-then-authorize flow)
 
 Modified principles:
-  - Principle IV (Interface-Driven Design): Added HTTP method annotation placement table
-    and NON-NEGOTIABLE rule that @GetMapping/@PostMapping etc. MUST be on the implementation,
-    with explanation of the Spring Security 6 MvcRequestMatcher consequence
+  - Added: Principle VIII (API Documentation & Swagger Security) — NON-NEGOTIABLE rule that
+    public endpoints MUST carry @SecurityRequirements on their controller interface method,
+    and documents the correct Swagger testing flow as a permanent reminder
 
 Templates requiring updates:
-  ✅ specs/005-architecture-refactor/tasks.md — Issue #12 added to Common Implementation Issues
-  ✅ CLAUDE.md — No change needed (Code Style section already covered by this constitution)
+  ✅ specs/005-architecture-refactor/tasks.md — Issue #13 added to Common Implementation Issues
+  ✅ .specify/templates/agent-file-template.md — Code Style section updated with Swagger rule
+
+---
+
+Previous amendment (2.0.0 → 2.1.0, MINOR):
+Principle IV expanded with mandatory HTTP method annotation rule on controller implementations.
+Discovered via production bug where missing @PostMapping on AuthControllerImpl caused Spring
+Security 6 MvcRequestMatcher to not match permitAll() rules, returning 403 on public auth endpoints.
 
 ---
 
@@ -153,6 +159,37 @@ All read-only operations SHOULD use `@Transactional(readOnly = true)`.
 - The `Authorization` header MUST NOT appear in any log line (excluded via `setHeaderPredicate`).
 - Health and metrics exposed via Spring Boot Actuator at `/actuator/health` and `/actuator/metrics`.
 - New services MUST NOT use `System.out.println`; use SLF4J via `@Slf4j`.
+
+### VIII. API Documentation & Swagger Security (NON-NEGOTIABLE)
+
+Swagger UI MUST support a self-contained token flow — developers MUST be able to obtain a token
+and test protected endpoints entirely within Swagger without switching to an external tool.
+
+**Global security scheme**: `OpenApiDocumentationConfig` registers a global `addSecurityItem` that
+applies the JWT Bearer padlock to every endpoint in the spec. This is correct for protected endpoints
+but MUST be overridden for public ones.
+
+**Rule**: Every public endpoint MUST carry `@SecurityRequirements` (the empty form, no arguments)
+on its controller interface method. This removes the padlock from that endpoint in Swagger UI.
+
+Public endpoints that MUST have `@SecurityRequirements`:
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh-token`
+
+Any future public endpoint added to `SecurityConfig.permitAll()` MUST also receive `@SecurityRequirements`
+on its interface method — both changes go together as a single atomic step.
+
+**Correct Swagger testing flow** (reminder for every developer and AI agent):
+1. Open Swagger UI at `GET /swagger-ui` (no token needed)
+2. Expand **Authentication → POST /auth/login** (shown without padlock)
+3. Click **Try it out** → fill credentials → **Execute**
+4. Copy the `accessToken` value from the response body
+5. Click the **Authorize** button (top-right of Swagger UI) → paste the token → **Authorize**
+6. All protected endpoints are now unlocked for the rest of the session
+
+**Implementation location**: `@SecurityRequirements` goes on the controller **interface** method
+(alongside `@Operation`) — consistent with the annotation placement rule in Principle IV.
 
 ## Technology Stack
 
@@ -305,4 +342,4 @@ for per-feature agent context generation; keep it in sync with any stack changes
 
 ---
 
-**Version**: 2.1.0 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-19
+**Version**: 2.2.0 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-19

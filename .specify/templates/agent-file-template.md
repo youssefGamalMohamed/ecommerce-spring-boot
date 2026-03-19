@@ -74,6 +74,8 @@ mvn clean compile
 - Interface + Impl pattern in same domain package: `XxxService` / `XxxServiceImpl`, `XxxController` / `XxxControllerImpl`
 - OpenAPI `@Operation` / `@Tag` on controller **interface**; `@PreAuthorize` on controller **implementation**
 - HTTP method annotations (`@GetMapping`, `@PostMapping`, `@PatchMapping`, `@DeleteMapping`) MUST be on the controller **implementation** — their absence produces no compile error but silently prevents handler registration, breaking Spring Security 6 `MvcRequestMatcher` `permitAll()` rules (results in 403 on public endpoints)
+- Public endpoints whitelisted in `SecurityConfig` MUST also carry `@SecurityRequirements` (empty, no args) on their controller **interface** method — `OpenApiDocumentationConfig` applies a global JWT padlock to all endpoints; without the override, public endpoints appear locked in Swagger UI and block the self-contained login-then-authorize flow
+- **Swagger testing flow**: open `/swagger-ui` → call `POST /auth/login` (no padlock) → copy `accessToken` from response → click **Authorize** (top-right) → paste token → all protected endpoints unlock
 - `@Transactional` on write service methods; `@Transactional(readOnly = true)` on reads
 - `@Version Long version` on entities subject to concurrent modification
 - All monetary values use `BigDecimal` — no `double`/`float` for prices
