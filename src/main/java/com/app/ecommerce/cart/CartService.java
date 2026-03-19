@@ -35,5 +35,5 @@ public interface CartService {
      * Throws NoSuchElementException if the cart item is not found or does not belong to this user.
      * Throws CartNotOpenException if the cart is CHECKED_OUT.
      */
-    void removeItem(User owner, UUID cartItemId);
+    CartResponse removeItem(User owner, UUID cartItemId);
 }

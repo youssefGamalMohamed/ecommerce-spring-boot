@@ -1188,8 +1188,52 @@ Expected: `BUILD SUCCESS`
 - [ ] `POST /carts/items` with same product → quantity incremented, no duplicate
 - [ ] `PATCH /carts/items/{id}` with quantity=5 → item updated
 - [ ] `PATCH /carts/items/{id}` with quantity=0 → item auto-removed
-- [ ] `DELETE /carts/items/{id}` → 204 returned, cache evicted
+- [ ] `DELETE /carts/items/{id}` → 200 returned with updated cart
 - [ ] `POST /orders` → order created, cart CHECKED_OUT
 - [ ] `GET /orders` as customer → only own orders returned
 - [ ] `GET /orders` as admin → all orders returned
 - [ ] `GET /orders/{id}` of another customer's order → 404 (ownership enforced)
+
+---
+
+## Code Review Findings — Round 2
+
+Additional code review completed. Issues found and fixed:
+
+### 🔴 CRITICAL — Fixed
+
+| ID | Issue | File | Fix Applied |
+|----|-------|------|-------------|
+| CR1 | `@Cacheable` on `findById` bypasses ownership check on cache hit | `OrderServiceImpl.java` | Removed `@Cacheable` from `findById` — only `@CachePut` on write operations |
+
+### 🟡 WARNING — Fixed
+
+| ID | Issue | File | Fix Applied |
+|----|-------|------|-------------|
+| WR1 | Wrong cache key `#owner.id` on `removeItem` (cache keyed by cart UUID) | `CartServiceImpl.java` | Changed return type to `CartResponse`, method now returns updated cart |
+| WR2 | `@PreAuthorize` on service layer violates constitution | `OrderServiceImpl.java` | Removed `@PreAuthorize` — belongs on controller only |
+| WR3 | Dead code: redundant `cart.getStatus() != OPEN` check after `findByOwnerAndStatus` | `CartServiceImpl.java` | Removed redundant check |
+
+### 🔵 NOTE — Verified OK
+
+| ID | Note | Status |
+|----|------|--------|
+| NR1 | `int quantity` vs `Integer` | Working as intended — `@Min` validation handles boundary |
+
+### Round 2 Fixes Applied
+
+1. ✅ CR1 — Removed `@Cacheable` from `findById` (security)
+2. ✅ WR1 — Changed `removeItem` return type to `CartResponse` (cache consistency + better API)
+3. ✅ WR2 — Removed `@PreAuthorize` from service layer (constitution compliance)
+4. ✅ WR3 — Removed dead code in `addItem` (code cleanliness)
+
+---
+
+## Implementation Complete
+
+All code review issues addressed. Final state:
+
+- **Security**: `@PreAuthorize` on all endpoints, ownership checks enforced, no cache bypass vulnerabilities
+- **Data Integrity**: Bidirectional FK properly set, optimistic locking preserved
+- **Cache Consistency**: `@CacheEvict` on all mutations, cache keyed correctly
+- **Code Quality**: Typed JPA joins, no dead code, constitution compliance

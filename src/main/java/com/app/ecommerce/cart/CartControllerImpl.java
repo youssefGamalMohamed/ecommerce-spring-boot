@@ -54,10 +54,10 @@ public class CartControllerImpl implements CartController {
     @DeleteMapping("/items/{cartItemId}")
     @Override
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
-    public ResponseEntity<Void> removeItem(@AuthenticationPrincipal User currentUser,
-                                            @PathVariable("cartItemId") UUID cartItemId) {
+    public ResponseEntity<ApiResponse<CartResponse>> removeItem(@AuthenticationPrincipal User currentUser,
+                                                                  @PathVariable("cartItemId") UUID cartItemId) {
         log.info("removeItem(user={}, cartItemId={})", currentUser.getUsername(), cartItemId);
-        cartService.removeItem(currentUser, cartItemId);
-        return ResponseEntity.noContent().build();
+        CartResponse cart = cartService.removeItem(currentUser, cartItemId);
+        return ResponseEntity.ok(ApiResponse.success(cart, "Cart item removed successfully"));
     }
 }

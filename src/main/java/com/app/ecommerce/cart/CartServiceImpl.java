@@ -69,10 +69,6 @@ public class CartServiceImpl implements CartService {
                     return cartRepository.save(newCart);
                 });
 
-        if (cart.getStatus() != CartStatus.OPEN) {
-            throw new CartNotOpenException();
-        }
-
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new NoSuchElementException("Product with id " + request.getProductId() + " not found"));
 
@@ -133,9 +129,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @CacheEvict(value = CacheConstants.CARTS, key = "#owner.id")
     @Transactional
-    public void removeItem(User owner, UUID cartItemId) {
+    public CartResponse removeItem(User owner, UUID cartItemId) {
         log.info("removeItem(owner={}, cartItemId={})", owner.getUsername(), cartItemId);
 
         CartItem item = cartItemRepository.findById(cartItemId)
@@ -150,10 +145,12 @@ public class CartServiceImpl implements CartService {
         }
 
         Cart cart = item.getCart();
+        UUID cartId = cart.getId();
         cart.getCartItems().remove(item);
         cartItemRepository.delete(item);
         cartRepository.save(cart);
         log.info("Cart item {} removed from cart {}", cartItemId, cart.getId());
+        return cartMapper.mapToResponse(cart);
     }
 
 }

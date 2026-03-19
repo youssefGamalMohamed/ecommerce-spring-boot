@@ -18,13 +18,11 @@ import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,7 +80,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(value = CacheConstants.ORDERS, key = "#orderId")
     @Transactional(readOnly = true)
     public OrderResponse findById(UUID orderId, User currentUser) {
         log.info("findById({}, user={})", orderId, currentUser.getUsername());
@@ -106,7 +103,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @CachePut(value = CacheConstants.ORDERS, key = "#result.id")
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
     public OrderResponse updateOrder(UUID orderId, UpdateOrderRequest request, User currentUser) {
         log.info("updateOrder({}, {}, user={})", orderId, request, currentUser.getUsername());
         if (orderId == null) {

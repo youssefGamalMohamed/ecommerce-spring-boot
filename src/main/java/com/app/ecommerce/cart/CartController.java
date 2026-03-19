@@ -50,11 +50,12 @@ public interface CartController {
 
     @Operation(summary = "Remove Cart Item", description = "Explicitly removes a specific item from the cart.")
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "Item removed"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Item removed",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Cart item not found",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Cart is already checked out",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<Void> removeItem(@AuthenticationPrincipal User currentUser, @PathVariable("cartItemId") UUID cartItemId);
+    ResponseEntity<ApiResponse<CartResponse>> removeItem(@AuthenticationPrincipal User currentUser, @PathVariable("cartItemId") UUID cartItemId);
 }
