@@ -73,6 +73,7 @@ mvn clean compile
 - MapStruct for all entity ↔ DTO mapping — no manual field copying
 - Interface + Impl pattern in same domain package: `XxxService` / `XxxServiceImpl`, `XxxController` / `XxxControllerImpl`
 - OpenAPI `@Operation` / `@Tag` on controller **interface**; `@PreAuthorize` on controller **implementation**
+- HTTP method annotations (`@GetMapping`, `@PostMapping`, `@PatchMapping`, `@DeleteMapping`) MUST be on the controller **implementation** — their absence produces no compile error but silently prevents handler registration, breaking Spring Security 6 `MvcRequestMatcher` `permitAll()` rules (results in 403 on public endpoints)
 - `@Transactional` on write service methods; `@Transactional(readOnly = true)` on reads
 - `@Version Long version` on entities subject to concurrent modification
 - All monetary values use `BigDecimal` — no `double`/`float` for prices

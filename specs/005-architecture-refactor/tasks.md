@@ -460,6 +460,29 @@ public static ErrorResponseDto unauthorized(String message, String path) {
 }
 ```
 
+### 12. Missing HTTP Method Annotations on Controller Implementation (AuthControllerImpl.java)
+**Issue**: `AuthControllerImpl` had no `@PostMapping` annotations on any method. The interface defined only OpenAPI annotations (`@Operation`) with no Spring MVC routing annotations, and the implementation overrode the methods with no routing annotations either. Spring MVC therefore never registered `POST /auth/register`, `POST /auth/login`, or `POST /auth/refresh-token` as handlers.
+
+**Why it caused 403 (not 404)**: In Spring Boot 3 / Spring Security 6, `requestMatchers` uses `MvcRequestMatcher`, which validates paths against **actually registered Spring MVC handlers** via `HandlerMappingIntrospector`. Because no handler was registered for `POST /auth/**`, the `permitAll()` rule in `SecurityConfig` never matched — the request fell through to `anyRequest().authenticated()`. With an invalid JWT (no authentication set) and anonymous authentication from Spring Security's anonymous filter, the framework returned 403 before the request ever reached the `DispatcherServlet`.
+
+**Fix**: Added `@PostMapping("/register")`, `@PostMapping("/login")`, `@PostMapping("/refresh-token")` to the respective methods in `AuthControllerImpl.java`.
+
+```java
+@Override
+@PostMapping("/register")
+public ResponseEntity<ApiResponse<LoginResponse>> register(RegisterRequest request) { ... }
+
+@Override
+@PostMapping("/login")
+public ResponseEntity<ApiResponse<LoginResponse>> login(LoginRequest request) { ... }
+
+@Override
+@PostMapping("/refresh-token")
+public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(RefreshTokenRequest request) { ... }
+```
+
+**Root rule**: HTTP method annotations (`@GetMapping`, `@PostMapping`, `@PatchMapping`, `@DeleteMapping`) MUST always be present on the controller **implementation** method. Their absence does not cause a compile error or startup warning — it silently prevents the endpoint from being reachable, and in Spring Security 6 it additionally breaks `MvcRequestMatcher`-based `permitAll()` rules, producing 403 instead of the expected response.
+
 ### Implementation Status
 - All tasks T001-T121 completed
 - T088: Run application - requires user to execute

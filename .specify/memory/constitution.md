@@ -1,6 +1,23 @@
 <!--
 SYNC IMPACT REPORT
 ==================
+Version change: 2.0.0 → 2.1.0 (MINOR — Principle IV expanded with mandatory HTTP method
+annotation rule on controller implementations; discovered via production bug where missing
+@PostMapping on AuthControllerImpl caused Spring Security 6 MvcRequestMatcher to not match
+the permitAll() rules, returning 403 on public auth endpoints)
+
+Modified principles:
+  - Principle IV (Interface-Driven Design): Added HTTP method annotation placement table
+    and NON-NEGOTIABLE rule that @GetMapping/@PostMapping etc. MUST be on the implementation,
+    with explanation of the Spring Security 6 MvcRequestMatcher consequence
+
+Templates requiring updates:
+  ✅ specs/005-architecture-refactor/tasks.md — Issue #12 added to Common Implementation Issues
+  ✅ CLAUDE.md — No change needed (Code Style section already covered by this constitution)
+
+---
+
+Previous amendment (1.0.2 → 2.0.0, MAJOR):
 Version change: 1.0.2 → 2.0.0 (MAJOR — Package conventions rewritten to reflect
 005-architecture-refactor domain-based structure; Interface-Driven Design principle
 updated to reflect actual naming pattern XxxService/XxxController, not IXxxService/IXxxController;
@@ -8,23 +25,6 @@ Added Monetary Precision, Transactional Integrity, State Machine, and Idempotenc
 Removed references to obsolete packages: controller/framework, controller/impl,
 service/framework, service/impl, dtos/, models/, entity/ (top-level), repository/ (top-level),
 mq/activemq/, logging/)
-
-Modified principles:
-  - Principle I (Layered Architecture): Updated package paths to actual structure
-  - Principle II (DTO-First): Updated package references to actual locations
-  - Principle III (JWT Auth): Updated security package to shared/security/
-  - Principle IV (Interface-Driven Design): Updated naming convention and package locations
-  - Principle VI (Observability): No change (still valid)
-  - Added: Principle VII (Monetary Precision)
-  - Added: Principle VIII (Transactional Integrity)
-
-Added sections: Monetary Precision, Transactional Integrity, State Machine, Idempotency
-Removed sections: Principle V (Async Messaging — MQ out of scope post-005-architecture-refactor)
-Package & Directory Conventions: Complete rewrite
-
-Templates requiring updates:
-  ✅ CLAUDE.md — Full rewrite to reflect domain-based structure and new patterns
-  ✅ specs/005-architecture-refactor/tasks.md — All tasks already completed and documented
 -->
 
 # Ecommerce API Constitution
@@ -108,6 +108,19 @@ in the same domain package:
 
 OpenAPI `@Operation` / `@Tag` annotations belong on the **interface**.
 `@PreAuthorize` annotations belong on the **implementation**.
+
+**HTTP method annotations (`@GetMapping`, `@PostMapping`, `@PatchMapping`, `@DeleteMapping`) MUST be on the implementation method — NOT the interface (NON-NEGOTIABLE).**
+
+This is critical in Spring Boot 3 / Spring Security 6: `requestMatchers` uses `MvcRequestMatcher`, which validates paths against actually registered Spring MVC handlers. If an implementation method lacks its HTTP method annotation, no handler is registered for that path. The `permitAll()` rule in `SecurityConfig` will silently fail to match, and Spring Security returns **403** before the request ever reaches the controller — with no compile error or startup warning to indicate the problem.
+
+Annotation placement summary:
+
+| Annotation type | Interface | Implementation |
+|---|---|---|
+| `@Operation`, `@Tag`, `@ApiResponse` (OpenAPI) | ✅ | ❌ |
+| `@GetMapping`, `@PostMapping`, `@PatchMapping`, `@DeleteMapping` | ❌ | ✅ **REQUIRED** |
+| `@PreAuthorize` | ❌ | ✅ |
+| `@RequestMapping` (class-level base path) | ❌ | ✅ |
 
 This ensures testability and allows alternative implementations without breaking callers.
 The `I`-prefix naming (`IXxxService`) is NOT used — this project uses plain name for interface,
@@ -292,4 +305,4 @@ for per-feature agent context generation; keep it in sync with any stack changes
 
 ---
 
-**Version**: 2.0.0 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-18
+**Version**: 2.1.0 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-19

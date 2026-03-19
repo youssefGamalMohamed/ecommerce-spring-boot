@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +18,7 @@ public class AuthControllerImpl implements AuthController {
     private final AuthService authService;
 
     @Override
+    @PostMapping("/register")
     public ResponseEntity<ApiResponse<LoginResponse>> register(RegisterRequest request) {
         log.info("register({})", request.getUsername());
         LoginResponse loginResponse = authService.register(request);
@@ -24,6 +26,7 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @Override
+    @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(LoginRequest request) {
         log.info("login({})", request.getUsername());
         LoginResponse loginResponse = authService.login(request);
@@ -31,6 +34,7 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @Override
+    @PostMapping("/refresh-token")
     public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(RefreshTokenRequest request) {
         log.info("refreshToken()");
         LoginResponse loginResponse = authService.refreshToken(request);
