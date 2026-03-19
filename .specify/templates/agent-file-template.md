@@ -33,7 +33,7 @@ src/main/java/com/app/ecommerce/
 └── shared/
     ├── config/      — @Configuration classes (Security, JPA, Cache, HttpLogging, OpenAPI)
     ├── constants/   — Cache key constants
-    ├── dto/         — ApiResponse, BaseResponse, ErrorResponse
+    ├── models/      — ApiResponse, BaseResponse, ErrorResponse
     ├── entity/      — BaseEntity
     ├── enums/       — PaymentType, Status
     ├── exception/   — RestExceptionHandler + custom exception types

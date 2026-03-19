@@ -60,7 +60,7 @@
 
 **Comment: We start with responses (rename existing DTOs) then create request DTOs, then update mappers, then update services, then update controllers. This order minimizes compilation errors.**
 
-- [x] T012 [P] [US3] Create `src/main/java/com/app/ecommerce/shared/dto/BaseResponse.java`
+- [x] T012 [P] [US3] Create `src/main/java/com/app/ecommerce/shared/models/BaseResponse.java`
 - [x] T013 [P] [US3] Create `src/main/java/com/app/ecommerce/product/ProductResponse.java`
 - [x] T014 [P] [US3] Create `src/main/java/com/app/ecommerce/category/CategoryResponse.java`
 - [x] T015 [P] [US3] Create `src/main/java/com/app/ecommerce/order/OrderResponse.java`
@@ -109,7 +109,7 @@
 - [x] T045 [P] [US1] Modify `src/main/java/com/app/ecommerce/cart/CartServiceImpl.java`
 - [x] T046 [P] [US1] Modify `src/main/java/com/app/ecommerce/cart/CartItemServiceImpl.java`
 - [x] T047 [US1] Modify `src/main/java/com/app/ecommerce/shared/exception/RestExceptionHandler.java`
-- [x] T048 [US1] Modify `src/main/java/com/app/ecommerce/shared/dto/ErrorResponseDto.java`
+- [x] T048 [US1] Modify `src/main/java/com/app/ecommerce/shared/models/ErrorResponseDto.java`
 
 **Checkpoint**: All service methods have explicit transactional boundaries. Concurrent updates to the same entity trigger 409 Conflict via @Version optimistic locking. Read-only operations use `readOnly = true` for performance.
 
@@ -529,7 +529,7 @@ Applied to `register`, `login`, and `refreshToken`.
 
 ### Sub-Phase 11A: Dead DTO & Mapper Cleanup (R-014)
 
-- [x] T090 [P] Delete dead DTO files: `src/main/java/com/app/ecommerce/product/ProductDto.java`, `src/main/java/com/app/ecommerce/category/CategoryDto.java`, `src/main/java/com/app/ecommerce/order/OrderDto.java`, `src/main/java/com/app/ecommerce/order/DeliveryInfoDto.java`, `src/main/java/com/app/ecommerce/shared/dto/BaseDto.java`
+- [x] T090 [P] Delete dead DTO files: `src/main/java/com/app/ecommerce/product/ProductDto.java`, `src/main/java/com/app/ecommerce/category/CategoryDto.java`, `src/main/java/com/app/ecommerce/order/OrderDto.java`, `src/main/java/com/app/ecommerce/order/DeliveryInfoDto.java`, `src/main/java/com/app/ecommerce/shared/models/BaseDto.java`
 
 - [x] T091 [P] Clean `src/main/java/com/app/ecommerce/product/ProductMapper.java`: Remove ALL dead methods: `mapToEntity(ProductDto)`, `mapToDto(Product)`, `mapToDtos(List)`, `mapToDtos(Set)`, `mapToEntity(Product)` (self-copy), `updateEntityFromEntity(Product, Product)` (without categories). Also remove dead collection methods: `mapToResponseList(List)`, `mapToResponseSet(Set)` (zero callers — services use `Page.map(mapper::mapToResponse)` instead). **Keep only**: `mapToEntity(CreateProductRequest)`, `mapToEntity(Product, Set<Category>)`, `updateEntityFromRequest(UpdateProductRequest, Product)`, `updateEntityFromEntity(Product, Set<Category>, Product)`, `mapToResponse(Product)`.
 
@@ -547,11 +547,11 @@ Applied to `register`, `login`, and `refreshToken`.
 
 **Purpose**: Rename `ApiResponseDto` → `ApiResponse`, `ErrorResponseDto` → `ErrorResponse`, `CartDto` → `CartResponse`, `CartItemDto` → `CartItemResponse` to achieve consistent naming across all request/response classes.
 
-- [x] T111 Rename `src/main/java/com/app/ecommerce/shared/dto/ApiResponseDto.java` → `ApiResponse.java`: Rename file, rename class to `ApiResponse`, update all static factory method references (`ApiResponse.success()`, `ApiResponse.created()`, `ApiResponse.noContent()`). Update `@Schema(description = ...)` annotation.
+- [x] T111 Rename `src/main/java/com/app/ecommerce/shared/models/ApiResponseDto.java` → `ApiResponse.java`: Rename file, rename class to `ApiResponse`, update all static factory method references (`ApiResponse.success()`, `ApiResponse.created()`, `ApiResponse.noContent()`). Update `@Schema(description = ...)` annotation.
 
 - [x] T112 Update all files that import/reference `ApiResponseDto` to use `ApiResponse` instead. Files: `ProductController.java`, `ProductControllerImpl.java`, `CategoryController.java`, `CategoryControllerImpl.java`, `OrderController.java`, `OrderControllerImpl.java`, `AuthController.java`, `AuthControllerImpl.java`. In each file: update import statement and all usages (return types, method calls).
 
-- [x] T113 Rename `src/main/java/com/app/ecommerce/shared/dto/ErrorResponseDto.java` → `ErrorResponse.java`: Rename file, rename class to `ErrorResponse`, update all static factory methods (`ErrorResponse.notFound()`, `ErrorResponse.badRequest()`, `ErrorResponse.conflict()`, `ErrorResponse.internalError()`, `ErrorResponse.serviceUnavailable()`, `ErrorResponse.forbidden()`, `ErrorResponse.unauthorized()`, `ErrorResponse.build()`).
+- [x] T113 Rename `src/main/java/com/app/ecommerce/shared/models/ErrorResponseDto.java` → `ErrorResponse.java`: Rename file, rename class to `ErrorResponse`, update all static factory methods (`ErrorResponse.notFound()`, `ErrorResponse.badRequest()`, `ErrorResponse.conflict()`, `ErrorResponse.internalError()`, `ErrorResponse.serviceUnavailable()`, `ErrorResponse.forbidden()`, `ErrorResponse.unauthorized()`, `ErrorResponse.build()`).
 
 - [x] T114 Update all files that import/reference `ErrorResponseDto` to use `ErrorResponse` instead. Files: `RestExceptionHandler.java`, `ProductController.java`, `CategoryController.java`, `OrderController.java`, `AuthController.java`. In each file: update import statement and all usages (return types, variable types).
 
@@ -668,9 +668,9 @@ Applied to `register`, `login`, and `refreshToken`.
 
 ### Sub-Phase 11F: HttpStatus Enum Consistency (R-024)
 
-- [x] T120 Update `src/main/java/com/app/ecommerce/shared/dto/ErrorResponse.java`: Replace hardcoded status codes and error strings in all factory methods with `HttpStatus` enum values. Change import from `import static org.springframework.http.HttpStatus.BAD_REQUEST;` to `import static org.springframework.http.HttpStatus.*;`. Update `@Schema(example = "NOT_FOUND")` to `@Schema(example = "Not Found")` to match `getReasonPhrase()` output. Methods affected: `notFound()`, `badRequest(String, String, String)`, `conflict()`, `internalError()`, `serviceUnavailable()`, `forbidden()`, `unauthorized()`.
+- [x] T120 Update `src/main/java/com/app/ecommerce/shared/models/ErrorResponse.java`: Replace hardcoded status codes and error strings in all factory methods with `HttpStatus` enum values. Change import from `import static org.springframework.http.HttpStatus.BAD_REQUEST;` to `import static org.springframework.http.HttpStatus.*;`. Update `@Schema(example = "NOT_FOUND")` to `@Schema(example = "Not Found")` to match `getReasonPhrase()` output. Methods affected: `notFound()`, `badRequest(String, String, String)`, `conflict()`, `internalError()`, `serviceUnavailable()`, `forbidden()`, `unauthorized()`.
 
-- [x] T121 Update `src/main/java/com/app/ecommerce/shared/dto/ApiResponse.java`: Replace hardcoded status codes in factory methods with `HttpStatus` enum values. Update `success(T data, String message)` to use `HttpStatus.OK.value()` instead of `200`. Update `created(T data)` to use `HttpStatus.CREATED.value()` instead of `201`. Update `noContent()` to use `HttpStatus.NO_CONTENT.value()` instead of `204`.
+- [x] T121 Update `src/main/java/com/app/ecommerce/shared/models/ApiResponse.java`: Replace hardcoded status codes in factory methods with `HttpStatus` enum values. Update `success(T data, String message)` to use `HttpStatus.OK.value()` instead of `200`. Update `created(T data)` to use `HttpStatus.CREATED.value()` instead of `201`. Update `noContent()` to use `HttpStatus.NO_CONTENT.value()` instead of `204`.
 
 **Checkpoint**: All factory methods use `HttpStatus.XXX.value()` and `HttpStatus.XXX.getReasonPhrase()`. Only `badRequest(String, String)` (line 67) already follows this pattern.
 

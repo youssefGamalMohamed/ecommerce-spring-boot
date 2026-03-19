@@ -31,7 +31,7 @@ src/main/java/com/app/ecommerce/
 └── shared/
     ├── config/      — @Configuration classes (Security, JPA, Cache, HttpLogging, OpenAPI)
     ├── constants/   — CacheConstants
-    ├── dto/         — ApiResponse, BaseResponse, ErrorResponse
+    ├── models/      — ApiResponse, BaseResponse, ErrorResponse
     ├── entity/      — BaseEntity (auditing base)
     ├── enums/       — PaymentType, Status (with state machine transitions)
     ├── exception/   — RestExceptionHandler, DuplicatedUniqueColumnValueException,

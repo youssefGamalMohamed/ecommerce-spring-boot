@@ -1,7 +1,18 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 2.1.0 → 2.2.0 (MINOR — Added Principle VIII: API Documentation & Swagger Security;
+Version change: 2.2.0 → 2.2.1 (PATCH — Renamed shared/dto/ → shared/models/ across all docs
+to reflect actual package structure)
+
+Templates requiring updates:
+  ✅ CLAUDE.md — shared/dto/ → shared/models/
+  ✅ .specify/memory/constitution.md — package tree + Principle II reference updated
+  ✅ .specify/templates/agent-file-template.md — package tree updated
+  ✅ specs/005-architecture-refactor/tasks.md — all path references updated
+
+---
+
+Previous amendment (2.1.0 → 2.2.0, MINOR — Added Principle VIII: API Documentation & Swagger Security;
 discovered via bug where global addSecurityItem in OpenApiDocumentationConfig locked auth endpoints
 in Swagger UI, preventing self-contained login-then-authorize flow)
 
@@ -51,7 +62,7 @@ in a single flat package. Shared infrastructure lives in `com.app.ecommerce.shar
 **Shared package** (`com.app.ecommerce.shared/`):
 - `config/` — Spring `@Configuration` classes (Security, JPA, Cache, HttpLogging, OpenAPI)
 - `constants/` — Cache key constants
-- `dto/` — Shared response wrappers (`ApiResponse<T>`, `ErrorResponse`, `BaseResponse`)
+- `models/` — Shared response wrappers (`ApiResponse<T>`, `ErrorResponse`, `BaseResponse`)
 - `entity/` — `BaseEntity` (auditing base for all JPA entities)
 - `enums/` — Shared enum types (`PaymentType`, `Status`)
 - `exception/` — Global `@RestControllerAdvice` + custom exception types
@@ -76,7 +87,7 @@ All data crossing a public API boundary MUST use dedicated Data Transfer Objects
   and `UpdateXxxRequest` (all fields optional, supporting partial updates). Defined in the domain package.
 - **Response DTOs**: `XxxResponse extends BaseResponse` (includes `id`, `version`, audit timestamps).
   Defined in the domain package.
-- **Wrappers**: `ApiResponse<T>` for successful responses, `ErrorResponse` for errors. Defined in `shared/dto/`.
+- **Wrappers**: `ApiResponse<T>` for successful responses, `ErrorResponse` for errors. Defined in `shared/models/`.
 - Entity ↔ DTO conversion MUST use MapStruct mappers in the domain package; manual field-by-field copying is prohibited.
 - Request bodies MUST be validated with Jakarta Bean Validation (`@Valid`) before reaching service methods.
 - No `Dto`-suffixed class names on response classes — use `Response` suffix consistently.
@@ -281,7 +292,7 @@ src/main/java/com/app/ecommerce/
     │   └── SecurityConfig.java        — SecurityFilterChain, whitelist, CORS
     ├── constants/
     │   └── CacheConstants.java        — Cache name constants
-    ├── dto/
+    ├── models/
     │   ├── ApiResponse.java           — Generic success response wrapper
     │   ├── BaseResponse.java          — Base class for all response DTOs
     │   └── ErrorResponse.java         — Error response with field-level details
@@ -342,4 +353,4 @@ for per-feature agent context generation; keep it in sync with any stack changes
 
 ---
 
-**Version**: 2.2.0 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-19
+**Version**: 2.2.1 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-19
