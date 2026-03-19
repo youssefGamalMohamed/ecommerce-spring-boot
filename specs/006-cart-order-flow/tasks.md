@@ -1124,3 +1124,72 @@ After T007 completes:
 - Cross-domain entity imports (e.g., `Cart → User`, `CartServiceImpl → ProductRepository`) follow the existing pattern of `CartItem → Product`
 - The `User` entity is in package `com.app.ecommerce.auth` and implements `UserDetails`
 - `Role` enum is in `com.app.ecommerce.auth.Role` with values `ADMIN` and `CUSTOMER`
+
+---
+
+## Code Review Findings
+
+Code review completed on implementation with 27 files changed (2,746 insertions). Issues found and fixed:
+
+### 🔴 CRITICAL — Fixed
+
+| ID | Issue | File | Fix Applied |
+|----|-------|------|-------------|
+| C1 | Missing `@PreAuthorize` on `createNewOrder()` — unauthenticated users would cause NPE | `OrderControllerImpl.java` | Added `@PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")` |
+| C2 | `order.setCart()` never called — `OrderResponse.cart` would be null | `OrderServiceImpl.java` | Added `order.setCart(cart)` before `orderRepository.save()` |
+| C3 | `existingOrder.setVersion(request.getVersion())` bypasses optimistic locking | `OrderServiceImpl.java` | Removed manual version setting — Hibernate handles it |
+| C4 | `@CacheEvict` missing on `removeItem()` — stale cache after deletion | `CartServiceImpl.java` | Added `@CacheEvict(value = CacheConstants.CARTS, key = "#owner.id")` |
+
+### 🟡 WARNING — Fixed
+
+| ID | Issue | File | Fix Applied |
+|----|-------|------|-------------|
+| W1 | `Join<Object, Object>` not type-safe | `OrderSpecifications.java` | Changed to typed `Join<Order, Cart>` and `Join<Cart, User>` |
+
+### 🟡 WARNING — Not Applicable
+
+| ID | Issue | Reason |
+|----|-------|--------|
+| C3 | Cart `findById()` no ownership check | No public endpoint uses this method — `GET /carts/{id}` doesn't exist |
+| W2 | Concurrent `getCurrentCart()` race condition | Service-level guards with `findByOwnerAndStatus` + optimistic locking via `@Version` |
+| W3 | Cache keyed on `#result.id` conflicts with user identity | Ownership check happens inside the cached method; exception thrown prevents caching on access denial |
+
+### 🔵 NOTES — Verified OK
+
+| ID | Note | Status |
+|----|------|--------|
+| N1 | `int quantity` vs `Integer` | Working as intended — `@Min` validation handles boundary |
+| N2 | `removeItem()` logging | Already has proper logging after removal |
+| N3 | `cartItems` missing `@Builder.Default` | Already fixed — `@Builder.Default private Set<CartItem> cartItems = new HashSet<>();` present |
+
+### Priority Fix Order Applied
+
+1. ✅ C1 — `@PreAuthorize` on order endpoints (security)
+2. ✅ C2 — `order.setCart()` bidirectional FK (data integrity)
+3. ✅ C4 — Remove manual `setVersion()` (optimistic locking)
+4. ✅ C5 — `@CacheEvict` on `removeItem()` (cache consistency)
+5. ✅ W3 — Typed joins in `OrderSpecifications` (type safety)
+
+---
+
+## Post-Implementation Verification
+
+After applying fixes, run:
+```bash
+mvn clean compile -DskipTests
+```
+
+Expected: `BUILD SUCCESS`
+
+### Manual Test Checklist
+
+- [ ] `GET /carts` → returns empty OPEN cart (auto-created)
+- [ ] `POST /carts/items` with productId → item added, 201 returned
+- [ ] `POST /carts/items` with same product → quantity incremented, no duplicate
+- [ ] `PATCH /carts/items/{id}` with quantity=5 → item updated
+- [ ] `PATCH /carts/items/{id}` with quantity=0 → item auto-removed
+- [ ] `DELETE /carts/items/{id}` → 204 returned, cache evicted
+- [ ] `POST /orders` → order created, cart CHECKED_OUT
+- [ ] `GET /orders` as customer → only own orders returned
+- [ ] `GET /orders` as admin → all orders returned
+- [ ] `GET /orders/{id}` of another customer's order → 404 (ownership enforced)

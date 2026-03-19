@@ -70,6 +70,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = orderMapper.mapToEntity(request);
         order.setTotalPrice(totalPrice);
+        order.setCart(cart);
         Order savedOrder = orderRepository.save(order);
 
         cart.setOrder(savedOrder);
@@ -113,7 +114,6 @@ public class OrderServiceImpl implements OrderService {
         }
         Order existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NoSuchElementException("Order with id " + orderId + " not found"));
-        existingOrder.setVersion(request.getVersion());
         if (request.getDeliveryStatus() != null) {
             Status currentStatus = existingOrder.getDeliveryInfo().getStatus();
             Status requestedStatus = request.getDeliveryStatus();

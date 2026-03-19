@@ -133,6 +133,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @CacheEvict(value = CacheConstants.CARTS, key = "#owner.id")
     @Transactional
     public void removeItem(User owner, UUID cartItemId) {
         log.info("removeItem(owner={}, cartItemId={})", owner.getUsername(), cartItemId);
