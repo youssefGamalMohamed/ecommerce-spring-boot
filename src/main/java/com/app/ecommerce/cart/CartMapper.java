@@ -7,7 +7,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", uses = {CartItemMapper.class}, unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface CartMapper {
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)

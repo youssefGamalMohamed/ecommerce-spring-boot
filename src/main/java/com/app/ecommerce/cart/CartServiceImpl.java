@@ -25,11 +25,8 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
 
-    @Override
-    @Transactional
-    public CartResponse getCurrentCart(User owner) {
-        log.info("getCurrentCart(owner={})", owner.getUsername());
-        Cart cart = cartRepository.findByOwnerAndStatus(owner, CartStatus.OPEN)
+    private Cart getOrCreateOpenCart(User owner) {
+        return cartRepository.findByOwnerAndStatusWithItems(owner, CartStatus.OPEN)
                 .orElseGet(() -> {
                     log.info("No OPEN cart found for user {}, creating new cart", owner.getUsername());
                     Cart newCart = Cart.builder()
@@ -39,6 +36,13 @@ public class CartServiceImpl implements CartService {
                             .build();
                     return cartRepository.save(newCart);
                 });
+    }
+
+    @Override
+    @Transactional
+    public CartResponse getCurrentCart(User owner) {
+        log.info("getCurrentCart(owner={})", owner.getUsername());
+        Cart cart = getOrCreateOpenCart(owner);
         return cartMapper.mapToResponse(cart);
     }
 
@@ -48,15 +52,8 @@ public class CartServiceImpl implements CartService {
     public CartResponse addItem(User owner, AddCartItemRequest request) {
         log.info("addItem(owner={}, productId={}, quantity={})", owner.getUsername(), request.getProductId(), request.getQuantity());
 
-        Cart cart = cartRepository.findByOwnerAndStatus(owner, CartStatus.OPEN)
-                .orElseGet(() -> {
-                    Cart newCart = Cart.builder()
-                            .owner(owner)
-                            .status(CartStatus.OPEN)
-                            .cartItems(new HashSet<>())
-                            .build();
-                    return cartRepository.save(newCart);
-                });
+        // getOrCreateOpenCart queries by owner, so cart ownership is guaranteed by query
+        Cart cart = getOrCreateOpenCart(owner);
 
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new NoSuchElementException("Product with id " + request.getProductId() + " not found"));
@@ -118,6 +115,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @CacheEvict(value = CacheConstants.CARTS, key = "#result.id")
     @Transactional
     public CartResponse removeItem(User owner, UUID cartItemId) {
         log.info("removeItem(owner={}, cartItemId={})", owner.getUsername(), cartItemId);

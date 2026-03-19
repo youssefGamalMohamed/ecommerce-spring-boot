@@ -50,6 +50,6 @@ public class Product extends BaseEntity {
     private Set<Category> categories = new HashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItem;
 }

@@ -47,22 +47,22 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse createNewOrder(CreateOrderRequest request, User currentUser) {
         log.info("createNewOrder(user={}, request={})", currentUser.getUsername(), request);
 
-        Cart cart = cartRepository.findByOwnerAndStatus(currentUser, CartStatus.OPEN)
+        Cart cart = cartRepository.findByOwnerAndStatusWithItems(currentUser, CartStatus.OPEN)
                 .orElseThrow(() -> new NoSuchElementException("No open cart found for user " + currentUser.getUsername()));
 
         if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
             throw new IllegalArgumentException("Cannot place an order with an empty cart");
         }
 
-        for (CartItem item : cart.getCartItems()) {
-            if (item.getProduct() == null) {
-                throw new NoSuchElementException("Cart contains an item with a missing product. Remove invalid items before checkout.");
-            }
-        }
-
         BigDecimal totalPrice = BigDecimal.ZERO;
         for (CartItem item : cart.getCartItems()) {
             Product product = item.getProduct();
+            if (product == null) {
+                throw new NoSuchElementException("Cart contains an item with a missing product.");
+            }
+            if (product.getPrice() == null) {
+                throw new IllegalStateException("Product " + product.getId() + " has no price set.");
+            }
             totalPrice = totalPrice.add(product.getPrice().multiply(BigDecimal.valueOf(item.getProductQuantity())));
         }
 
@@ -111,7 +111,11 @@ public class OrderServiceImpl implements OrderService {
         Order existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NoSuchElementException("Order with id " + orderId + " not found"));
         if (request.getDeliveryStatus() != null) {
-            Status currentStatus = existingOrder.getDeliveryInfo().getStatus();
+            var deliveryInfo = existingOrder.getDeliveryInfo();
+            if (deliveryInfo == null) {
+                throw new IllegalStateException("Order " + orderId + " has no delivery info");
+            }
+            Status currentStatus = deliveryInfo.getStatus();
             Status requestedStatus = request.getDeliveryStatus();
             if (!currentStatus.canTransitionTo(requestedStatus)) {
                 throw new InvalidStateTransitionException(currentStatus, requestedStatus);
@@ -137,8 +141,7 @@ public class OrderServiceImpl implements OrderService {
         PageRequest safePage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
 
         Specification<Order> spec = Specification
-                .where((Root<Order> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> null)
-                .and(OrderSpecifications.hasStatus(status))
+                .where(OrderSpecifications.hasStatus(status))
                 .and(OrderSpecifications.hasPaymentType(paymentType))
                 .and(OrderSpecifications.createdAfter(createdAfter))
                 .and(OrderSpecifications.createdBefore(createdBefore));
