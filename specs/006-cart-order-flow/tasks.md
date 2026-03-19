@@ -1229,11 +1229,31 @@ Additional code review completed. Issues found and fixed:
 
 ---
 
+## Code Review Findings — Round 3
+
+Final code review cleanup. Issues found and fixed:
+
+### 🟡 WARNING — Fixed
+
+| ID | Issue | File | Fix Applied |
+|----|-------|------|-------------|
+| FR1 | Unused variable `cartId` in `removeItem` | `CartServiceImpl.java` | Removed unused variable |
+| FR2 | `findById()` method has no ownership check (public on interface) | `CartService.java`, `CartServiceImpl.java` | Removed method entirely — no controller uses it |
+
+### Round 3 Fixes Applied
+
+1. ✅ FR1 — Removed unused `cartId` variable (code cleanliness)
+2. ✅ FR2 — Removed `findById()` method (security: no ownership check possible)
+
+---
+
 ## Implementation Complete
 
-All code review issues addressed. Final state:
+All code review issues addressed across 3 rounds. Final state:
 
-- **Security**: `@PreAuthorize` on all endpoints, ownership checks enforced, no cache bypass vulnerabilities
-- **Data Integrity**: Bidirectional FK properly set, optimistic locking preserved
-- **Cache Consistency**: `@CacheEvict` on all mutations, cache keyed correctly
-- **Code Quality**: Typed JPA joins, no dead code, constitution compliance
+| Category | Status |
+|----------|--------|
+| **Security** | `@PreAuthorize` on all endpoints, ownership checks enforced, no cache bypass vulnerabilities |
+| **Data Integrity** | Bidirectional FK properly set, optimistic locking preserved |
+| **Cache Consistency** | `@CacheEvict` on all mutations, `@Cacheable` removed from `findById` |
+| **Code Quality** | Typed JPA joins, no dead code, constitution compliance, unused code removed |
