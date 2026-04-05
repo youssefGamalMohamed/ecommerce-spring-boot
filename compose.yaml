@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mysql:8.0-oracle
+    image: mysql:latest
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: 1234
@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    image: redis:alpine
     container_name: redis
     ports:
       - "6379:6379"
