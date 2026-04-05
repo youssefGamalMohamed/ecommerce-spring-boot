@@ -13,7 +13,19 @@
       "Bash(.specify/scripts/bash/create-new-feature.sh \"i want you check the logic of creating for cart and order from the prespective of ecommerce applications without deep dive into deep details as an example if you have inventory systems or external system just add to it the interface or neglect it if it not important as implementation and i want to you check the current implementation for cart and order and check what is needed to be added because when i tried to look at the order i can't see the user create cart or cart item, the Question is when user is creating Cart and its Item and how it stored [In-Memory as Redis or normal db] and how can i check if it still valid or not, to be honest i don't know how it implemented in real world systems so you should tell me how it implemented first from the real world example and try to implement it to my code with spring boot\" --json --short-name \"cart-order-flow\")",
       "Bash(.specify/scripts/bash/check-prerequisites.sh --json --paths-only)",
       "Bash(.specify/scripts/bash/setup-plan.sh --json)",
-      "Bash(.specify/scripts/bash/check-prerequisites.sh --json)"
+      "Bash(.specify/scripts/bash/check-prerequisites.sh --json)",
+      "Bash(npx skills:*)",
+      "Bash(which obsidian:*)",
+      "Bash(obsidian vault=\"obsidian-workspace\" search query=\"\" limit=20 2>&1 || obsidian vault=\"obsidian-workspace\" help 2>&1)",
+      "Bash(obsidian vault=\"obsidian-workspace\" help 2>&1)",
+      "Bash(obsidian vault=\"obsidian-workspace\" files folder=\"Projects/Active\" 2>&1)",
+      "Bash(obsidian vault=\"obsidian-workspace\" read path=\"Projects/Active/Active Projects.md\" 2>&1)",
+      "Bash(obsidian vault=\"obsidian-workspace\" templates 2>&1)",
+      "Bash(obsidian vault=\"obsidian-workspace\" append path=\"Projects/Active/Active Projects.md\" content=\"\\\\n- [[ecommerce-spring-boot]] — Spring Boot e-commerce REST API\" 2>&1)",
+      "Bash(obsidian vault=\"obsidian-workspace\" search query=\"CLAUDE\" limit=10 2>&1)",
+      "Bash(obsidian vault=\"obsidian-workspace\" file file=\"CLAUDE\" 2>&1)",
+      "Bash(obsidian vault=\"obsidian-workspace\" read file=\"CLAUDE\" 2>&1)",
+      "Bash(git add:*)"
     ]
   }
 }
