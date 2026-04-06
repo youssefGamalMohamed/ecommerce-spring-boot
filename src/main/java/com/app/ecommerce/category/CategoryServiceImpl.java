@@ -111,6 +111,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NoSuchElementException("No Category Update, Id Not Found"));
 
+        category.setVersion(request.getVersion());
 
         if (request.getName() != null && !request.getName().equals(category.getName())) {
             if (categoryRepository.findByName(request.getName()).isPresent()) {

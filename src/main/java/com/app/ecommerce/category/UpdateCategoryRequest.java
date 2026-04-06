@@ -2,7 +2,6 @@ package com.app.ecommerce.category;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -19,7 +18,6 @@ public class UpdateCategoryRequest {
     @Schema(description = "Name of the category", example = "Electronics")
     private String name;
 
-    @NotNull(message = "Version is required for optimistic locking")
-    @Schema(description = "Version for optimistic locking", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Version for optimistic locking", example = "1")
     private Long version;
 }
