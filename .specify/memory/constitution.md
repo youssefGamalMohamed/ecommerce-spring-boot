@@ -1,6 +1,15 @@
 <!--
 SYNC IMPACT REPORT
 ==================
+Version change: 2.2.1 → 2.2.2 (PATCH — Technology Stack table updated to reflect Spring Boot 4.0.5 upgrade
+— Spring Boot 3.0.0→4.0.5, JJWT 0.11.5→0.12.6, MySQL Connector/J 8.0.31→9.6.0,
+MapStruct 1.6.0→1.6.3, SpringDoc 2.0.2→3.0.2, Lombok 1.18.42→1.18.44)
+
+Templates requiring updates:
+  ✅ CLAUDE.md — Technology Stack table updated
+
+---
+
 Version change: 2.2.0 → 2.2.1 (PATCH — Renamed shared/dto/ → shared/models/ across all docs
 to reflect actual package structure)
 
@@ -207,15 +216,15 @@ on its interface method — both changes go together as a single atomic step.
 | Concern | Choice | Version |
 |---|---|---|
 | Language | Java | 17 |
-| Framework | Spring Boot | 3.0.0 |
+| Framework | Spring Boot | 4.0.5 |
 | Build | Maven | 3.x |
 | ORM | Spring Data JPA + Hibernate | Spring Boot managed |
 | Database | MySQL | 8.0.31 |
 | Cache | Redis (Lettuce, `spring-boot-starter-data-redis`) | Spring Boot managed |
-| Security | Spring Security + JJWT | 0.11.5 |
-| DTO Mapping | MapStruct | 1.6.0 |
-| API Documentation | SpringDoc OpenAPI (Swagger UI) | 2.0.2 |
-| Boilerplate | Lombok | Spring Boot managed |
+| Security | Spring Security + JJWT | 0.12.6 |
+| DTO Mapping | MapStruct | 1.6.3 |
+| API Documentation | SpringDoc OpenAPI (Swagger UI) | 3.0.2 |
+| Boilerplate | Lombok | 1.18.44 |
 | Validation | Jakarta Bean Validation | Spring Boot managed |
 | Monitoring | Spring Boot Actuator | Spring Boot managed |
 
@@ -353,4 +362,4 @@ for per-feature agent context generation; keep it in sync with any stack changes
 
 ---
 
-**Version**: 2.2.1 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-03-19
+**Version**: 2.2.2 | **Ratified**: 2023-04-17 | **Last Amended**: 2026-04-06
