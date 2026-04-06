@@ -35,7 +35,19 @@
       "Bash(cp -r /home/youssef-gamal/Downloads/claude-skills/skills/spring-boot-engineer .claude/skills/ && echo \"Done\")",
       "Bash(cp -r /home/youssef-gamal/Downloads/claude-skills/skills/java-architect /media/youssef-gamal/021288CB1288C55F/works/personal/programming/git-workspace/ecommerce-spring-boot/.claude/skills/java-architect)",
       "Bash(git -C /media/youssef-gamal/021288CB1288C55F/works/personal/programming/git-workspace/ecommerce-spring-boot diff --stat HEAD && git -C /media/youssef-gamal/021288CB1288C55F/works/personal/programming/git-workspace/ecommerce-spring-boot status --short)",
-      "Skill(commit-commands:commit)"
+      "Skill(commit-commands:commit)",
+      "Bash(.specify/scripts/bash/create-new-feature.sh \"i want to update my entire pom.xml to match 2026 latest stable update for spring boot and all of the dependencies and also i need to ensure after upgrading it that the application will work correctly\" --json --short-name \"spring-boot-upgrade\" \"Spring Boot 2026 Dependency Upgrade\")",
+      "Bash(chmod +x .specify/scripts/bash/create-new-feature.sh && .specify/scripts/bash/create-new-feature.sh \"i want to update my entire pom.xml to match 2026 latest stable update for spring boot and all of the dependencies and also i need to ensure after upgrading it that the application will work correctly\" --json --short-name \"spring-boot-upgrade\" \"Spring Boot 2026 Dependency Upgrade\")",
+      "Bash(chmod +x .specify/scripts/bash/setup-plan.sh && .specify/scripts/bash/setup-plan.sh --json)",
+      "WebSearch",
+      "WebFetch(domain:spring.io)",
+      "WebFetch(domain:github.com)",
+      "Bash(chmod +x .specify/scripts/bash/update-agent-context.sh && .specify/scripts/bash/update-agent-context.sh claude)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh --json 2>/dev/null || .specify/scripts/bash/check-prerequisites.sh)",
+      "Bash(git remote:*)",
+      "Bash(obsidian read:*)",
+      "Bash(obsidian delete:*)",
+      "Bash(obsidian eval:*)"
     ]
   }
 }
