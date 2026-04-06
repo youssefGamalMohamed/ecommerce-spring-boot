@@ -94,7 +94,6 @@
         </dependency>
 
         <!-- Jackson JSR310 (LocalDate/LocalDateTime serialization) -->
-        <!-- Note: Jackson 3 datatype module not yet stable; using Jackson 2 via Spring Boot managed version -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
