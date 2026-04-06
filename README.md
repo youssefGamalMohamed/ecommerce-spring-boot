@@ -48,3 +48,13 @@ All write operations on entities with `@Version` (optimistic locking) use `saveA
 - `src/main/java/com/app/ecommerce/product/ProductServiceImpl.java` - line 113
 - `src/main/java/com/app/ecommerce/order/OrderServiceImpl.java` - lines 72, 76, 125
 - `src/main/java/com/app/ecommerce/cart/CartServiceImpl.java` - lines 79, 113, 137
+
+### Jackson Setup (007-spring-boot-upgrade)
+Spring Boot 4.0.5 uses Jackson 3 (`tools.jackson.*`), but Jackson 3's datatype modules (`tools.jackson.datatype:jackson-datatype-jsr310`) are not yet stable (only RC versions available).
+
+**Current setup**: Uses Jackson 2 datatype module transitively from `jjwt-jackson`. This works because:
+- Spring Boot's `ObjectMapper` auto-configuration uses Jackson 3 core
+- Jackson 2 and Jackson 3 have different package names (`com.fasterxml.jackson` vs `tools.jackson`) so they coexist
+- JJWT's serialization uses its own Jackson 2 integration
+
+**Note**: If date serialization issues arise, consider upgrading to `tools.jackson.datatype:jackson-datatype-jsr310:3.x` once stable versions are released.
