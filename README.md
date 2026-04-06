@@ -38,11 +38,13 @@ Backend E-commerce Application that enables Customers to buy products online and
 
 ## Implementation Notes
 
-### saveAndFlush() for Optimistic Locking
-All update operations on entities with `@Version` (optimistic locking) use `saveAndFlush()` instead of `save()` to ensure the version is immediately incremented and returned in the response. This prevents stale version values in responses.
+### saveAndFlush() for Optimistic Locking (007-spring-boot-upgrade)
+All write operations on entities with `@Version` (optimistic locking) use `saveAndFlush()` instead of `save()` to ensure the version is immediately incremented and returned in the response. This prevents stale version values in API responses.
 
-Affected services:
-- `CategoryServiceImpl.java` - update operations
-- `ProductServiceImpl.java` - update operations
-- `OrderServiceImpl.java` - update operations
-- `CartServiceImpl.java` - add/update/remove item operations
+**Root cause**: `save()` defers the flush to transaction commit, so the returned entity still has the old version. `saveAndFlush()` forces an immediate DB write.
+
+**Files changed**:
+- `src/main/java/com/app/ecommerce/category/CategoryServiceImpl.java` - line 123
+- `src/main/java/com/app/ecommerce/product/ProductServiceImpl.java` - line 113
+- `src/main/java/com/app/ecommerce/order/OrderServiceImpl.java` - lines 72, 76, 125
+- `src/main/java/com/app/ecommerce/cart/CartServiceImpl.java` - lines 79, 113, 137

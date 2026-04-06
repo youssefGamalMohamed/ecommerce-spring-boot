@@ -134,7 +134,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = item.getCart();
         cart.getCartItems().remove(item);
         cartItemRepository.delete(item);
-        cartRepository.save(cart);
+        cartRepository.saveAndFlush(cart);
         log.info("Cart item {} removed from cart {}", cartItemId, cart.getId());
         return cartMapper.mapToResponse(cart);
     }

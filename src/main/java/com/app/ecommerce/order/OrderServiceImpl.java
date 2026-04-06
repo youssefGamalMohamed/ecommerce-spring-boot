@@ -69,11 +69,11 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.mapToEntity(request);
         order.setTotalPrice(totalPrice);
         order.setCart(cart);
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder = orderRepository.saveAndFlush(order);
 
         cart.setOrder(savedOrder);
         cart.setStatus(CartStatus.CHECKED_OUT);
-        cartRepository.save(cart);
+        cartRepository.saveAndFlush(cart);
 
         log.info("Order created with id={}, cart {} transitioned to CHECKED_OUT", savedOrder.getId(), cart.getId());
         return orderMapper.mapToResponse(savedOrder);
