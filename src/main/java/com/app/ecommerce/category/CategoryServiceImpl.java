@@ -42,7 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         Category categoryToSave = categoryMapper.mapToEntity(request);
-        Category newCreatedCategory = categoryRepository.save(categoryToSave);
+        Category newCreatedCategory = categoryRepository.saveAndFlush(categoryToSave);
         log.info("Category added/saved successfully with id = {}", newCreatedCategory.getId());
 
         return categoryMapper.mapToResponse(newCreatedCategory);

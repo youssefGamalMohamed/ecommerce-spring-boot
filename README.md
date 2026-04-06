@@ -3,13 +3,15 @@ Backend E-commerce Application that enables Customers to buy products online and
 
 	
    ### Technologies ###
-	 - Security: Spring Security JWT and Refresh Token
-	 - ORM: Spring JPA 
-	 - DB: MySQL Database
-	 - MQ: ActiveMQ
-	 - Logging: Log4j2
-	 - OpenAPIDocumentation: for creating documentation
-	 - Email: Mail Trap
+	 - Framework: Spring Boot 4.0.5
+	 - Security: Spring Security 7.x + JJWT 0.12.6 (JWT stateless auth)
+	 - ORM: Spring Data JPA + Hibernate 7.x
+	 - DB: MySQL 8 (MySQL Connector/J 9.6.0)
+	 - Cache: Redis (Lettuce, Spring Boot managed)
+	 - Mapping: MapStruct 1.6.3
+	 - Boilerplate: Lombok 1.18.44
+	 - API Docs: SpringDoc OpenAPI 3.0.2 (Swagger UI)
+	 - Monitoring: Spring Boot Actuator
 	
    ### Swagger UI ###
 	 
@@ -24,11 +26,10 @@ Backend E-commerce Application that enables Customers to buy products online and
   ### Installation ###
 	 - Database
 	  . Create DB Schema on MySQL named "ecommerce"
-	 
-	 -  Mail Trap
-	  . Change Mail Host from "spring.mail.host" to your hosting Email Provider
-	  . Change Mail Host from "spring.mail.port" to your port Email Provider 
-	  . Change your e-commerce organization email to from properties file from "ecommerce.email" to your organization email 
+	  . Default connection: localhost:3306, user: root, password: 1234 (see application.yml)
+
+	 - Redis
+	  . Start Redis on localhost:6379 (default, no auth required for local dev)
 
 
 ### Postman Collection ###
