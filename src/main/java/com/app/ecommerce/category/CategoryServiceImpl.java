@@ -111,7 +111,6 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NoSuchElementException("No Category Update, Id Not Found"));
 
-        category.setVersion(request.getVersion());
 
         if (request.getName() != null && !request.getName().equals(category.getName())) {
             if (categoryRepository.findByName(request.getName()).isPresent()) {
@@ -121,7 +120,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryMapper.updateEntityFromRequest(request, category);
 
-        Category updCategory = categoryRepository.save(category);
+        Category updCategory = categoryRepository.saveAndFlush(category);
 
         log.info("updated category with id = {}", updCategory.getId());
 

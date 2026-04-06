@@ -122,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         orderMapper.updateEntityFromRequest(request, existingOrder);
-        Order updatedOrder = orderRepository.save(existingOrder);
+        Order updatedOrder = orderRepository.saveAndFlush(existingOrder);
         log.info("order updated with id = {}", updatedOrder.getId());
         return orderMapper.mapToResponse(updatedOrder);
     }

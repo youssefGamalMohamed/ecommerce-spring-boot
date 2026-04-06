@@ -33,3 +33,16 @@ Backend E-commerce Application that enables Customers to buy products online and
 
 ### Postman Collection ###
   - Download Postman Collection from: [here](https://github.com/youssefGamalMohamed/Ecommerce-Spring-Boot-App/blob/main/Ecommerce.postman_collection.json)
+
+---
+
+## Implementation Notes
+
+### saveAndFlush() for Optimistic Locking
+All update operations on entities with `@Version` (optimistic locking) use `saveAndFlush()` instead of `save()` to ensure the version is immediately incremented and returned in the response. This prevents stale version values in responses.
+
+Affected services:
+- `CategoryServiceImpl.java` - update operations
+- `ProductServiceImpl.java` - update operations
+- `OrderServiceImpl.java` - update operations
+- `CartServiceImpl.java` - add/update/remove item operations

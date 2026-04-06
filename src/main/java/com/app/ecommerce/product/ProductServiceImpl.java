@@ -110,7 +110,7 @@ public class ProductServiceImpl implements ProductService {
             productMapper.updateEntityFromRequest(request, product);
         }
 
-        Product updatedProductData = productRepository.save(product);
+        Product updatedProductData = productRepository.saveAndFlush(product);
 
         log.info("updated product with id = {}", updatedProductData.getId());
         return productMapper.mapToResponse(updatedProductData);

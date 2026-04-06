@@ -76,7 +76,7 @@ public class CartServiceImpl implements CartService {
             cart.getCartItems().add(newItem);
         }
 
-        Cart savedCart = cartRepository.save(cart);
+        Cart savedCart = cartRepository.saveAndFlush(cart);
         log.info("Item added to cart {}", savedCart.getId());
         return cartMapper.mapToResponse(savedCart);
     }
@@ -110,7 +110,7 @@ public class CartServiceImpl implements CartService {
             log.info("Cart item {} updated to quantity {}", cartItemId, request.getQuantity());
         }
 
-        Cart savedCart = cartRepository.save(cart);
+        Cart savedCart = cartRepository.saveAndFlush(cart);
         return cartMapper.mapToResponse(savedCart);
     }
 
