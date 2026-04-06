@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.5.9</version>
         <relativePath />
     </parent>
 
@@ -17,10 +17,10 @@
 
     <properties>
         <java.version>17</java.version>
-        <org.mapstruct.version>1.6.0</org.mapstruct.version>
-        <maven.version>3.13.0</maven.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <maven.version>3.15.0</maven.version>
         <lombok.mapstruct.binding>0.2.0</lombok.mapstruct.binding>
-        <lombok.version>1.18.42</lombok.version>
+        <lombok.version>1.18.44</lombok.version>
     </properties>
 
     <dependencies>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>8.0.31</version>
+            <version>9.6.0</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -105,18 +105,18 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
+            <version>0.12.6</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.11.5</version>
+            <version>0.12.6</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.5</version>
+            <version>0.12.6</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.0.2</version>
+            <version>2.8.16</version>
         </dependency>
 
         <!-- ==================== DEV TOOLS ==================== -->
@@ -145,6 +145,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- TEMPORARY: Detects Spring Boot property renames at startup; remove in T033 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-properties-migrator</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
