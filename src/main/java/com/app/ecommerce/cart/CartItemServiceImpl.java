@@ -1,5 +1,6 @@
 package com.app.ecommerce.cart;
 
+import com.app.ecommerce.auth.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,13 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public CartItemResponse findById(UUID cartItemId) {
-        log.info("findById({})", cartItemId);
-        CartItem cartItem = cartItemRepository.findById(cartItemId)
+    public CartItemResponse findById(UUID cartItemId, User owner) {
+        log.info("findById({}, owner={})", cartItemId, owner.getUsername());
+        CartItem cartItem = cartItemRepository.findByIdWithCartAndOwner(cartItemId)
                 .orElseThrow(() -> new NoSuchElementException("CartItem with id " + cartItemId + " not found"));
+        if (!cartItem.getCart().getOwner().getId().equals(owner.getId())) {
+            throw new NoSuchElementException("CartItem with id " + cartItemId + " not found");
+        }
         return cartItemMapper.mapToResponse(cartItem);
     }
 

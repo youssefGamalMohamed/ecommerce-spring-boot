@@ -4,6 +4,7 @@ import com.app.ecommerce.shared.exception.DuplicatedUniqueColumnValueException;
 import com.app.ecommerce.shared.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,8 +63,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public LoginResponse login(LoginRequest request) {
-        log.info("Logging in user: {}", request.getUsername());
-
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
@@ -136,5 +135,12 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Token refreshed successfully for user: {}", user.getUsername());
         return authMapper.mapToLoginResponse(accessToken, refreshToken);
+    }
+
+    @Scheduled(cron = "0 0 3 * * *")
+    @Transactional
+    public void cleanupExpiredTokens() {
+        int deleted = tokenRepository.deleteExpiredOrRevokedTokens();
+        log.info("Token cleanup: deleted {} expired/revoked tokens", deleted);
     }
 }

@@ -4,9 +4,6 @@ import com.app.ecommerce.category.Category;
 import com.app.ecommerce.category.CategoryService;
 import com.app.ecommerce.shared.constants.CacheConstants;
 import com.app.ecommerce.shared.util.SortUtils;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -72,8 +69,7 @@ public class ProductServiceImpl implements ProductService {
         PageRequest safePage = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
 
         Specification<Product> spec = Specification
-                .where((Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> null)
-                .and(ProductSpecifications.nameLike(name))
+                .where(ProductSpecifications.nameLike(name))
                 .and(ProductSpecifications.priceGte(minPrice))
                 .and(ProductSpecifications.priceLte(maxPrice))
                 .and(ProductSpecifications.hasCategory(categoryId));

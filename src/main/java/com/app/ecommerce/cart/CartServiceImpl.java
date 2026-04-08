@@ -67,7 +67,11 @@ public class CartServiceImpl implements CartService {
                 .orElse(null);
 
         if (existingItem != null) {
-            existingItem.setProductQuantity(existingItem.getProductQuantity() + request.getQuantity());
+            int newQuantity = existingItem.getProductQuantity() + request.getQuantity();
+            if (newQuantity > 99) {
+                throw new IllegalArgumentException("Quantity per item cannot exceed 99");
+            }
+            existingItem.setProductQuantity(newQuantity);
             cartItemRepository.save(existingItem);
         } else {
             CartItem newItem = CartItem.builder()

@@ -21,6 +21,8 @@ import java.util.UUID;
 @Setter
 public class User extends BaseEntity implements UserDetails {
 
+    private static final int MAX_FAILED_LOGIN_ATTEMPTS = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -61,7 +63,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return failedLoginAttempts < MAX_FAILED_LOGIN_ATTEMPTS;
     }
 
     @Override

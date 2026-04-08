@@ -11,6 +11,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,7 +38,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn("Validation failed: {}", message);
 
         ErrorResponse errorResponse = ErrorResponse.badRequest(
-                "Validation failed",
+                message,
                 request.getDescription(false).replace("uri=", "")
         );
 
@@ -174,6 +175,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(value = LockedException.class)
+    public ResponseEntity<ErrorResponse> handleLockedException(
+            LockedException exception, WebRequest request) {
+        log.warn("Account locked: {}", exception.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.forbidden(
+                "Account is locked due to too many failed attempts.",
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
     @ExceptionHandler(value = AuthenticationException.class)

@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,16 @@ public class JwtService {
 
     private final TokenRepository tokenRepository;
 
+    private SecretKey cachedSignInKey;
+
     public JwtService(TokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
+    }
+
+    @PostConstruct
+    private void initSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.cachedSignInKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String extractUsername(String token) {
@@ -113,7 +122,6 @@ public class JwtService {
     }
 
     private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return cachedSignInKey;
     }
 }

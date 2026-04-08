@@ -17,11 +17,11 @@ public interface TokenRepository extends JpaRepository<Token, UUID> {
 
     Optional<Token> findByRefreshToken(String refreshToken);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE Token t SET t.revoked = true WHERE t.user = :user AND t.revoked = false AND t.expired = false")
     void revokeAllValidTokensByUser(@Param("user") User user);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("DELETE FROM Token t WHERE t.expired = true OR t.revoked = true")
     int deleteExpiredOrRevokedTokens();
 }

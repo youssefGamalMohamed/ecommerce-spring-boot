@@ -12,9 +12,6 @@ import com.app.ecommerce.shared.enums.PaymentType;
 import com.app.ecommerce.shared.enums.Status;
 import com.app.ecommerce.shared.exception.InvalidStateTransitionException;
 import com.app.ecommerce.shared.util.SortUtils;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -83,9 +80,6 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public OrderResponse findById(UUID orderId, User currentUser) {
         log.info("findById({}, user={})", orderId, currentUser.getUsername());
-        if (orderId == null) {
-            throw new IllegalArgumentException("orderId == null");
-        }
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NoSuchElementException("No Such Order With This Id, Id Not Found with value = " + orderId));
 
@@ -105,9 +99,6 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponse updateOrder(UUID orderId, UpdateOrderRequest request, User currentUser) {
         log.info("updateOrder({}, {}, user={})", orderId, request, currentUser.getUsername());
-        if (orderId == null) {
-            throw new IllegalArgumentException("Order Id Not Exist to Update");
-        }
         Order existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NoSuchElementException("Order with id " + orderId + " not found"));
         if (request.getDeliveryStatus() != null) {

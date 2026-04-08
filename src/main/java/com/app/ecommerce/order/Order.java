@@ -11,17 +11,37 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedSubgraph;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Table(name = "`order`")
-@Entity(name = "`order`")
+@Entity(name = "Order")
 @SuperBuilder
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @DynamicUpdate
+@NamedEntityGraph(
+    name = "Order.withCartAndItems",
+    attributeNodes = {
+        @NamedAttributeNode(value = "cart", subgraph = "cart.items"),
+        @NamedAttributeNode("deliveryInfo")
+    },
+    subgraphs = {
+        @NamedSubgraph(name = "cart.items",
+            attributeNodes = {
+                @NamedAttributeNode(value = "cartItems", subgraph = "items.product"),
+                @NamedAttributeNode("owner")
+            }),
+        @NamedSubgraph(name = "items.product",
+            attributeNodes = @NamedAttributeNode("product"))
+    }
+)
 public class Order extends BaseEntity {
 
     @Id
