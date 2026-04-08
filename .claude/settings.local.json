@@ -47,7 +47,9 @@
       "Bash(git remote:*)",
       "Bash(obsidian read:*)",
       "Bash(obsidian delete:*)",
-      "Bash(obsidian eval:*)"
+      "Bash(obsidian eval:*)",
+      "Bash(obsidian append:*)",
+      "Bash(chmod +x /media/youssef-gamal/021288CB1288C55F/works/personal/programming/git-workspace/ecommerce-spring-boot/.claude/hooks/save-context.sh)"
     ]
   }
 }

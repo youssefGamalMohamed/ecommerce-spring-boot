@@ -1,5 +1,7 @@
 package com.app.ecommerce.shared.security;
 
+import com.app.ecommerce.auth.Token;
+import com.app.ecommerce.auth.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -12,6 +14,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -25,6 +28,12 @@ public class JwtService {
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
+
+    private final TokenRepository tokenRepository;
+
+    public JwtService(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -56,7 +65,34 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        Optional<Token> storedToken = tokenRepository.findByAccessToken(token);
+
+        if (storedToken.isEmpty()) {
+            return false;
+        }
+
+        Token tokenEntity = storedToken.get();
+        if (tokenEntity.isRevoked() || tokenEntity.isExpired()) {
+            return false;
+        }
+
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        Optional<Token> storedToken = tokenRepository.findByRefreshToken(token);
+
+        if (storedToken.isEmpty()) {
+            return false;
+        }
+
+        Token tokenEntity = storedToken.get();
+        if (tokenEntity.isRevoked() || tokenEntity.isExpired()) {
+            return false;
+        }
+
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
