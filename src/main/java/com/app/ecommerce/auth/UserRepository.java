@@ -20,11 +20,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE User u SET u.failedLoginAttempts = u.failedLoginAttempts + 1 WHERE u.id = :id")
     void incrementFailedLoginAttempts(@Param("id") UUID id);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE User u SET u.failedLoginAttempts = 0 WHERE u.id = :id")
     void resetFailedLoginAttempts(@Param("id") UUID id);
 }

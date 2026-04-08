@@ -9,7 +9,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,8 +75,6 @@ public class AuthServiceImpl implements AuthService {
             log.warn("Failed login attempt for user: {}", request.getUsername());
             throw new BadCredentialsException("Invalid username or password");
         }
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         User user = (User) authentication.getPrincipal();
         userRepository.resetFailedLoginAttempts(user.getId());
