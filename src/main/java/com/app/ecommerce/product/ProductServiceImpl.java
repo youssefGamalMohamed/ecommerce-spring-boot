@@ -52,9 +52,6 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public ProductResponse findById(UUID productId) {
         log.info("findById({})", productId);
-        if (productId == null) {
-            throw new IllegalArgumentException("productId == null");
-        }
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchElementException("Product Id = " + productId + " Not Found"));
         log.info("findById(): Found product with id = {}", productId);
@@ -91,16 +88,11 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse updateById(UUID productId, UpdateProductRequest request) {
         log.info("updateById({}, {})", productId, request);
-        if (productId == null) {
-            throw new IllegalArgumentException("productId == null");
-        }
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Can Not Update Product , Id Not Found with value = " + productId));
         log.info("updateById(): Found product with id = {}", productId);
-
-        product.setVersion(request.getVersion());
 
         if (request.getCategoryIds() != null) {
             Set<Category> managedCategories = categoryService.getCategories(request.getCategoryIds());
@@ -121,15 +113,12 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void deleteById(UUID productId) {
         log.info("deleteById({})", productId);
-        if (productId == null) {
-            throw new IllegalArgumentException("productId == null");
+
+        int deleted = productRepository.deleteProductById(productId);
+        if (deleted == 0) {
+            throw new NoSuchElementException("Product Id = " + productId + " Not Found to Delete");
         }
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NoSuchElementException("Product Id = " + productId + " Not Found to Delete"));
-
-        log.info("product exists with id = {}", product.getId());
-
-        productRepository.deleteById(productId);
+        log.info("product deleted with id = {}", productId);
     }
 }

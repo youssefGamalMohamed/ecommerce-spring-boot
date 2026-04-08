@@ -96,7 +96,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler(value = {InvalidDataAccessResourceUsageException.class})
+    @ExceptionHandler(value = InvalidDataAccessResourceUsageException.class)
     public ResponseEntity<ErrorResponse> handleFailedDatabaseConnectionException(
             InvalidDataAccessResourceUsageException exception, WebRequest request) {
         log.error("The Database Deleted or Table of Database Deleted , Check DB and Tables");
@@ -107,6 +107,21 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse);
+    }
+
+    @ExceptionHandler(value = org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+            org.springframework.dao.DataIntegrityViolationException exception, WebRequest request) {
+        log.warn("Data integrity violation: {}", exception.getMessage());
+        String cause = exception.getMostSpecificCause().getMessage().toLowerCase();
+        String message = cause.contains("foreign key")
+                ? "Cannot delete this resource because it is referenced by other data."
+                : "A resource with this value already exists.";
+        ErrorResponse errorResponse = ErrorResponse.conflict(
+                message,
+                request.getDescription(false).replace("uri=", "")
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(value = ObjectOptimisticLockingFailureException.class)

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -38,8 +37,4 @@ public class UpdateProductRequest {
 
     @Schema(description = "Set of category IDs this product belongs to")
     private Set<UUID> categoryIds;
-
-    @NotNull(message = "Version is required for optimistic locking")
-    @Schema(description = "Version for optimistic locking", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Long version;
 }

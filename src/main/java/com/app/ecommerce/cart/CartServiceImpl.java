@@ -8,6 +8,8 @@ import com.app.ecommerce.shared.exception.CartNotOpenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +41,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Cacheable(value = CacheConstants.CARTS, key = "#owner.id")
     @Transactional
     public CartResponse getCurrentCart(User owner) {
         log.info("getCurrentCart(owner={})", owner.getUsername());
@@ -47,7 +50,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @CacheEvict(value = CacheConstants.CARTS, key = "#result.id")
+    @CachePut(value = CacheConstants.CARTS, key = "#owner.id")
     @Transactional
     public CartResponse addItem(User owner, AddCartItemRequest request) {
         log.info("addItem(owner={}, productId={}, quantity={})", owner.getUsername(), request.getProductId(), request.getQuantity());
@@ -82,12 +85,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @CacheEvict(value = CacheConstants.CARTS, key = "#result.id")
+    @CachePut(value = CacheConstants.CARTS, key = "#owner.id")
     @Transactional
     public CartResponse updateItemQuantity(User owner, UUID cartItemId, UpdateCartItemQuantityRequest request) {
         log.info("updateItemQuantity(owner={}, cartItemId={}, quantity={})", owner.getUsername(), cartItemId, request.getQuantity());
 
-        CartItem item = cartItemRepository.findById(cartItemId)
+        CartItem item = cartItemRepository.findByIdWithCartAndOwner(cartItemId)
                 .orElseThrow(() -> new NoSuchElementException("Cart item with id " + cartItemId + " not found"));
 
         if (!item.getCart().getOwner().getId().equals(owner.getId())) {
@@ -102,7 +105,6 @@ public class CartServiceImpl implements CartService {
 
         if (request.getQuantity() == 0) {
             cart.getCartItems().remove(item);
-            cartItemRepository.delete(item);
             log.info("Cart item {} removed (quantity set to 0)", cartItemId);
         } else {
             item.setProductQuantity(request.getQuantity());
@@ -115,12 +117,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @CacheEvict(value = CacheConstants.CARTS, key = "#result.id")
+    @CachePut(value = CacheConstants.CARTS, key = "#owner.id")
     @Transactional
     public CartResponse removeItem(User owner, UUID cartItemId) {
         log.info("removeItem(owner={}, cartItemId={})", owner.getUsername(), cartItemId);
 
-        CartItem item = cartItemRepository.findById(cartItemId)
+        CartItem item = cartItemRepository.findByIdWithCartAndOwner(cartItemId)
                 .orElseThrow(() -> new NoSuchElementException("Cart item with id " + cartItemId + " not found"));
 
         if (!item.getCart().getOwner().getId().equals(owner.getId())) {
@@ -133,7 +135,6 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = item.getCart();
         cart.getCartItems().remove(item);
-        cartItemRepository.delete(item);
         cartRepository.saveAndFlush(cart);
         log.info("Cart item {} removed from cart {}", cartItemId, cart.getId());
         return cartMapper.mapToResponse(cart);
