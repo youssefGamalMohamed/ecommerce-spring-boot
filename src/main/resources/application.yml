@@ -42,7 +42,7 @@ cache:
     orders: 900000
 
 jwt:
-  secret-key: ${JWT_SECRET:T3Bwb3J0aW5lVGhpcyBCYXNlNjQgU2VjcmV0IEtleSBGb3IgS0VUMjU2IGtleQ==}
+  secret-key: ${JWT_SECRET}
   access-token-expiration: 900000
   refresh-token-expiration: 604800000
 

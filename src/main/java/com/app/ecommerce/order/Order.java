@@ -65,6 +65,6 @@ public class Order extends BaseEntity {
     })
     private DeliveryInfo deliveryInfo;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Cart cart;
 }

@@ -34,7 +34,7 @@ public class Token extends BaseEntity {
     @Builder.Default
     private boolean expired = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

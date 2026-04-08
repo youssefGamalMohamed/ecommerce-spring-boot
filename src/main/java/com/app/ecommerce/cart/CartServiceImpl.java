@@ -42,7 +42,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Cacheable(value = CacheConstants.CARTS, key = "#owner.id")
-    @Transactional
+    @Transactional(readOnly = true)
     public CartResponse getCurrentCart(User owner) {
         log.info("getCurrentCart(owner={})", owner.getUsername());
         Cart cart = getOrCreateOpenCart(owner);
