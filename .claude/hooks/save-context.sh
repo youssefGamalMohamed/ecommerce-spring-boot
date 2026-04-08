@@ -1,6 +1,7 @@
 #!/bin/bash
-# Stop hook: auto-saves the last assistant response to CONTEXT.md
-# Fires automatically after every Claude response - no manual action needed.
+# Stop hook: appends the latest user+assistant exchange to CONTEXT.md as a full chat log.
+# No truncation. No trimming. Every message is stored in full.
+# Fires automatically after every Claude response.
 
 set -euo pipefail
 
@@ -12,32 +13,48 @@ CONTEXT_FILE="$PROJECT_DIR/CONTEXT.md"
 [ -z "$TRANSCRIPT" ] && exit 0
 [ ! -f "$TRANSCRIPT" ] && exit 0
 
-# Extract the last assistant text block from the transcript
-LAST_ASSISTANT=$(jq -r '
-  select(.type == "assistant") |
-  .message.content[]? |
-  select(.type == "text") |
-  .text
-' "$TRANSCRIPT" 2>/dev/null | tail -c 4000)
+# Count total turns already logged to find the new one(s)
+# We track the last written turn index in a small state file
+STATE_FILE="$PROJECT_DIR/.claude/.context-state"
+LAST_INDEX=0
+[ -f "$STATE_FILE" ] && LAST_INDEX=$(cat "$STATE_FILE")
 
-[ -z "$LAST_ASSISTANT" ] && exit 0
+# Read all turns from the transcript as a JSON array
+TURNS=$(jq -c 'select(.type == "user" or .type == "assistant")' "$TRANSCRIPT" 2>/dev/null)
 
-# Write a dated entry into CONTEXT.md
-{
-  echo ""
-  echo "## $(date '+%Y-%m-%d %H:%M')"
-  echo ""
-  echo "$LAST_ASSISTANT"
-  echo ""
-  echo "---"
-} >> "$CONTEXT_FILE"
+TOTAL=$(echo "$TURNS" | wc -l)
 
-# Keep the file lean — retain only the last 300 lines
-if [ -f "$CONTEXT_FILE" ]; then
-  LINES=$(wc -l < "$CONTEXT_FILE")
-  if [ "$LINES" -gt 300 ]; then
-    tail -n 300 "$CONTEXT_FILE" > "$CONTEXT_FILE.tmp" && mv "$CONTEXT_FILE.tmp" "$CONTEXT_FILE"
-  fi
-fi
+# Only write turns we haven't written yet
+NEW_TURNS=$(echo "$TURNS" | tail -n +"$((LAST_INDEX + 1))")
+
+[ -z "$NEW_TURNS" ] && exit 0
+
+while IFS= read -r turn; do
+    TYPE=$(echo "$turn" | jq -r '.type')
+    TEXT=$(echo "$turn" | jq -r '.message.content[]? | select(.type == "text") | .text' 2>/dev/null)
+
+    [ -z "$TEXT" ] && continue
+
+    if [ "$TYPE" = "user" ]; then
+        {
+            echo ""
+            echo "### 🧑 User — $(date '+%Y-%m-%d %H:%M')"
+            echo ""
+            echo "$TEXT"
+            echo ""
+        } >> "$CONTEXT_FILE"
+    elif [ "$TYPE" = "assistant" ]; then
+        {
+            echo "### 🤖 Claude — $(date '+%Y-%m-%d %H:%M')"
+            echo ""
+            echo "$TEXT"
+            echo ""
+            echo "---"
+        } >> "$CONTEXT_FILE"
+    fi
+done <<< "$NEW_TURNS"
+
+# Save the new last index so next run only writes new turns
+echo "$TOTAL" > "$STATE_FILE"
 
 exit 0
